@@ -3,8 +3,29 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.google.devtools.ksp)
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kover)
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "**/di/**",
+                    "**/*_Factory*",
+                    "**/*_HiltModules*",
+                    "**/*ComposableSingletons*",
+                    "**/BuildConfig*"
+                )
+            }
+        }
+        verify {
+            rule {
+                minBound(70)
+            }
+        }
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
@@ -29,7 +50,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            enableUnitTestCoverage = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -68,7 +91,6 @@ dependencies {
 
     // Core
     implementation(libs.androidx.core.ktx)
-    implementation(libs.core.ktx)
 
     // Room
     implementation(libs.androidx.room.runtime)
@@ -95,21 +117,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.core)
 
-    // Camera
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
-
     // Image Loading
     implementation(libs.coil.compose)
 
     // WorkManager
     implementation(libs.work.runtime.ktx)
-
-    // Location & Permissions
-    implementation(libs.play.services.location)
-    implementation(libs.accompanist.permissions)
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)

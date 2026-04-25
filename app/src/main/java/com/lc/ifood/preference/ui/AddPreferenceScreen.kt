@@ -37,16 +37,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
 import com.lc.ifood.core.domain.model.MealType
-import com.lc.ifood.core.ui.toLabel
 import com.lc.ifood.core.ui.theme.IfoodBackground
 import com.lc.ifood.core.ui.theme.IfoodRed
 import com.lc.ifood.core.ui.theme.IfoodSurface
 import com.lc.ifood.core.ui.theme.IfoodTextPrimary
 import com.lc.ifood.core.ui.theme.IfoodTextSecondary
+import com.lc.ifood.core.ui.toLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
