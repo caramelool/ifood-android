@@ -183,12 +183,12 @@ private fun OnboardingFab(
             icon = {
                 Icon(
                     imageVector = if (isOnboardCompleted) Icons.Default.Check else Icons.Default.ArrowForward,
-                    contentDescription = if (isOnboardCompleted) stringResource(R.string.btn_start) else stringResource(R.string.btn_next)
+                    contentDescription = if (isOnboardCompleted) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next)
                 )
             },
             text = {
                 Text(
-                    text = if (isOnboardCompleted) stringResource(R.string.btn_start) else stringResource(R.string.btn_next),
+                    text = if (isOnboardCompleted) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )

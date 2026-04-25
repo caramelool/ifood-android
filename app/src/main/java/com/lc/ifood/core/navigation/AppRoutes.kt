@@ -10,3 +10,9 @@ data object OnboardingRoute
 
 @Serializable
 data object HomeRoute
+
+@Serializable
+data object ScheduleAdjustmentRoute
+
+@Serializable
+data object AddPreferenceRoute

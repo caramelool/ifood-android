@@ -1,6 +1,21 @@
 <resources>
     <string name="app_name">iFoodFast</string>
 
+    <!-- Common -->
+    <string name="common_save">Salvar</string>
+    <string name="common_saving">Salvando…</string>
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Cancelar</string>
+    <string name="common_back_content_description">Voltar</string>
+
+    <!-- Meal types -->
+    <string name="meal_type_breakfast">Café da Manhã</string>
+    <string name="meal_type_lunch">Almoço</string>
+    <string name="meal_type_afternoon_snack">Lanche da Tarde</string>
+    <string name="meal_type_dinner">Jantar</string>
+    <string name="meal_type_breakfast_short">Café</string>
+    <string name="meal_type_afternoon_snack_short">Lanche</string>
+
     <!-- Onboarding -->
     <string name="onboarding_title_1">Bem-vindo ao iFood Preferences</string>
     <string name="onboarding_subtitle_1">Recomendações inteligentes feitas para o seu gosto</string>
@@ -10,27 +25,26 @@
     <string name="onboarding_subtitle_3">Descobrimos o que você curte comer em cada momento</string>
     <string name="onboarding_title_4">Na hora certa, a escolha perfeita</string>
     <string name="onboarding_subtitle_4">Cruzamos seus dados e indicamos a melhor opção pra você</string>
-    <string name="btn_next">Próximo</string>
-    <string name="btn_start">Começar</string>
+    <string name="onboarding_btn_next">Próximo</string>
+    <string name="onboarding_btn_start">Começar</string>
 
     <!-- Home -->
-    <string name="greeting">Olá!</string>
-    <string name="location_label">Sua localização</string>
-    <string name="category_breakfast">Café da manhã</string>
-    <string name="category_lunch">Almoço</string>
-    <string name="category_snack">Lanche da tarde</string>
-    <string name="category_dinner">Jantar</string>
-    <string name="available_now">Disponíveis agora</string>
-    <string name="nav_home">Início</string>
-    <string name="nav_search">Busca</string>
-    <string name="nav_orders">Pedidos</string>
-    <string name="nav_profile">Perfil</string>
+    <string name="home_welcome">Bem vindo,</string>
+    <string name="home_user_name">Fulano</string>
+    <string name="home_schedules_title">Seus Horários</string>
+    <string name="home_schedules_edit_content_description">Editar horários</string>
+    <string name="home_preferences_title">Suas Preferências</string>
+    <string name="home_preferences_add_content_description">Adicionar preferência</string>
+    <string name="home_preferences_empty">Nenhuma preferência cadastrada.</string>
 
-    <!-- Meal Selection -->
-    <string name="meal_selection_title">Selecione a refeição</string>
-    <string name="breakfast_time">06:00 – 10:00</string>
-    <string name="lunch_time">11:00 – 14:00</string>
-    <string name="snack_time">14:00 – 18:00</string>
-    <string name="dinner_time">18:00 – 22:00</string>
-    <string name="back">Voltar</string>
+    <!-- Schedule adjustment -->
+    <string name="schedule_adjustment_title">Ajustar Horários</string>
+    <string name="schedule_adjustment_edit_content_description">Editar horário</string>
+    <string name="schedule_adjustment_time_picker_title">Selecionar horário</string>
+
+    <!-- Add preference -->
+    <string name="add_preference_title">Nova Preferência</string>
+    <string name="add_preference_label_field">Descrição da preferência</string>
+    <string name="add_preference_label_placeholder">Ex: Saudável, Econômico…</string>
+    <string name="add_preference_meal_types_title">Tipos de refeição</string>
 </resources>

@@ -1,0 +1,49 @@
+package com.lc.ifood.preference.ui
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.lc.ifood.core.domain.model.MealType
+import com.lc.ifood.home.domain.SavePreferenceUseCase
+import com.lc.ifood.home.ui.UserPreference
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class AddPreferenceViewModel @Inject constructor(
+    private val savePreferenceUseCase: SavePreferenceUseCase
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(AddPreferenceUiState())
+    val uiState: StateFlow<AddPreferenceUiState> = _uiState.asStateFlow()
+
+    fun onLabelChange(label: String) {
+        _uiState.value = _uiState.value.copy(label = label)
+    }
+
+    fun toggleMealType(mealType: MealType) {
+        val current = _uiState.value.selectedMealTypes.toMutableSet()
+        if (mealType in current) current.remove(mealType) else current.add(mealType)
+        _uiState.value = _uiState.value.copy(selectedMealTypes = current)
+    }
+
+    fun save(onDone: () -> Unit) {
+        val state = _uiState.value
+        if (!state.canSave) return
+        viewModelScope.launch {
+            _uiState.value = state.copy(isSaving = true)
+            savePreferenceUseCase(
+                UserPreference(
+                    id = 0,
+                    label = state.label.trim(),
+                    mealTypes = state.selectedMealTypes.toList()
+                )
+            )
+            _uiState.value = _uiState.value.copy(isSaving = false, saved = true)
+            onDone()
+        }
+    }
+}
