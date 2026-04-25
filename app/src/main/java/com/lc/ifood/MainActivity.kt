@@ -10,17 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.lc.ifood.core.navigation.AddPreferenceRoute
-import com.lc.ifood.core.navigation.HomeRoute
-import com.lc.ifood.core.navigation.OnboardingRoute
-import com.lc.ifood.core.navigation.ScheduleAdjustmentRoute
-import com.lc.ifood.core.navigation.SplashRoute
-import com.lc.ifood.core.ui.theme.IfoodTheme
-import com.lc.ifood.home.ui.HomeScreen
-import com.lc.ifood.onboarding.ui.OnboardingScreen
-import com.lc.ifood.preference.ui.AddPreferenceScreen
-import com.lc.ifood.schedule.ui.ScheduleAdjustmentScreen
-import com.lc.ifood.splash.ui.SplashScreen
+import com.lc.ifood.ui.home.HomeScreen
+import com.lc.ifood.ui.navigation.AddPreferenceRoute
+import com.lc.ifood.ui.navigation.HomeRoute
+import com.lc.ifood.ui.navigation.OnboardingRoute
+import com.lc.ifood.ui.navigation.ScheduleAdjustmentRoute
+import com.lc.ifood.ui.navigation.SplashRoute
+import com.lc.ifood.ui.onboarding.OnboardingScreen
+import com.lc.ifood.ui.preference.AddPreferenceScreen
+import com.lc.ifood.ui.schedule.ScheduleAdjustmentScreen
+import com.lc.ifood.ui.splash.SplashScreen
+import com.lc.ifood.ui.theme.IfoodTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
