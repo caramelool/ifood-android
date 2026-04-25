@@ -47,4 +47,9 @@
     <string name="add_preference_label_field">Descrição da preferência</string>
     <string name="add_preference_label_placeholder">Ex: Saudável, Econômico…</string>
     <string name="add_preference_meal_types_title">Tipos de refeição</string>
+
+    <!-- Delete preference -->
+    <string name="delete_preference_dialog_title">Remover preferência?</string>
+    <string name="delete_preference_dialog_message">"%s" será removida permanentemente.</string>
+    <string name="delete_preference_confirm">Remover</string>
 </resources>

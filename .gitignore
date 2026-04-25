@@ -8,3 +8,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+/app/debug/
+/app/release/
+
+/app/ifood.jks
