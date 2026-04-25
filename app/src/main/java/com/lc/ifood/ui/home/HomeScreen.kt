@@ -43,13 +43,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
-import com.lc.ifood.ui.preference.delete.DeletePreferenceViewModel
-import com.lc.ifood.ui.preference.delete.SwipeToDeletePreference
-import com.lc.ifood.ui.preference.delete.rememberDeletePreferenceState
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.model.time
+import com.lc.ifood.ui.preference.delete.SwipeToDeletePreference
+import com.lc.ifood.ui.preference.delete.rememberDeletePreferenceState
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface

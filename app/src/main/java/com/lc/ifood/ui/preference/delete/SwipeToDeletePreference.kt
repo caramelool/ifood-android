@@ -55,8 +55,9 @@ fun SwipeToDeletePreference(
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
+            val isSwiping = runCatching { dismissState.requireOffset() }.getOrElse { 0f } < 0f
             DeleteBackground(
-                isActive = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+                isActive = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart || isSwiping
             )
         }
     ) {

@@ -1,8 +1,5 @@
 package com.lc.ifood.di
 
-import com.lc.ifood.data.db.AppDatabase
-import com.lc.ifood.data.db.dao.MealScheduleDao
-import com.lc.ifood.data.db.dao.UserPreferenceDao
 import com.lc.ifood.data.repository.MealReminderRepositoryImpl
 import com.lc.ifood.data.repository.OnboardingRepositoryImpl
 import com.lc.ifood.data.repository.PreferenceRepositoryImpl
@@ -13,7 +10,6 @@ import com.lc.ifood.domain.repository.PreferenceRepository
 import com.lc.ifood.domain.repository.ScheduleRepository
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
