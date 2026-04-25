@@ -35,11 +35,13 @@ jobs:
       - name: Build (${{ matrix.build_type }})
         run: ./gradlew assemble${{ matrix.build_type_cap }}
 
-      - name: Run Unit Tests (${{ matrix.build_type }})
-        run: ./gradlew test${{ matrix.build_type_cap }}UnitTest
+      - name: Run Unit Tests
+        if: matrix.build_type == 'debug'
+        run: ./gradlew testDebugUnitTest
 
-      - name: Generate Coverage Report (${{ matrix.build_type }})
-        run: ./gradlew koverXmlReport${{ matrix.build_type_cap }} koverHtmlReport${{ matrix.build_type_cap }}
+      - name: Generate Coverage Report
+        if: matrix.build_type == 'debug'
+        run: ./gradlew koverXmlReportDebug koverHtmlReportDebug
 
 # enable when the development is completed
 #      - name: Verify Coverage Threshold (${{ matrix.build_type }})
@@ -78,17 +80,18 @@ jobs:
 #          fi
 #          gh pr comment "$PR_NUMBER" --body "$BODY"
 
-      - name: Upload Coverage Report (HTML - ${{ matrix.build_type }})
+      - name: Upload Coverage Report (HTML)
+        if: matrix.build_type == 'debug'
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-${{ matrix.build_type }}
-          path: app/build/reports/kover/html${{ matrix.build_type_cap }}/
+          name: coverage-report-debug
+          path: app/build/reports/kover/htmlDebug/
           retention-days: 7
 
-      - name: Upload Test Results (${{ matrix.build_type }})
-        if: always()
+      - name: Upload Test Results
+        if: always() && matrix.build_type == 'debug'
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.build_type }}
-          path: app/build/reports/tests/test${{ matrix.build_type_cap }}UnitTest/
+          name: test-results-debug
+          path: app/build/reports/tests/testDebugUnitTest/
           retention-days: 7
