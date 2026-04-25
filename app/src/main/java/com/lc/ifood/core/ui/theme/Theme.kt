@@ -21,7 +21,6 @@ private val IfoodColorScheme = lightColorScheme(
 
 @Composable
 fun IfoodTheme(
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
