@@ -18,7 +18,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,17 +41,16 @@ fun SwipeToDeletePreference(
     viewModel: DeletePreferenceViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val dismissState = rememberSwipeToDismissBoxState(
-        confirmValueChange = { newValue ->
-            if (newValue == SwipeToDismissBoxValue.EndToStart) {
-                state.requestDelete(preference)
-                false
-            } else {
-                true
-            }
-        },
         positionalThreshold = { totalDistance -> totalDistance * 0.2f }
     )
+
+    LaunchedEffect(dismissState.currentValue) {
+        if (dismissState.currentValue == SwipeToDismissBoxValue.EndToStart) {
+            state.requestDelete(preference)
+        }
+    }
 
     SwipeToDismissBox(
         state = dismissState,
@@ -70,7 +72,10 @@ fun SwipeToDeletePreference(
             onConfirm = {
                 state.confirmDelete()?.let { viewModel.delete(it.id) }
             },
-            onDismiss = state::dismiss
+            onDismiss = {
+                state.dismiss()
+                scope.launch { dismissState.reset() }
+            }
         )
     }
 }
