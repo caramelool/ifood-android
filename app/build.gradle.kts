@@ -90,7 +90,6 @@ dependencies {
 
     // Core
     implementation(libs.androidx.core.ktx)
-    implementation(libs.core.ktx)
 
     // Room
     implementation(libs.androidx.room.runtime)
@@ -117,21 +116,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.core)
 
-    // Camera
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
-
     // Image Loading
     implementation(libs.coil.compose)
 
     // WorkManager
     implementation(libs.work.runtime.ktx)
-
-    // Location & Permissions
-    implementation(libs.play.services.location)
-    implementation(libs.accompanist.permissions)
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
