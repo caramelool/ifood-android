@@ -36,15 +36,13 @@ kotlinxCoroutines = "1.10.2"
 kotlinxSerializationCore = "1.11.0"
 
 # Other
-accompanistPermissions = "0.37.3"
 coilCompose = "2.7.0"
 datastorePreferences = "1.2.1"
 material = "1.13.0"
-playServicesLocation = "21.3.0"
 
 # Testing
 core = "1.7.0"
-espressoCore = "3.5.1"
+espressoCore = "3.7.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 runner = "1.7.0"
@@ -89,7 +87,6 @@ retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = 
 converter-moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
 moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 
 # Dependency Injection
@@ -108,10 +105,6 @@ kotlinx-serialization-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 
 # Image Loading
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coilCompose" }
-
-# Location & Permissions
-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanistPermissions" }
-play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 # Material (legacy View system)
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }

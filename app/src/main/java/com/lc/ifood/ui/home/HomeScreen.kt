@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,9 +43,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
+import com.lc.ifood.ui.preference.delete.DeletePreferenceViewModel
+import com.lc.ifood.ui.preference.delete.SwipeToDeletePreference
+import com.lc.ifood.ui.preference.delete.rememberDeletePreferenceState
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
+import com.lc.ifood.domain.model.time
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -146,8 +151,12 @@ private fun MealSchedulesSection(
         Spacer(Modifier.height(12.dp))
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
             contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(
+                space = 8.dp,
+                alignment = Alignment.CenterHorizontally
+            )
         ) {
             items(schedules) { schedule ->
                 MealScheduleCard(schedule = schedule)
@@ -183,15 +192,10 @@ private fun MealScheduleCard(schedule: MealSchedule) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "%02d:%02d".format(schedule.hour, schedule.minute),
+                    text = schedule.time(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = IfoodTextPrimary
-                )
-                Text(
-                    text = schedule.period,
-                    fontSize = 11.sp,
-                    color = IfoodTextSecondary
                 )
             }
         }
@@ -203,6 +207,8 @@ private fun PreferencesSection(
     preferences: List<UserPreference>,
     onAddClick: () -> Unit
 ) {
+    val deleteState = rememberDeletePreferenceState()
+
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -246,7 +252,15 @@ private fun PreferencesSection(
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 preferences.forEach { preference ->
-                    PreferenceCard(preference = preference)
+                    SwipeToDeletePreference(
+                        preference = preference,
+                        state = deleteState
+                    ) {
+                        PreferenceCard(
+                            preference = preference,
+                            onDeleteClick = { deleteState.requestDelete(preference) }
+                        )
+                    }
                 }
             }
         }
@@ -254,31 +268,50 @@ private fun PreferencesSection(
 }
 
 @Composable
-private fun PreferenceCard(preference: UserPreference) {
+private fun PreferenceCard(
+    preference: UserPreference,
+    onDeleteClick: () -> Unit = {}
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = IfoodSurface),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 14.dp)
-        ) {
-            Text(
-                text = preference.label,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = IfoodTextPrimary
-            )
-            if (preference.mealTypes.isNotEmpty()) {
-                Spacer(Modifier.height(6.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    preference.mealTypes.forEach { mealType ->
-                        MealTypeChip(mealType = mealType)
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 14.dp)
+            ) {
+                Text(
+                    text = preference.label,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = IfoodTextPrimary
+                )
+                if (preference.mealTypes.isNotEmpty()) {
+                    Spacer(Modifier.height(6.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        preference.mealTypes.forEach { mealType ->
+                            MealTypeChip(mealType = mealType)
+                        }
                     }
                 }
+            }
+            IconButton(
+                onClick = onDeleteClick,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(32.dp)
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete_preference_confirm),
+                    tint = IfoodTextSecondary,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }

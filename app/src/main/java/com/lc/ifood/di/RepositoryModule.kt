@@ -37,12 +37,4 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindMealReminderRepository(impl: MealReminderRepositoryImpl): MealReminderRepository
-
-    companion object {
-        @Provides
-        fun provideMealScheduleDao(db: AppDatabase): MealScheduleDao = db.mealScheduleDao()
-
-        @Provides
-        fun provideUserPreferenceDao(db: AppDatabase): UserPreferenceDao = db.userPreferenceDao()
-    }
 }

@@ -10,6 +10,7 @@ plugins {
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)
+val isSigning = project.hasProperty("signing.enabled")
 
 android {
     namespace = "com.lc.ifood"
@@ -25,15 +26,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    signingConfigs {
-        create("release") {
-            require(localProperties.getProperty("signing.keystore.path") != null) {
-                "Signing properties not found. You need to configure your local.properties with signing properties"
+    if (isSigning) {
+        signingConfigs {
+            create("release") {
+                storeFile = file(localProperties.getProperty("signing.keystore.path"))
+                storePassword = localProperties.getProperty("signing.keystore.password")
+                keyAlias = localProperties.getProperty("signing.key.alias")
+                keyPassword = localProperties.getProperty("signing.key.password")
             }
-            storeFile = file(localProperties.getProperty("signing.keystore.path"))
-            storePassword = localProperties.getProperty("signing.keystore.password")
-            keyAlias = localProperties.getProperty("signing.key.alias")
-            keyPassword = localProperties.getProperty("signing.key.password")
         }
     }
 
@@ -50,7 +50,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            if (isSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -124,7 +126,6 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
-    implementation(libs.moshi.kotlin)
     ksp(libs.moshi.kotlin.codegen)
 
     // Dependency Injection

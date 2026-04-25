@@ -14,26 +14,43 @@ App Android de agendamento de refeições com preferências alimentares.
 - **Background:** WorkManager (`MealReminderWorker`)
 - **Build:** Gradle KTS, Version Catalog (`gradle/libs.versions.toml`)
 
-## Estrutura de módulos (feature packages)
+## Estrutura de pacotes
 
 ```
 app/src/main/java/com/lc/ifood/
-├── core/          # DB (Room), DI base, domínio compartilhado, navegação, tema
-├── home/          # Tela principal: lista refeições e preferências
-├── onboarding/    # Fluxo de primeiro acesso
-├── preference/    # Adicionar/remover preferências alimentares
-├── schedule/      # Ajuste de horários de refeições
-├── splash/        # Splash screen + verificação de onboarding
-└── worker/        # WorkManager: notificações de lembrete
+├── data/
+│   ├── db/
+│   │   ├── AppDatabase.kt
+│   │   ├── dao/          # MealScheduleDao, UserPreferenceDao
+│   │   └── entity/       # MealScheduleEntity, UserPreferenceEntity
+│   ├── remote/           # MealReminderApiService, MealReminderRequest
+│   └── repository/       # Impl: MealReminder, Onboarding, Preference, Schedule
+├── di/                   # AppModule, DaoModule, NetworkModule, RepositoryModule
+├── domain/
+│   ├── model/            # MealSchedule, MealType, UserPreference
+│   ├── repository/       # Interfaces: MealReminder, Onboarding, Preference, Schedule
+│   └── usecase/          # CompleteOnboarding, DeletePreference, GetMealSchedules,
+│                         # GetOnboardingStatus, GetPreferences, SavePreference,
+│                         # UpdateMealSchedule
+├── ui/
+│   ├── home/             # HomeScreen, HomeViewModel, HomeUiState
+│   ├── onboarding/       # OnboardingScreen, OnboardingViewModel, OnboardingUiState
+│   ├── preference/       # AddPreferenceScreen, AddPreferenceViewModel, AddPreferenceUiState
+│   ├── schedule/         # ScheduleAdjustmentScreen, ScheduleAdjustmentViewModel, ScheduleAdjustmentUiState
+│   ├── splash/           # SplashScreen, SplashViewModel, SplashUiState
+│   ├── navigation/       # AppRoutes
+│   ├── theme/            # Color, Theme, Type, SystemStatusBar
+│   └── MealTypeStrings.kt
+├── worker/               # MealReminderWorker, MealReminderScheduler
+├── MainActivity.kt
+└── MainApplication.kt
 ```
-
-Cada feature segue a estrutura: `data/`, `domain/`, `ui/`, `di/`.
 
 ## Banco de dados (Room)
 
 - `MealScheduleEntity` + `MealScheduleDao` — horários de refeições
 - `UserPreferenceEntity` + `UserPreferenceDao` — preferências do usuário
-- `AppDatabase` com `MealTypeConverter`
+- `AppDatabase`
 
 ## Backend
 

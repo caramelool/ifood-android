@@ -34,8 +34,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         mealType = MealType.valueOf(mealType),
         label = label,
         hour = hour,
-        minute = minute,
-        period = if (hour < 12) "am" else "pm"
+        minute = minute
     )
 
     private fun MealSchedule.toEntity() = MealScheduleEntity(
@@ -46,9 +45,9 @@ class ScheduleRepositoryImpl @Inject constructor(
     )
 
     private fun defaultSchedules() = listOf(
-        MealSchedule(MealType.BREAKFAST, "Café da Manhã", 8, 0, "am"),
-        MealSchedule(MealType.LUNCH, "Almoço", 13, 0, "pm"),
-        MealSchedule(MealType.AFTERNOON_SNACK, "Lanche da Tarde", 17, 0, "pm"),
-        MealSchedule(MealType.DINNER, "Jantar", 21, 0, "pm")
+        MealSchedule(MealType.BREAKFAST, "Café da Manhã", 8, 0),
+        MealSchedule(MealType.LUNCH, "Almoço", 13, 0),
+        MealSchedule(MealType.AFTERNOON_SNACK, "Lanche da Tarde", 17, 0),
+        MealSchedule(MealType.DINNER, "Jantar", 21, 0)
     )
 }

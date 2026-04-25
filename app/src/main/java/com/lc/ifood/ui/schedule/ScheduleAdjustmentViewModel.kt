@@ -32,8 +32,7 @@ class ScheduleAdjustmentViewModel @Inject constructor(
     fun updateTime(schedule: MealSchedule, hour: Int, minute: Int) {
         val updated = schedule.copy(
             hour = hour,
-            minute = minute,
-            period = if (hour < 12) "am" else "pm"
+            minute = minute
         )
         _uiState.value = _uiState.value.copy(
             schedules = _uiState.value.schedules.map {

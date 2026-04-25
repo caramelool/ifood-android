@@ -17,7 +17,7 @@ import com.lc.ifood.ui.navigation.OnboardingRoute
 import com.lc.ifood.ui.navigation.ScheduleAdjustmentRoute
 import com.lc.ifood.ui.navigation.SplashRoute
 import com.lc.ifood.ui.onboarding.OnboardingScreen
-import com.lc.ifood.ui.preference.AddPreferenceScreen
+import com.lc.ifood.ui.preference.add.AddPreferenceScreen
 import com.lc.ifood.ui.schedule.ScheduleAdjustmentScreen
 import com.lc.ifood.ui.splash.SplashScreen
 import com.lc.ifood.ui.theme.IfoodTheme

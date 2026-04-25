@@ -1,4 +1,4 @@
-package com.lc.ifood.ui.preference
+package com.lc.ifood.ui.preference.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -31,7 +31,6 @@ class MealReminderWorker @AssistedInject constructor(
         const val KEY_MEAL_LABEL = "meal_label"
         const val KEY_HOUR = "hour"
         const val KEY_MINUTE = "minute"
-        const val KEY_PERIOD = "period"
         const val CHANNEL_ID = "meal_reminders"
         const val CHANNEL_NAME = "Lembretes de Refeição"
         private const val TAG = "MealReminderWorker"
@@ -84,8 +83,7 @@ fun MealSchedule.toWorkData() = workDataOf(
     MealReminderWorker.KEY_MEAL_TYPE to mealType.name,
     MealReminderWorker.KEY_MEAL_LABEL to label,
     MealReminderWorker.KEY_HOUR to hour,
-    MealReminderWorker.KEY_MINUTE to minute,
-    MealReminderWorker.KEY_PERIOD to period
+    MealReminderWorker.KEY_MINUTE to minute
 )
 
 fun Data.toMealSchedule(): MealSchedule? {
@@ -93,6 +91,5 @@ fun Data.toMealSchedule(): MealSchedule? {
     val label = getString(MealReminderWorker.KEY_MEAL_LABEL) ?: return null
     val hour = getInt(MealReminderWorker.KEY_HOUR, -1).takeIf { it >= 0 } ?: return null
     val minute = getInt(MealReminderWorker.KEY_MINUTE, 0)
-    val period = getString(MealReminderWorker.KEY_PERIOD) ?: if (hour < 12) "am" else "pm"
-    return MealSchedule(MealType.valueOf(mealType), label, hour, minute, period)
+    return MealSchedule(MealType.valueOf(mealType), label, hour, minute)
 }

@@ -1,4 +1,4 @@
-package com.lc.ifood.ui.preference
+package com.lc.ifood.ui.preference.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

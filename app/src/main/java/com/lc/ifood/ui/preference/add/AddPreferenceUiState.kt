@@ -1,4 +1,4 @@
-package com.lc.ifood.ui.preference
+package com.lc.ifood.ui.preference.add
 
 import com.lc.ifood.domain.model.MealType
 
