@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">iFoodFast</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Bem-vindo ao iFood Preferences</string>
+    <string name="onboarding_subtitle_1">Recomendações inteligentes feitas para o seu gosto</string>
+    <string name="onboarding_title_2">Seu ritmo, no horário certo</string>
+    <string name="onboarding_subtitle_2">Aprendemos quando você prefere cada refeição do dia</string>
+    <string name="onboarding_title_3">Cada refeição tem seu sabor</string>
+    <string name="onboarding_subtitle_3">Descobrimos o que você curte comer em cada momento</string>
+    <string name="onboarding_title_4">Na hora certa, a escolha perfeita</string>
+    <string name="onboarding_subtitle_4">Cruzamos seus dados e indicamos a melhor opção pra você</string>
+    <string name="btn_next">Próximo</string>
+    <string name="btn_start">Começar</string>
+
+    <!-- Home -->
+    <string name="greeting">Olá!</string>
+    <string name="location_label">Sua localização</string>
+    <string name="category_breakfast">Café da manhã</string>
+    <string name="category_lunch">Almoço</string>
+    <string name="category_snack">Lanche da tarde</string>
+    <string name="category_dinner">Jantar</string>
+    <string name="available_now">Disponíveis agora</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_search">Busca</string>
+    <string name="nav_orders">Pedidos</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Meal Selection -->
+    <string name="meal_selection_title">Selecione a refeição</string>
+    <string name="breakfast_time">06:00 – 10:00</string>
+    <string name="lunch_time">11:00 – 14:00</string>
+    <string name="snack_time">14:00 – 18:00</string>
+    <string name="dinner_time">18:00 – 22:00</string>
+    <string name="back">Voltar</string>
+</resources>

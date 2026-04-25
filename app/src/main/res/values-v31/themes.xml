@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Ifood" parent="Theme.MaterialComponents.Light">
+        <item name="android:statusBarColor">@color/ifood_red</item>
+        <item name="android:windowBackground">@drawable/background</item>
+        <item name="android:windowSplashScreenBackground">@color/ifood_red</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+    </style>
+</resources>

@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.Ifood" parent="Theme.MaterialComponents.Light">
+        <item name="android:statusBarColor">@color/ifood_red</item>
+        <item name="android:windowBackground">@drawable/background</item>
+    </style>
+</resources>
