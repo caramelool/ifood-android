@@ -45,12 +45,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
-import com.lc.ifood.core.ui.toLabel
 import com.lc.ifood.core.ui.theme.IfoodBackground
 import com.lc.ifood.core.ui.theme.IfoodRed
 import com.lc.ifood.core.ui.theme.IfoodSurface
 import com.lc.ifood.core.ui.theme.IfoodTextPrimary
 import com.lc.ifood.core.ui.theme.IfoodTextSecondary
+import com.lc.ifood.core.ui.toLabel
 import com.lc.ifood.home.ui.MealSchedule
 
 @OptIn(ExperimentalMaterial3Api::class)

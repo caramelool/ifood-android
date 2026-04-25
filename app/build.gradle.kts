@@ -5,6 +5,28 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kover)
+}
+
+kover {
+    reports {
+        filters {
+            excludes {
+                classes(
+                    "**/di/**",
+                    "**/*_Factory*",
+                    "**/*_HiltModules*",
+                    "**/*ComposableSingletons*",
+                    "**/BuildConfig*"
+                )
+            }
+        }
+        verify {
+            rule {
+                minBound(60)
+            }
+        }
+    }
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

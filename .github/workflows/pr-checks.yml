@@ -1,0 +1,55 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        build_type: [debug, release]
+        include:
+          - build_type: debug
+            build_type_cap: Debug
+          - build_type: release
+            build_type_cap: Release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build (${{ matrix.build_type }})
+        run: ./gradlew assemble${{ matrix.build_type_cap }}
+
+      - name: Run Unit Tests (${{ matrix.build_type }})
+        run: ./gradlew test${{ matrix.build_type_cap }}UnitTest
+
+      - name: Generate Coverage Report (${{ matrix.build_type }})
+        run: ./gradlew koverXmlReport${{ matrix.build_type_cap }} koverHtmlReport${{ matrix.build_type_cap }}
+
+      - name: Upload Coverage Report (HTML - ${{ matrix.build_type }})
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-${{ matrix.build_type }}
+          path: app/build/reports/kover/report${{ matrix.build_type_cap }}/
+          retention-days: 7
+
+      - name: Upload Test Results (${{ matrix.build_type }})
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.build_type }}
+          path: app/build/reports/tests/test${{ matrix.build_type_cap }}UnitTest/
+          retention-days: 7

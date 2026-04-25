@@ -58,8 +58,10 @@ fun OnboardingScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagerState = rememberPagerState(pageCount = { uiState.pages.size })
 
-    LaunchedEffect(pagerState.currentPage) {
-        viewModel.onPageChanged(pagerState.currentPage)
+    if (uiState.isOnboardCompleted.not()) {
+        LaunchedEffect(pagerState.currentPage) {
+            viewModel.onPageChanged(pagerState.currentPage)
+        }
     }
 
     Scaffold(
