@@ -6,28 +6,17 @@ data class MealSchedule(
     val mealType: MealType,
     val label: String,
     val hour: Int,
+    val minute: Int = 0,
     val period: String
 )
 
 data class UserPreference(
     val id: Int,
-    val label: String
+    val label: String,
+    val mealTypes: List<MealType> = emptyList()
 )
 
 data class HomeUiState(
-    val mealSchedules: List<MealSchedule> = defaultMealSchedules(),
-    val preferences: List<UserPreference> = defaultPreferences()
-)
-
-private fun defaultMealSchedules() = listOf(
-    MealSchedule(MealType.BREAKFAST, "breakfast", 8, "am"),
-    MealSchedule(MealType.LUNCH, "lunch", 13, "pm"),
-    MealSchedule(MealType.AFTERNOON_SNACK, "afternoon", 17, "pm"),
-    MealSchedule(MealType.DINNER, "dinner", 21, "pm")
-)
-
-private fun defaultPreferences() = listOf(
-    UserPreference(1, "Pão com Ovo"),
-    UserPreference(2, "Saudavel"),
-    UserPreference(3, "Economia")
+    val mealSchedules: List<MealSchedule> = emptyList(),
+    val preferences: List<UserPreference> = emptyList()
 )

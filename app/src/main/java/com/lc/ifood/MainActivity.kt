@@ -10,12 +10,16 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lc.ifood.core.navigation.AddPreferenceRoute
 import com.lc.ifood.core.navigation.HomeRoute
 import com.lc.ifood.core.navigation.OnboardingRoute
+import com.lc.ifood.core.navigation.ScheduleAdjustmentRoute
 import com.lc.ifood.core.navigation.SplashRoute
 import com.lc.ifood.core.ui.theme.IfoodTheme
 import com.lc.ifood.home.ui.HomeScreen
 import com.lc.ifood.onboarding.ui.OnboardingScreen
+import com.lc.ifood.preference.ui.AddPreferenceScreen
+import com.lc.ifood.schedule.ui.ScheduleAdjustmentScreen
 import com.lc.ifood.splash.ui.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -71,7 +75,22 @@ fun IfoodNavHost() {
         }
 
         composable<HomeRoute> {
-            HomeScreen()
+            HomeScreen(
+                onEditSchedules = { navController.navigate(ScheduleAdjustmentRoute) },
+                onAddPreference = { navController.navigate(AddPreferenceRoute) }
+            )
+        }
+
+        composable<ScheduleAdjustmentRoute> {
+            ScheduleAdjustmentScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<AddPreferenceRoute> {
+            AddPreferenceScreen(
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
