@@ -1,0 +1,41 @@
+# Build outputs
+build/
+app/build/
+.gradle/
+
+# IDE
+.idea/
+
+# Gradle wrapper binaries
+gradlew
+gradlew.bat
+gradle/wrapper/gradle-wrapper.jar
+
+# Backend dependencies
+backend/node_modules/
+backend/package-lock.json
+
+# Generated / compiled
+**/*.class
+**/*.apk
+**/*.aab
+**/*.dex
+**/*.so
+**/generated/
+
+# Local config (não tem info de arquitetura)
+local.properties
+gradle.properties
+
+# Assets binários
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.webp
+**/*.svg
+**/*.xml
+app/src/main/res/
+
+# Testes (ignore por padrão; remova se estiver trabalhando em testes)
+app/src/test/
+app/src/androidTest/

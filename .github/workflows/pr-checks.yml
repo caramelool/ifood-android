@@ -39,11 +39,39 @@ jobs:
       - name: Generate Coverage Report (${{ matrix.build_type }})
         run: ./gradlew koverXmlReport${{ matrix.build_type_cap }} koverHtmlReport${{ matrix.build_type_cap }}
 
+      - name: Verify Coverage Threshold (${{ matrix.build_type }})
+        run: ./gradlew koverVerify${{ matrix.build_type_cap }}
+
+      - name: Parse Coverage Data (${{ matrix.build_type }})
+        if: always()
+        id: coverage
+        run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
+
+      - name: Comment Coverage on PR (${{ matrix.build_type }})
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = require('./.github/scripts/comment_coverage.js');
+            await comment({ github, context, inputs: {
+              buildType:     '${{ matrix.build_type_cap }}',
+              available:     '${{ steps.coverage.outputs.available }}',
+              linePct:       '${{ steps.coverage.outputs.line_pct }}',
+              lineCovered:   '${{ steps.coverage.outputs.line_covered }}',
+              lineTotal:     '${{ steps.coverage.outputs.line_total }}',
+              branchPct:     '${{ steps.coverage.outputs.branch_pct }}',
+              branchCovered: '${{ steps.coverage.outputs.branch_covered }}',
+              branchTotal:   '${{ steps.coverage.outputs.branch_total }}',
+              instrPct:      '${{ steps.coverage.outputs.instruction_pct }}',
+              instrCovered:  '${{ steps.coverage.outputs.instruction_covered }}',
+              instrTotal:    '${{ steps.coverage.outputs.instruction_total }}',
+            }});
+
       - name: Upload Coverage Report (HTML - ${{ matrix.build_type }})
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-${{ matrix.build_type }}
-          path: app/build/reports/kover/report${{ matrix.build_type_cap }}/
+          path: app/build/reports/kover/html${{ matrix.build_type_cap }}/
           retention-days: 7
 
       - name: Upload Test Results (${{ matrix.build_type }})

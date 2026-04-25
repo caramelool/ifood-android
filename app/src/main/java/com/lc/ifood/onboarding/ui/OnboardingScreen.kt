@@ -19,6 +19,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -184,7 +185,7 @@ private fun OnboardingFab(
             ),
             icon = {
                 Icon(
-                    imageVector = if (isOnboardCompleted) Icons.Default.Check else Icons.Default.ArrowForward,
+                    imageVector = if (isOnboardCompleted) Icons.Default.Check else Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = if (isOnboardCompleted) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next)
                 )
             },

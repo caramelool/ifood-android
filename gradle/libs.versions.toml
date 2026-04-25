@@ -1,8 +1,8 @@
 [versions]
 # Build & Tooling
 agp = "8.9.3"
-googleDevtoolsKsp = "2.3.5"
-jetbrainsKotlinPluginSerialization = "2.2.21"
+googleDevtoolsKsp = "2.2.10-1.0.31"
+jetbrainsKotlinPluginSerialization = "2.2.10"
 kotlin = "2.2.10"
 
 # Core AndroidX
