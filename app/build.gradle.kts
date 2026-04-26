@@ -20,8 +20,8 @@ android {
         applicationId = "com.lc.ifood"
         minSdk = 29
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (findProperty("app.versionCode") as String? ?: "1").toInt()
+        versionName = findProperty("app.versionName") as String? ?: "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

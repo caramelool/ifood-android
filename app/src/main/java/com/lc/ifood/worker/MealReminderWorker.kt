@@ -10,7 +10,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.lc.ifood.data.factory.MealFactory
+import com.lc.ifood.domain.factory.MealFactory
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.repository.MealReminderRepository

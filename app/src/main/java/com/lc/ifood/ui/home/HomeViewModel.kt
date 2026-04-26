@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,12 +54,6 @@ class HomeViewModel @Inject constructor(
     fun saveUserName(name: String) {
         viewModelScope.launch {
             saveUserUseCase(name)
-            _uiState.update {
-                it.copy(
-                    userName = name,
-                    isUserLoaded = true
-                )
-            }
         }
     }
 }

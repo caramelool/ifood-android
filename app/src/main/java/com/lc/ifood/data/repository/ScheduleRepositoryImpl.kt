@@ -2,7 +2,7 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
-import com.lc.ifood.data.factory.MealFactory
+import com.lc.ifood.domain.factory.MealFactory
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.repository.ScheduleRepository
@@ -19,7 +19,11 @@ class ScheduleRepositoryImpl @Inject constructor(
 
     override fun getMealSchedules(): Flow<List<MealSchedule>> =
         dao.getAll().map { entities ->
-            if (entities.isEmpty()) defaultSchedules() else entities.map { it.toDomain() }
+            if (entities.isEmpty()) {
+                defaultSchedules()
+            } else {
+                entities.map { it.toDomain() }
+            }
         }
 
     override suspend fun updateMealSchedule(schedule: MealSchedule) {

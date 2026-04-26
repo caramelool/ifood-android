@@ -264,7 +264,7 @@ private fun MealScheduleCard(schedule: MealSchedule) {
         Spacer(Modifier.height(6.dp))
         Card(
             modifier = Modifier
-                .width(72.dp)
+                .fillMaxWidth()
                 .height(64.dp),
             shape = RoundedCornerShape(14.dp),
             colors = CardDefaults.cardColors(containerColor = IfoodSurface),

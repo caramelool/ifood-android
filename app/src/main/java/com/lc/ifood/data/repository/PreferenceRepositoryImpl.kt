@@ -2,7 +2,7 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.UserPreferenceDao
 import com.lc.ifood.data.db.entity.UserPreferenceEntity
-import com.lc.ifood.data.factory.MealFactory
+import com.lc.ifood.domain.factory.MealFactory
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.PreferenceRepository

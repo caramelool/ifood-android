@@ -3,21 +3,19 @@ package com.lc.ifood.ui.preference.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lc.ifood.domain.model.MealType
-import com.lc.ifood.domain.model.UserPreference
-import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
+import com.lc.ifood.domain.usecase.GetMealsBySchedulesUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddPreferenceViewModel @Inject constructor(
-    private val getMealSchedules: GetMealSchedulesUseCase,
+    private val getMeals: GetMealsBySchedulesUseCase,
     private val savePreference: SavePreferenceUseCase
 ) : ViewModel() {
 
@@ -26,9 +24,9 @@ class AddPreferenceViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getMealSchedules().collect { options ->
+            getMeals().collect { options ->
                 _uiState.update {
-                    it.copy(mealOptions = options.map { it.meal })
+                    it.copy(mealOptions = options)
                 }
             }
         }
