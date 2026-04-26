@@ -58,7 +58,7 @@ returns a 200 JSON body with all required fields populated.
 
 - [x] T010 [P] [US1] Write integration test: happy path with preferences returns 200 and all response fields in `tests/recommendation.test.ts`
 - [x] T011 [P] [US1] Write integration test: known mealType echoed back in `tests/recommendation.test.ts`
-- [x] T012 [P] [US1] Write integration test: missing `userName` returns 200 with null in `tests/recommendation.test.ts`
+- [x] T012 [P] [US1] Write integration test: missing `userName` returns 400 in `tests/recommendation.test.ts`
 - [x] T013 [P] [US1] Write integration test: missing `mealType` returns 400 in `tests/recommendation.test.ts`
 - [x] T014 [P] [US1] Write integration test: unknown mealType returns 404 in `tests/recommendation.test.ts`
 - [x] T015 [P] [US1] Write integration test: afternoon_snack returns 200 in `tests/recommendation.test.ts`

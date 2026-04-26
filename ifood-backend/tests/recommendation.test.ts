@@ -29,14 +29,14 @@ it('accepts and echoes known mealType', async () => {
   expect(res.body.mealType).toBe('dinner');
 });
 
-// T012: missing userName → 200 with null userName
-it('returns 200 with null userName when omitted', async () => {
+// T012: missing userName → 400
+it('returns 400 when userName is missing', async () => {
   const res = await request(app)
     .get('/recommendation')
     .query({ mealType: 'lunch', preferences: ['healthy'] });
 
-  expect(res.status).toBe(200);
-  expect(res.body.userName).toBeNull();
+  expect(res.status).toBe(400);
+  expect(res.body.error).toMatch(/userName/);
 });
 
 // T013: missing mealType → 400

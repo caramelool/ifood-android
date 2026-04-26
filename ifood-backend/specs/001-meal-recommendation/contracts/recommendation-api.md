@@ -10,7 +10,7 @@ GET /recommendation
 
 | Parameter  | Type   | Required | Example |
 |------------|--------|----------|---------|
-| `userName` | string | no       | `Lucas` |
+| `userName` | string | yes      | `Lucas` |
 | `mealType` | string | yes      | `lunch` |
 
 ### `mealType`
@@ -48,7 +48,7 @@ A random meal for the given type is returned.
 ```
 
 ### Validation rules
-- `userName` is optional; omitted or empty returns `null` in the response.
+- `userName` MUST be present and non-empty; omitting it returns 400.
 - `mealType` MUST be present (any non-empty string is accepted; unknown types return 404).
 
 ## Example Requests

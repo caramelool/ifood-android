@@ -78,9 +78,9 @@ verifying a non-empty collection of meals is returned with their attributes.
 
 ### Key Entities
 
-- **UserPreference**: Represents the user's stated meal preferences — cuisine types,
-  dietary restrictions (e.g., vegan, gluten-free), and meal type (breakfast/lunch/dinner).
-  At least one preference must be provided.
+- **UserPreference**: Represents the user's stated meal preferences — userName (required),
+  cuisine types, dietary restrictions (e.g., vegan, gluten-free), and meal type
+  (breakfast/lunch/dinner). At least one preference must be provided.
 - **Meal**: A meal option available in the city — name, cuisine type, dietary tags,
   and a relevance score used for ranking.
 - **Recommendation**: The result of matching a UserPreference against available Meals —
