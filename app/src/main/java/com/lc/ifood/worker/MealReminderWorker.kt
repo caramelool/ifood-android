@@ -10,11 +10,11 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
-import com.lc.ifood.domain.factory.MealFactory
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
-import com.lc.ifood.domain.repository.MealReminderRepository
-import com.lc.ifood.domain.repository.PreferenceRepository
+import com.lc.ifood.domain.usecase.CreateMealScheduleUseCase
+import com.lc.ifood.domain.usecase.GetPreferencesByMealTypeUseCase
+import com.lc.ifood.domain.usecase.SendMealReminderUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
@@ -22,10 +22,10 @@ import dagger.assisted.AssistedInject
 class MealReminderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val preferenceRepository: PreferenceRepository,
-    private val mealReminderRepository: MealReminderRepository,
     private val mealReminderScheduler: MealReminderScheduler,
-    private val mealFactory: MealFactory,
+    private val getPreferencesByMealType: GetPreferencesByMealTypeUseCase,
+    private val createMealSchedule: CreateMealScheduleUseCase,
+    private val sendMealReminder: SendMealReminderUseCase,
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -41,12 +41,10 @@ class MealReminderWorker @AssistedInject constructor(
         val schedule = inputData.toMealSchedule() ?: return Result.failure()
         val meal = schedule.meal
 
-        val preferences = preferenceRepository
-            .getPreferencesByMealType(meal.type)
-            .map { it.label }
+        val preferences = getPreferencesByMealType(meal.type).map { it.label }
 
         runCatching {
-            mealReminderRepository.sendReminder(schedule, preferences)
+            sendMealReminder(schedule, preferences)
         }.onFailure { Log.e(TAG, "API call failed for ${meal.type}", it) }
 
         createNotificationChannel()
@@ -85,7 +83,7 @@ class MealReminderWorker @AssistedInject constructor(
             ?.let { MealType.valueOf(it) } ?: return null
         val hour = getInt(KEY_HOUR, -1).takeIf { it >= 0 } ?: return null
         val minute = getInt(KEY_MINUTE, 0)
-        return MealSchedule(mealFactory.factoryMeal(mealType), hour, minute)
+        return createMealSchedule(mealType, hour, minute)
     }
 }
 

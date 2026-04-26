@@ -1,10 +1,10 @@
 package com.lc.ifood.domain.usecase
 
-import com.lc.ifood.domain.repository.ScheduleRepository
+import com.lc.ifood.domain.repository.MealScheduleRepository
 import javax.inject.Inject
 
 class SeedDefaultSchedulesUseCase @Inject constructor(
-    private val repository: ScheduleRepository
+    private val repository: MealScheduleRepository
 ) {
     suspend operator fun invoke() = repository.seedDefaultsIfEmpty()
 }

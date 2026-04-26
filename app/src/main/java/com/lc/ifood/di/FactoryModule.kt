@@ -1,7 +1,7 @@
 package com.lc.ifood.di
 
-import com.lc.ifood.data.factory.MealFactoryImpl
-import com.lc.ifood.domain.factory.MealFactory
+import com.lc.ifood.data.mapper.MealMapperImpl
+import com.lc.ifood.domain.mapper.MealMapper
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,5 +14,5 @@ abstract class FactoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindMealFactory(impl: MealFactoryImpl): MealFactory
+    abstract fun bindMealFactory(impl: MealMapperImpl): MealMapper
 }

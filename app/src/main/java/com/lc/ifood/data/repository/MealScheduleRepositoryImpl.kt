@@ -2,20 +2,20 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
-import com.lc.ifood.domain.factory.MealFactory
+import com.lc.ifood.domain.mapper.MealMapper
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
-import com.lc.ifood.domain.repository.ScheduleRepository
+import com.lc.ifood.domain.repository.MealScheduleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ScheduleRepositoryImpl @Inject constructor(
+class MealScheduleRepositoryImpl @Inject constructor(
     private val dao: MealScheduleDao,
-    private val mealFactory: MealFactory
-) : ScheduleRepository {
+    private val mealMapper: MealMapper
+) : MealScheduleRepository {
 
     override fun getMealSchedules(): Flow<List<MealSchedule>> =
         dao.getAll().map { entities ->
@@ -39,7 +39,7 @@ class ScheduleRepositoryImpl @Inject constructor(
     private fun MealScheduleEntity.toDomain(): MealSchedule {
         val type = MealType.valueOf(mealType)
         return MealSchedule(
-            meal = mealFactory.factoryMeal(type),
+            meal = mealMapper.map(type),
             hour = hour,
             minute = minute
         )
@@ -52,9 +52,9 @@ class ScheduleRepositoryImpl @Inject constructor(
     )
 
     private fun defaultSchedules() = listOf(
-        MealSchedule(mealFactory.factoryMeal(MealType.BREAKFAST), 8, 0),
-        MealSchedule(mealFactory.factoryMeal(MealType.LUNCH), 13, 0),
-        MealSchedule(mealFactory.factoryMeal(MealType.AFTERNOON_SNACK), 17, 0),
-        MealSchedule(mealFactory.factoryMeal(MealType.DINNER), 21, 0)
+        MealSchedule(mealMapper.map(MealType.BREAKFAST), 8, 0),
+        MealSchedule(mealMapper.map(MealType.LUNCH), 13, 0),
+        MealSchedule(mealMapper.map(MealType.AFTERNOON_SNACK), 17, 0),
+        MealSchedule(mealMapper.map(MealType.DINNER), 21, 0)
     )
 }
