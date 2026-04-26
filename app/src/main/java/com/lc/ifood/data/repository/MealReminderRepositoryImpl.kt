@@ -15,8 +15,8 @@ class MealReminderRepositoryImpl @Inject constructor(
     override suspend fun sendReminder(schedule: MealSchedule, preferences: List<String>) {
         apiService.sendMealReminder(
             MealReminderRequest(
-                mealType = schedule.mealType.name,
-                mealLabel = schedule.label,
+                mealType = schedule.meal.type.name,
+                mealLabel = schedule.meal.label,
                 preferences = preferences
             )
         )

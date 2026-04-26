@@ -1,6 +1,7 @@
 package com.lc.ifood.ui.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,17 +24,27 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,10 +54,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
+import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
-import com.lc.ifood.domain.model.time
 import com.lc.ifood.ui.preference.delete.SwipeToDeletePreference
 import com.lc.ifood.ui.preference.delete.rememberDeletePreferenceState
 import com.lc.ifood.ui.theme.IfoodBackground
@@ -54,8 +64,6 @@ import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
 import com.lc.ifood.ui.theme.IfoodTextPrimary
 import com.lc.ifood.ui.theme.IfoodTextSecondary
-import com.lc.ifood.ui.toLabel
-import com.lc.ifood.ui.toShortLabel
 
 @Composable
 fun HomeScreen(
@@ -76,7 +84,11 @@ fun HomeScreen(
                 .background(IfoodBackground)
                 .padding(bottom = innerPadding.calculateBottomPadding())
         ) {
-            HomeHeader()
+            HomeHeader(
+                userName = uiState.userName,
+                isUserLoaded = uiState.isUserLoaded,
+                onSaveName = viewModel::saveUserName
+            )
             MealSchedulesSection(
                 schedules = uiState.mealSchedules,
                 onEditClick = onEditSchedules
@@ -91,7 +103,27 @@ fun HomeScreen(
 }
 
 @Composable
-private fun HomeHeader() {
+private fun HomeHeader(
+    userName: String?,
+    isUserLoaded: Boolean,
+    onSaveName: (String) -> Unit
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isUserLoaded) {
+        if (isUserLoaded && userName == null) showDialog = true
+    }
+
+    if (showDialog) {
+        UserNameDialog(
+            onConfirm = { name ->
+                onSaveName(name)
+                showDialog = false
+            },
+            onDismiss = { showDialog = false }
+        )
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -105,14 +137,63 @@ private fun HomeHeader() {
             fontWeight = FontWeight.Light,
             color = IfoodTextPrimary
         )
-        Spacer(Modifier.width(4.dp))
-        Text(
-            text = stringResource(R.string.home_user_name),
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Light,
-            color = IfoodTextPrimary
-        )
+        if (userName != null) {
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = userName,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Light,
+                color = IfoodTextPrimary
+            )
+        }
     }
+}
+
+@Composable
+private fun UserNameDialog(
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var name by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = stringResource(R.string.home_username_dialog_title)) },
+        text = {
+            Column {
+                Text(
+                    text = stringResource(R.string.home_username_dialog_message),
+                    color = IfoodTextSecondary
+                )
+                Spacer(Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    placeholder = { Text(stringResource(R.string.home_username_dialog_hint)) },
+                    singleLine = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester)
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (name.isNotBlank()) onConfirm(name.trim()) },
+                colors = ButtonDefaults.textButtonColors(contentColor = IfoodRed)
+            ) {
+                Text(text = stringResource(R.string.home_username_dialog_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(R.string.common_cancel), color = IfoodTextSecondary)
+            }
+        }
+    )
 }
 
 @Composable
@@ -149,7 +230,11 @@ private fun MealSchedulesSection(
         }
         Spacer(Modifier.height(12.dp))
         LazyRow(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(true) {
+                    onEditClick()
+                },
             verticalAlignment = Alignment.Bottom,
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(
@@ -171,7 +256,7 @@ private fun MealScheduleCard(schedule: MealSchedule) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = schedule.mealType.toLabel(),
+            text = schedule.meal.label,
             fontSize = 12.sp,
             color = IfoodTextSecondary,
             textAlign = TextAlign.Center
@@ -191,7 +276,7 @@ private fun MealScheduleCard(schedule: MealSchedule) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = schedule.time(),
+                    text = schedule.time,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = IfoodTextPrimary
@@ -289,11 +374,11 @@ private fun PreferenceCard(
                     fontWeight = FontWeight.SemiBold,
                     color = IfoodTextPrimary
                 )
-                if (preference.mealTypes.isNotEmpty()) {
+                if (preference.meals.isNotEmpty()) {
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        preference.mealTypes.forEach { mealType ->
-                            MealTypeChip(mealType = mealType)
+                        preference.meals.forEach { meal ->
+                            MealTypeChip(meal)
                         }
                     }
                 }
@@ -317,13 +402,13 @@ private fun PreferenceCard(
 }
 
 @Composable
-private fun MealTypeChip(mealType: MealType) {
+private fun MealTypeChip(meal: Meal) {
     Surface(
         shape = RoundedCornerShape(50),
         color = IfoodRed.copy(alpha = 0.1f)
     ) {
         Text(
-            text = mealType.toShortLabel(),
+            text = meal.sortLabel,
             fontSize = 11.sp,
             color = IfoodRed,
             fontWeight = FontWeight.Medium,

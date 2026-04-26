@@ -5,5 +5,7 @@ import com.lc.ifood.domain.model.UserPreference
 
 data class HomeUiState(
     val mealSchedules: List<MealSchedule> = emptyList(),
-    val preferences: List<UserPreference> = emptyList()
+    val preferences: List<UserPreference> = emptyList(),
+    val userName: String? = null,
+    val isUserLoaded: Boolean = false
 )

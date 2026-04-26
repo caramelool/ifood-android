@@ -4,21 +4,35 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
+import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AddPreferenceViewModel @Inject constructor(
-    private val savePreferenceUseCase: SavePreferenceUseCase
+    private val getMealSchedules: GetMealSchedulesUseCase,
+    private val savePreference: SavePreferenceUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AddPreferenceUiState())
     val uiState: StateFlow<AddPreferenceUiState> = _uiState.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            getMealSchedules().collect { options ->
+                _uiState.update {
+                    it.copy(mealOptions = options.map { it.meal })
+                }
+            }
+        }
+    }
 
     fun onLabelChange(label: String) {
         _uiState.value = _uiState.value.copy(label = label)
@@ -35,12 +49,9 @@ class AddPreferenceViewModel @Inject constructor(
         if (!state.canSave) return
         viewModelScope.launch {
             _uiState.value = state.copy(isSaving = true)
-            savePreferenceUseCase(
-                UserPreference(
-                    id = 0,
-                    label = state.label.trim(),
-                    mealTypes = state.selectedMealTypes.toList()
-                )
+            savePreference(
+                label = state.label.trim(),
+                mealTypes = state.selectedMealTypes.toList()
             )
             _uiState.value = _uiState.value.copy(isSaving = false, saved = true)
             onDone()

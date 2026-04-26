@@ -46,13 +46,11 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.time
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
 import com.lc.ifood.ui.theme.IfoodTextPrimary
 import com.lc.ifood.ui.theme.IfoodTextSecondary
-import com.lc.ifood.ui.toLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,13 +154,13 @@ private fun ScheduleCard(
         ) {
             Column {
                 Text(
-                    text = schedule.mealType.toLabel(),
+                    text = schedule.meal.label,
                     fontSize = 14.sp,
                     color = IfoodTextSecondary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = schedule.time(),
+                    text = schedule.time,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = IfoodTextPrimary

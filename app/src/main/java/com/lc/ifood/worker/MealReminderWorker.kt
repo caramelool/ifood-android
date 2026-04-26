@@ -10,6 +10,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.lc.ifood.data.factory.MealFactory
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.repository.MealReminderRepository
@@ -23,12 +24,12 @@ class MealReminderWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val preferenceRepository: PreferenceRepository,
     private val mealReminderRepository: MealReminderRepository,
-    private val mealReminderScheduler: MealReminderScheduler
+    private val mealReminderScheduler: MealReminderScheduler,
+    private val mealFactory: MealFactory,
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
         const val KEY_MEAL_TYPE = "meal_type"
-        const val KEY_MEAL_LABEL = "meal_label"
         const val KEY_HOUR = "hour"
         const val KEY_MINUTE = "minute"
         const val CHANNEL_ID = "meal_reminders"
@@ -38,17 +39,18 @@ class MealReminderWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val schedule = inputData.toMealSchedule() ?: return Result.failure()
+        val meal = schedule.meal
 
         val preferences = preferenceRepository
-            .getPreferencesByMealType(schedule.mealType)
+            .getPreferencesByMealType(meal.type)
             .map { it.label }
 
         runCatching {
             mealReminderRepository.sendReminder(schedule, preferences)
-        }.onFailure { Log.e(TAG, "API call failed for ${schedule.mealType}", it) }
+        }.onFailure { Log.e(TAG, "API call failed for ${meal.type}", it) }
 
         createNotificationChannel()
-        showNotification(schedule.label)
+        showNotification(meal.label)
         mealReminderScheduler.schedule(schedule)
 
         return Result.success()
@@ -77,19 +79,18 @@ class MealReminderWorker @AssistedInject constructor(
         applicationContext.getSystemService(NotificationManager::class.java)
             .notify(mealLabel.hashCode(), notification)
     }
+
+    fun Data.toMealSchedule(): MealSchedule? {
+        val mealType = getString(KEY_MEAL_TYPE)
+            ?.let { MealType.valueOf(it) } ?: return null
+        val hour = getInt(KEY_HOUR, -1).takeIf { it >= 0 } ?: return null
+        val minute = getInt(KEY_MINUTE, 0)
+        return MealSchedule(mealFactory.factoryMeal(mealType), hour, minute)
+    }
 }
 
 fun MealSchedule.toWorkData() = workDataOf(
-    MealReminderWorker.KEY_MEAL_TYPE to mealType.name,
-    MealReminderWorker.KEY_MEAL_LABEL to label,
+    MealReminderWorker.KEY_MEAL_TYPE to meal.type.name,
     MealReminderWorker.KEY_HOUR to hour,
     MealReminderWorker.KEY_MINUTE to minute
 )
-
-fun Data.toMealSchedule(): MealSchedule? {
-    val mealType = getString(MealReminderWorker.KEY_MEAL_TYPE) ?: return null
-    val label = getString(MealReminderWorker.KEY_MEAL_LABEL) ?: return null
-    val hour = getInt(MealReminderWorker.KEY_HOUR, -1).takeIf { it >= 0 } ?: return null
-    val minute = getInt(MealReminderWorker.KEY_MINUTE, 0)
-    return MealSchedule(MealType.valueOf(mealType), label, hour, minute)
-}

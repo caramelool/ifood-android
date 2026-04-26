@@ -40,13 +40,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
 import com.lc.ifood.ui.theme.IfoodTextPrimary
 import com.lc.ifood.ui.theme.IfoodTextSecondary
-import com.lc.ifood.ui.toLabel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,11 +120,11 @@ fun AddPreferenceScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    MealType.entries.forEach { mealType ->
+                    uiState.mealOptions.forEach { meal ->
                         MealTypeCheckboxRow(
-                            label = mealType.toLabel(),
-                            checked = mealType in uiState.selectedMealTypes,
-                            onCheckedChange = { viewModel.toggleMealType(mealType) }
+                            label = meal.label,
+                            checked = meal.type in uiState.selectedMealTypes,
+                            onCheckedChange = { viewModel.toggleMealType(meal.type) }
                         )
                     }
                 }
