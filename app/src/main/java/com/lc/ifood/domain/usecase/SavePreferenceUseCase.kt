@@ -1,21 +1,16 @@
 package com.lc.ifood.domain.usecase
 
-import com.lc.ifood.data.factory.MealFactory
-import com.lc.ifood.domain.model.MealType
-import com.lc.ifood.domain.model.UserPreference
+import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.repository.PreferenceRepository
 import javax.inject.Inject
 
 class SavePreferenceUseCase @Inject constructor(
-    private val repository: PreferenceRepository,
-    private val factory: MealFactory
+    private val repository: PreferenceRepository
 ) {
-    suspend operator fun invoke(label: String, mealTypes: List<MealType>) {
-        val preference = UserPreference(
-            id = 0,
+    suspend operator fun invoke(label: String, meals: List<Meal>) {
+        repository.addPreference(
             label = label,
-            meals = mealTypes.map { factory.factoryMeal(it) }
+            meals = meals
         )
-        repository.addPreference(preference)
     }
 }

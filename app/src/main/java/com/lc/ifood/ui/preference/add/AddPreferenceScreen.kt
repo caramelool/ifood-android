@@ -123,8 +123,8 @@ fun AddPreferenceScreen(
                     uiState.mealOptions.forEach { meal ->
                         MealTypeCheckboxRow(
                             label = meal.label,
-                            checked = meal.type in uiState.selectedMealTypes,
-                            onCheckedChange = { viewModel.toggleMealType(meal.type) }
+                            checked = meal in uiState.selectedMeals,
+                            onCheckedChange = { viewModel.toggleMeal(meal) }
                         )
                     }
                 }

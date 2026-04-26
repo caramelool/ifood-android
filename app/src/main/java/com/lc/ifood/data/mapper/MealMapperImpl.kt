@@ -1,17 +1,18 @@
-package com.lc.ifood.data.factory
+package com.lc.ifood.data.mapper
 
 import android.content.Context
 import com.lc.ifood.R
+import com.lc.ifood.domain.mapper.MealMapper
 import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealType
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class MealFactory @Inject constructor(
+class MealMapperImpl @Inject constructor(
     @ApplicationContext private val context: Context
-) {
+) : MealMapper {
 
-    fun factoryMeal(type: MealType): Meal {
+    override fun map(type: MealType): Meal {
         return Meal(
             type = type,
             label = getLabel(type),
