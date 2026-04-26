@@ -7,10 +7,13 @@ on:
 jobs:
   check-version:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       version_changed: ${{ steps.check.outputs.changed }}
       version_name: ${{ steps.check.outputs.version_name }}
       version_code: ${{ steps.check.outputs.version_code }}
+      release_exists: ${{ steps.check.outputs.release_exists }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -18,6 +21,8 @@ jobs:
 
       - name: Check version change
         id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           PREV=$(git show HEAD^:gradle.properties 2>/dev/null || echo "")
           CURR=$(cat gradle.properties)
@@ -38,9 +43,15 @@ jobs:
           echo "version_name=$CURR_NAME" >> "$GITHUB_OUTPUT"
           echo "version_code=$CURR_CODE" >> "$GITHUB_OUTPUT"
 
+          if gh release view "v${CURR_NAME}" &>/dev/null; then
+            echo "release_exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "release_exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
   release:
     needs: check-version
-    if: needs.check-version.outputs.version_changed == 'true'
+    if: needs.check-version.outputs.version_changed == 'true' || needs.check-version.outputs.release_exists == 'false'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -61,7 +72,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Decode keystore
-        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > app/ifood.jks
+        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 --ignore-garbage --decode > app/ifood.jks
 
       - name: Create local.properties
         run: |
