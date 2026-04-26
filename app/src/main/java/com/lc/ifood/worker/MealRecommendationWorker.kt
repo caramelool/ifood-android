@@ -2,6 +2,7 @@ package com.lc.ifood.worker
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -10,22 +11,25 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.lc.ifood.MainActivity
+import com.lc.ifood.R
+import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.usecase.CreateMealScheduleUseCase
+import com.lc.ifood.domain.usecase.GetMealRecommendationUseCase
 import com.lc.ifood.domain.usecase.GetPreferencesByMealTypeUseCase
-import com.lc.ifood.domain.usecase.SendMealReminderUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
 @HiltWorker
-class MealReminderWorker @AssistedInject constructor(
+class MealRecommendationWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val mealReminderScheduler: MealReminderScheduler,
+    private val mealRecommendationScheduler: MealRecommendationScheduler,
     private val getPreferencesByMealType: GetPreferencesByMealTypeUseCase,
     private val createMealSchedule: CreateMealScheduleUseCase,
-    private val sendMealReminder: SendMealReminderUseCase,
+    private val getMealRecommendation: GetMealRecommendationUseCase,
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -41,15 +45,19 @@ class MealReminderWorker @AssistedInject constructor(
         val schedule = inputData.toMealSchedule() ?: return Result.failure()
         val meal = schedule.meal
 
-        val preferences = getPreferencesByMealType(meal.type).map { it.label }
+        val preferences = getPreferencesByMealType(meal.type)
 
-        runCatching {
-            sendMealReminder(schedule, preferences)
-        }.onFailure { Log.e(TAG, "API call failed for ${meal.type}", it) }
+        val recommendation = runCatching {
+            getMealRecommendation(schedule, preferences)
+        }.onFailure { Log.e(TAG, "Recommendation failed for ${meal.type}", it) }.getOrNull()
 
         createNotificationChannel()
-        showNotification(meal.label)
-        mealReminderScheduler.schedule(schedule)
+
+        if (recommendation != null) {
+            showEnhancedNotification(meal.label, recommendation)
+        }
+
+        mealRecommendationScheduler.schedule(schedule)
 
         return Result.success()
     }
@@ -66,14 +74,33 @@ class MealReminderWorker @AssistedInject constructor(
             .createNotificationChannel(channel)
     }
 
-    private fun showNotification(mealLabel: String) {
+    private fun showEnhancedNotification(mealLabel: String, rec: MealRecommendation) {
+        val priceFormatted = "R$ %.2f".format(rec.mealPrice)
+        val bigText = "${rec.mealName} • $priceFormatted\n${rec.placeName}\n${rec.placeAddress}"
+
+        val tapIntent = MainActivity.intentRecommendation(applicationContext, rec)
+        val pendingIntent = PendingIntent.getActivity(
+            applicationContext,
+            rec.meal.type.hashCode(),
+            tapIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.ic_popup_reminder)
-            .setContentTitle("Hora de comer!")
-            .setContentText("Que tal pedir seu $mealLabel agora?")
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setContentTitle("Hora de comer! ${rec.mealName}")
+            .setContentText("${rec.placeName} • $priceFormatted")
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(bigText)
+                    .setBigContentTitle("Hora de comer! ${rec.mealName}")
+                    .setSummaryText(mealLabel)
+            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
+            .setContentIntent(pendingIntent)
             .build()
+
         applicationContext.getSystemService(NotificationManager::class.java)
             .notify(mealLabel.hashCode(), notification)
     }
@@ -88,7 +115,7 @@ class MealReminderWorker @AssistedInject constructor(
 }
 
 fun MealSchedule.toWorkData() = workDataOf(
-    MealReminderWorker.KEY_MEAL_TYPE to meal.type.name,
-    MealReminderWorker.KEY_HOUR to hour,
-    MealReminderWorker.KEY_MINUTE to minute
+    MealRecommendationWorker.KEY_MEAL_TYPE to meal.type.name,
+    MealRecommendationWorker.KEY_HOUR to hour,
+    MealRecommendationWorker.KEY_MINUTE to minute
 )

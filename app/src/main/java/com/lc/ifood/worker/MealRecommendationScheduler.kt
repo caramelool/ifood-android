@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MealReminderScheduler @Inject constructor(
+class MealRecommendationScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val getMealSchedules: GetMealSchedulesUseCase,
 ) {
@@ -37,9 +37,9 @@ class MealReminderScheduler @Inject constructor(
 
     private fun buildPendingIntent(schedule: MealSchedule): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(MealReminderWorker.KEY_MEAL_TYPE, schedule.meal.type.name)
-            putExtra(MealReminderWorker.KEY_HOUR, schedule.hour)
-            putExtra(MealReminderWorker.KEY_MINUTE, schedule.minute)
+            putExtra(MealRecommendationWorker.KEY_MEAL_TYPE, schedule.meal.type.name)
+            putExtra(MealRecommendationWorker.KEY_HOUR, schedule.hour)
+            putExtra(MealRecommendationWorker.KEY_MINUTE, schedule.minute)
         }
         return PendingIntent.getBroadcast(
             context,

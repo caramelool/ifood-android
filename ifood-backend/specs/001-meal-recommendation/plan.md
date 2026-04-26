@@ -5,9 +5,9 @@
 
 ## Summary
 
-Single GET `/recommendation` endpoint that receives `userName`, `mealType`, `mealTime`,
-and an optional list of preference strings, then returns the best-matching meal from a
-static in-memory mock dataset — no database, no external services.
+Single GET `/recommendation` endpoint that receives `userName`, `mealType`, and a
+required non-empty list of preference strings, then returns a random meal for the given
+type from a static in-memory mock dataset — no database, no external services.
 
 ## Technical Context
 

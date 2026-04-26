@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.plugin.serialization)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kover)
+    id("kotlin-parcelize")
 }
 
 val localProperties = gradleLocalProperties(rootDir, providers)
@@ -24,6 +25,8 @@ android {
         versionName = findProperty("app.versionName") as String? ?: "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "BASE_URL", "\"https://ifood-backend-lyart.vercel.app/\"")
     }
 
     if (isSigning) {
@@ -63,6 +66,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

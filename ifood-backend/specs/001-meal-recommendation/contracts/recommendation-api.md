@@ -8,18 +8,14 @@ GET /recommendation
 
 ## Query Parameters
 
-| Parameter     | Type     | Required | Example                        |
-|---------------|----------|----------|--------------------------------|
-| `userName`    | string   | yes      | `Lucas`                        |
-| `mealType`    | string   | yes      | `lunch`                        |
-| `mealTime`    | string   | yes      | `12:30`                        |
-| `preferences` | string[] | no       | `preferences=vegan&preferences=spicy` |
+| Parameter  | Type   | Required | Example |
+|------------|--------|----------|---------|
+| `userName` | string | no       | `Lucas` |
+| `mealType` | string | yes      | `lunch` |
 
-### `mealType` allowed values
-`breakfast` | `lunch` | `dinner`
-
-### `mealTime` format
-`HH:MM` (24-hour clock, e.g. `08:00`, `13:45`)
+### `mealType`
+Any non-empty string matching one of the available meal types (`breakfast`, `lunch`, `dinner`, `afternoon_snack`).
+A random meal for the given type is returned.
 
 ## Success Response — 200 OK
 
@@ -31,8 +27,7 @@ GET /recommendation
   "placeAddress": "Rua das Flores, 123 - São Paulo, SP",
   "mealName": "Bowl de Quinoa com Legumes",
   "mealDescription": "Bowl nutritivo com quinoa, legumes grelhados e molho tahine.",
-  "mealPrice": 32.90,
-  "preferences": ["vegan"]
+  "mealPrice": 32.90
 }
 ```
 
@@ -48,19 +43,18 @@ GET /recommendation
 
 ```json
 {
-  "error": "Missing required parameter: userName"
+  "error": "Missing required parameter: mealType"
 }
 ```
 
 ### Validation rules
-- `userName` MUST be a non-empty string.
-- `mealType` MUST be one of `breakfast`, `lunch`, `dinner`.
-- `mealTime` MUST match `HH:MM` pattern.
+- `userName` is optional; omitted or empty returns `null` in the response.
+- `mealType` MUST be present (any non-empty string is accepted; unknown types return 404).
 
 ## Example Requests
 
 ```
-GET /recommendation?userName=Lucas&mealType=lunch&mealTime=12:30&preferences=vegan&preferences=spicy
-GET /recommendation?userName=Ana&mealType=breakfast&mealTime=08:00
-GET /recommendation?userName=Pedro&mealType=dinner&mealTime=20:00&preferences=italian
+GET /recommendation?userName=Lucas&mealType=lunch
+GET /recommendation?userName=Ana&mealType=breakfast
+GET /recommendation?userName=Pedro&mealType=dinner
 ```

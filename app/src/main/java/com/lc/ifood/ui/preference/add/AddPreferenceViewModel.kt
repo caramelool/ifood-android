@@ -3,7 +3,6 @@ package com.lc.ifood.ui.preference.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lc.ifood.domain.model.Meal
-import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.usecase.GetMealsUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

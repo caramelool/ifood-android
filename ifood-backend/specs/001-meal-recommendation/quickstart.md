@@ -30,16 +30,19 @@ npm start
 
 ```bash
 # Happy path — with preferences
-curl "http://localhost:3000/recommendation?userName=Lucas&mealType=lunch&mealTime=12:30&preferences=vegan&preferences=spicy"
+curl "http://localhost:3000/recommendation?userName=Lucas&mealType=lunch&preferences=vegan&preferences=spicy"
 
-# Happy path — no preferences
-curl "http://localhost:3000/recommendation?userName=Ana&mealType=breakfast&mealTime=08:00"
+# Happy path — single preference
+curl "http://localhost:3000/recommendation?userName=Ana&mealType=breakfast&preferences=healthy"
 
-# Validation error
-curl "http://localhost:3000/recommendation?mealType=lunch&mealTime=12:30"
+# Missing mealType → 400
+curl "http://localhost:3000/recommendation?userName=Pedro&preferences=vegan"
 
-# No match (invalid mealType triggers 400, out-of-window time triggers 404)
-curl "http://localhost:3000/recommendation?userName=Pedro&mealType=dinner&mealTime=03:00"
+# Missing preferences → 400
+curl "http://localhost:3000/recommendation?userName=Pedro&mealType=lunch"
+
+# Unknown mealType → 404
+curl "http://localhost:3000/recommendation?userName=Maria&mealType=brunch&preferences=vegan"
 ```
 
 ## Run tests

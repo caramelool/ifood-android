@@ -49,28 +49,31 @@ and testing of each story.
 
 ## Phase 3: User Story 1 — Submit Preferences and Get Recommendation (Priority: P1) 🎯 MVP
 
-**Goal**: A user sends preferences via GET and receives the best-matching meal.
+**Goal**: A user sends a non-empty preferences list and a mealType via GET and receives a random matching meal.
 
-**Independent Test**: `GET /recommendation?userName=Lucas&mealType=lunch&mealTime=12:30&preferences=vegan`
+**Independent Test**: `GET /recommendation?userName=Lucas&mealType=lunch&preferences=vegan`
 returns a 200 JSON body with all required fields populated.
 
 ### Integration Tests for User Story 1 ⚠️ Write first — confirm they FAIL before implementing
 
 - [x] T010 [P] [US1] Write integration test: happy path with preferences returns 200 and all response fields in `tests/recommendation.test.ts`
-- [x] T011 [P] [US1] Write integration test: happy path with no preferences returns 200 in `tests/recommendation.test.ts`
-- [x] T012 [P] [US1] Write integration test: missing `userName` returns 400 in `tests/recommendation.test.ts`
-- [x] T013 [P] [US1] Write integration test: invalid `mealType` returns 400 in `tests/recommendation.test.ts`
-- [x] T014 [P] [US1] Write integration test: no matching meal returns 404 in `tests/recommendation.test.ts`
+- [x] T011 [P] [US1] Write integration test: known mealType echoed back in `tests/recommendation.test.ts`
+- [x] T012 [P] [US1] Write integration test: missing `userName` returns 200 with null in `tests/recommendation.test.ts`
+- [x] T013 [P] [US1] Write integration test: missing `mealType` returns 400 in `tests/recommendation.test.ts`
+- [x] T014 [P] [US1] Write integration test: unknown mealType returns 404 in `tests/recommendation.test.ts`
+- [x] T015 [P] [US1] Write integration test: afternoon_snack returns 200 in `tests/recommendation.test.ts`
+- [x] T016 [P] [US1] Write integration test: unknown mealType (supper) returns 404 in `tests/recommendation.test.ts`
+- [x] T017 [P] [US1] Write integration test: missing preferences returns 400 in `tests/recommendation.test.ts`
+- [x] T018 [P] [US1] Write integration test: empty preferences array returns 400 in `tests/recommendation.test.ts`
 
 ### Implementation for User Story 1
 
-- [x] T015 [US1] Create `src/mock/meals.ts` — define `MockMeal` type and export a static array of ≥8 diverse meal entries covering breakfast, lunch, and dinner with varied tags (vegan, spicy, italian, japanese, gluten-free, etc.)
-- [x] T016 [US1] Create `src/routes/recommendation.ts` — implement input validation (userName non-empty, mealType enum, mealTime HH:MM regex); return 400 with descriptive message on failure
-- [x] T017 [US1] Add scoring logic to `src/routes/recommendation.ts` — filter mock meals by mealType, filter by mealTime window, score by preference tag intersection, return top match
-- [x] T018 [US1] Add 404 response to `src/routes/recommendation.ts` when no meal passes the filters
-- [x] T019 [US1] Register `GET /recommendation` route in `src/app.ts` using the handler from `src/routes/recommendation.ts`
+- [x] T019 [US1] Create `src/mock/meals.ts` — define `MockMeal` type (no `tags`, no time fields) and export a static array of ≥8 diverse meal entries covering breakfast, lunch, dinner, and afternoon_snack
+- [x] T020 [US1] Create `src/routes/recommendation.ts` — validate `mealType` (required) and `preferences` (required non-empty array); return 400 with descriptive message on failure
+- [x] T021 [US1] Add selection logic to `src/routes/recommendation.ts` — filter mock meals by `mealType`, pick one at random, return 404 if no match
+- [x] T022 [US1] Register `GET /recommendation` route in `src/app.ts` using the handler from `src/routes/recommendation.ts`
 
-**Checkpoint**: Run `npm test` — all 5 tests in T010–T014 must pass
+**Checkpoint**: Run `npm test` — all tests in T010–T018 must pass
 
 ---
 
@@ -78,9 +81,9 @@ returns a 200 JSON body with all required fields populated.
 
 **Purpose**: Final validation and documentation check
 
-- [x] T020 [P] Verify `npm run dev` starts without errors and all curl examples in `specs/001-meal-recommendation/quickstart.md` return expected responses
-- [x] T021 [P] Ensure `npm run build` compiles without TypeScript errors
-- [x] T022 Run `npm test` final pass — all tests green, no console errors
+- [x] T023 [P] Verify `npm run dev` starts without errors and all curl examples in `specs/001-meal-recommendation/quickstart.md` return expected responses
+- [x] T024 [P] Ensure `npm run build` compiles without TypeScript errors
+- [x] T025 Run `npm test` final pass — all tests green, no console errors
 
 ---
 
@@ -91,38 +94,19 @@ returns a 200 JSON body with all required fields populated.
 - **Setup (Phase 1)**: No dependencies — start immediately; T002–T007 can all run in parallel after T001
 - **Foundational (Phase 2)**: Depends on Setup completion — BLOCKS user story work
 - **User Story 1 (Phase 3)**: Depends on Foundational (Phase 2)
-  - T010–T014 (tests): Write and run together after T008–T009; they must FAIL at this point
-  - T015: No dependency within US1 — can start immediately after Foundational
-  - T016: Depends on T015 (needs MockMeal type for type imports)
-  - T017: Depends on T016 (extends validation handler with scoring)
-  - T018: Depends on T017 (adds 404 branch to existing handler)
-  - T019: Depends on T016–T018 (registers complete handler)
-- **Polish (Phase 4)**: Depends on Phase 3 completion; T020–T021 run in parallel, T022 runs last
+  - T010–T018 (tests): Write and run together after T008–T009; they must FAIL at this point
+  - T019: No dependency within US1 — can start immediately after Foundational
+  - T020: Depends on T019 (needs MockMeal type for type imports)
+  - T021: Depends on T020 (extends validation handler with selection)
+  - T022: Depends on T020–T021 (registers complete handler)
+- **Polish (Phase 4)**: Depends on Phase 3 completion; T023–T024 run in parallel, T025 runs last
 
 ### Parallel Opportunities
 
 - Setup: T002, T003, T004, T005, T006, T007 all run in parallel after T001
-- US1 tests: T010, T011, T012, T013, T014 all run in parallel (same file, no inter-dependency)
-- US1 models: T015 runs in parallel with test writing
-- Polish: T020, T021 run in parallel
-
----
-
-## Parallel Example: User Story 1
-
-```bash
-# After T008–T009 (Foundational) complete, launch in parallel:
-Task: "Write happy-path with preferences test in tests/recommendation.test.ts"   # T010
-Task: "Write happy-path no preferences test in tests/recommendation.test.ts"     # T011
-Task: "Write missing userName 400 test in tests/recommendation.test.ts"          # T012
-Task: "Write invalid mealType 400 test in tests/recommendation.test.ts"          # T013
-Task: "Write no-match 404 test in tests/recommendation.test.ts"                  # T014
-Task: "Create src/mock/meals.ts with static MockMeal[] data"                     # T015
-
-# After all above complete:
-Task: "Implement validation in src/routes/recommendation.ts"                      # T016
-# → T017 → T018 → T019 (sequential)
-```
+- US1 tests: T010–T018 all run in parallel (same file, no inter-dependency)
+- US1 models: T019 runs in parallel with test writing
+- Polish: T023, T024 run in parallel
 
 ---
 
@@ -132,8 +116,8 @@ Task: "Implement validation in src/routes/recommendation.ts"                    
 
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational
-3. Write tests T010–T014 → confirm they FAIL
-4. Complete Phase 3: User Story 1 (T015–T019)
+3. Write tests T010–T018 → confirm they FAIL
+4. Complete Phase 3: User Story 1 (T019–T022)
 5. **STOP and VALIDATE**: `npm test` all green, curl examples pass
 6. Done — single endpoint fully functional
 
