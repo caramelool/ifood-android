@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
+import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -53,7 +54,24 @@ fun AddPreferenceScreen(
     viewModel: AddPreferenceViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    AddPreferenceContent(
+        uiState = uiState,
+        onLabelChange = viewModel::onLabelChange,
+        onToggleMeal = viewModel::toggleMeal,
+        onSave = { viewModel.save(onBack) },
+        onBack = onBack
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AddPreferenceContent(
+    uiState: AddPreferenceUiState,
+    onLabelChange: (String) -> Unit,
+    onToggleMeal: (Meal) -> Unit,
+    onSave: () -> Unit,
+    onBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,7 +107,7 @@ fun AddPreferenceScreen(
 
             OutlinedTextField(
                 value = uiState.label,
-                onValueChange = viewModel::onLabelChange,
+                onValueChange = onLabelChange,
                 label = { Text(stringResource(R.string.add_preference_label_field)) },
                 placeholder = { Text(stringResource(R.string.add_preference_label_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -124,7 +142,7 @@ fun AddPreferenceScreen(
                         MealTypeCheckboxRow(
                             label = meal.label,
                             checked = meal in uiState.selectedMeals,
-                            onCheckedChange = { viewModel.toggleMeal(meal) }
+                            onCheckedChange = { onToggleMeal(meal) }
                         )
                     }
                 }
@@ -133,7 +151,7 @@ fun AddPreferenceScreen(
             Spacer(Modifier.height(32.dp))
 
             Button(
-                onClick = { viewModel.save(onBack) },
+                onClick = onSave,
                 enabled = uiState.canSave && !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = IfoodRed),

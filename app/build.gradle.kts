@@ -162,6 +162,8 @@ dependencies {
     testImplementation(libs.androidx.junit)
     testImplementation(libs.androidx.core)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
+    testImplementation(libs.turbine)
 
     // Instrumented Tests
     androidTestImplementation(platform(libs.androidx.compose.bom))

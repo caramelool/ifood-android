@@ -12,8 +12,8 @@ gradlew.bat
 gradle/wrapper/gradle-wrapper.jar
 
 # Backend dependencies
-backend/node_modules/
-backend/package-lock.json
+ifood-backend/node_modules/
+ifood-backend/package-lock.json
 
 # Generated / compiled
 **/*.class
@@ -35,7 +35,3 @@ gradle.properties
 **/*.svg
 **/*.xml
 app/src/main/res/
-
-# Testes (ignore por padrão; remova se estiver trabalhando em testes)
-app/src/test/
-app/src/androidTest/

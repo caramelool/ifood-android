@@ -59,6 +59,22 @@ fun ScheduleAdjustmentScreen(
     viewModel: ScheduleAdjustmentViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScheduleAdjustmentContent(
+        uiState = uiState,
+        onUpdateTime = viewModel::updateTime,
+        onSaveAll = { viewModel.saveAll(onBack) },
+        onBack = onBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ScheduleAdjustmentContent(
+    uiState: ScheduleAdjustmentUiState,
+    onUpdateTime: (MealSchedule, Int, Int) -> Unit,
+    onSaveAll: () -> Unit,
+    onBack: () -> Unit
+) {
     var editingSchedule by remember { mutableStateOf<MealSchedule?>(null) }
 
     Scaffold(
@@ -105,7 +121,7 @@ fun ScheduleAdjustmentScreen(
             Spacer(Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.saveAll(onBack) },
+                onClick = onSaveAll,
                 enabled = !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = IfoodRed),
@@ -126,7 +142,7 @@ fun ScheduleAdjustmentScreen(
             initialHour = schedule.hour,
             initialMinute = schedule.minute,
             onConfirm = { hour, minute ->
-                viewModel.updateTime(schedule, hour, minute)
+                onUpdateTime(schedule, hour, minute)
                 editingSchedule = null
             },
             onDismiss = { editingSchedule = null }

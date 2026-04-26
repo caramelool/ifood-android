@@ -86,6 +86,21 @@ fun HomeScreen(
         }
     }
 
+    HomeContent(
+        uiState = uiState,
+        onEditSchedules = onEditSchedules,
+        onAddPreference = onAddPreference,
+        onSaveUserName = viewModel::saveUserName
+    )
+}
+
+@Composable
+internal fun HomeContent(
+    uiState: HomeUiState,
+    onEditSchedules: () -> Unit,
+    onAddPreference: () -> Unit,
+    onSaveUserName: (String) -> Unit
+) {
     Scaffold(
         containerColor = IfoodRed
     ) { innerPadding ->
@@ -100,7 +115,7 @@ fun HomeScreen(
             HomeHeader(
                 userName = uiState.userName,
                 isUserLoaded = uiState.isUserLoaded,
-                onSaveName = viewModel::saveUserName
+                onSaveName = onSaveUserName
             )
             MealSchedulesSection(
                 schedules = uiState.mealSchedules,

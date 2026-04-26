@@ -43,42 +43,41 @@ jobs:
         if: matrix.build_type == 'debug'
         run: ./gradlew koverXmlReportDebug koverHtmlReportDebug
 
-# enable when the development is completed
-#      - name: Verify Coverage Threshold (${{ matrix.build_type }})
-#        run: ./gradlew koverVerify${{ matrix.build_type_cap }}
-#
-#      - name: Parse Coverage Data (${{ matrix.build_type }})
-#        if: always()
-#        id: coverage
-#        run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
-#
-#      - name: Comment Coverage on PR (${{ matrix.build_type }})
-#        if: always() && github.event_name == 'pull_request'
-#        env:
-#          GH_TOKEN: ${{ github.token }}
-#          PR_NUMBER: ${{ github.event.pull_request.number }}
-#          BUILD_TYPE: ${{ matrix.build_type_cap }}
-#          AVAILABLE: ${{ steps.coverage.outputs.available }}
-#          LINE_PCT: ${{ steps.coverage.outputs.line_pct }}
-#          LINE_COVERED: ${{ steps.coverage.outputs.line_covered }}
-#          LINE_TOTAL: ${{ steps.coverage.outputs.line_total }}
-#          BRANCH_PCT: ${{ steps.coverage.outputs.branch_pct }}
-#          BRANCH_COVERED: ${{ steps.coverage.outputs.branch_covered }}
-#          BRANCH_TOTAL: ${{ steps.coverage.outputs.branch_total }}
-#          INSTR_PCT: ${{ steps.coverage.outputs.instruction_pct }}
-#          INSTR_COVERED: ${{ steps.coverage.outputs.instruction_covered }}
-#          INSTR_TOTAL: ${{ steps.coverage.outputs.instruction_total }}
-#        run: |
-#          if [ "$AVAILABLE" = "true" ]; then
-#            BODY=$(printf "## Coverage Report — %s\n\n| Metric | Covered | Total | %% |\n|--------|---------|-------|----|\n| Lines | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instructions | %s | %s | %s%% |" \
-#              "$BUILD_TYPE" \
-#              "$LINE_COVERED" "$LINE_TOTAL" "$LINE_PCT" \
-#              "$BRANCH_COVERED" "$BRANCH_TOTAL" "$BRANCH_PCT" \
-#              "$INSTR_COVERED" "$INSTR_TOTAL" "$INSTR_PCT")
-#          else
-#            BODY=$(printf "## Coverage Report — %s\n\n_Coverage data unavailable (build or verification may have failed)._" "$BUILD_TYPE")
-#          fi
-#          gh pr comment "$PR_NUMBER" --body "$BODY"
+      - name: Verify Coverage Threshold (${{ matrix.build_type }})
+        run: ./gradlew koverVerify${{ matrix.build_type_cap }}
+
+      - name: Parse Coverage Data (${{ matrix.build_type }})
+        if: always()
+        id: coverage
+        run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
+
+      - name: Comment Coverage on PR (${{ matrix.build_type }})
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BUILD_TYPE: ${{ matrix.build_type_cap }}
+          AVAILABLE: ${{ steps.coverage.outputs.available }}
+          LINE_PCT: ${{ steps.coverage.outputs.line_pct }}
+          LINE_COVERED: ${{ steps.coverage.outputs.line_covered }}
+          LINE_TOTAL: ${{ steps.coverage.outputs.line_total }}
+          BRANCH_PCT: ${{ steps.coverage.outputs.branch_pct }}
+          BRANCH_COVERED: ${{ steps.coverage.outputs.branch_covered }}
+          BRANCH_TOTAL: ${{ steps.coverage.outputs.branch_total }}
+          INSTR_PCT: ${{ steps.coverage.outputs.instruction_pct }}
+          INSTR_COVERED: ${{ steps.coverage.outputs.instruction_covered }}
+          INSTR_TOTAL: ${{ steps.coverage.outputs.instruction_total }}
+        run: |
+          if [ "$AVAILABLE" = "true" ]; then
+            BODY=$(printf "## Coverage Report — %s\n\n| Metric | Covered | Total | %% |\n|--------|---------|-------|----|\n| Lines | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instructions | %s | %s | %s%% |" \
+              "$BUILD_TYPE" \
+              "$LINE_COVERED" "$LINE_TOTAL" "$LINE_PCT" \
+              "$BRANCH_COVERED" "$BRANCH_TOTAL" "$BRANCH_PCT" \
+              "$INSTR_COVERED" "$INSTR_TOTAL" "$INSTR_PCT")
+          else
+            BODY=$(printf "## Coverage Report — %s\n\n_Coverage data unavailable (build or verification may have failed)._" "$BUILD_TYPE")
+          fi
+          gh pr comment "$PR_NUMBER" --body "$BODY"
 
       - name: Upload Coverage Report (HTML)
         if: matrix.build_type == 'debug'
