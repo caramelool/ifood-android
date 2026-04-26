@@ -2,6 +2,7 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
+import com.lc.ifood.data.factory.MealFactory
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.repository.ScheduleRepository
@@ -12,7 +13,8 @@ import javax.inject.Singleton
 
 @Singleton
 class ScheduleRepositoryImpl @Inject constructor(
-    private val dao: MealScheduleDao
+    private val dao: MealScheduleDao,
+    private val mealFactory: MealFactory
 ) : ScheduleRepository {
 
     override fun getMealSchedules(): Flow<List<MealSchedule>> =
@@ -30,24 +32,25 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun MealScheduleEntity.toDomain() = MealSchedule(
-        mealType = MealType.valueOf(mealType),
-        label = label,
-        hour = hour,
-        minute = minute
-    )
+    private fun MealScheduleEntity.toDomain(): MealSchedule {
+        val type = MealType.valueOf(mealType)
+        return MealSchedule(
+            meal = mealFactory.factoryMeal(type),
+            hour = hour,
+            minute = minute
+        )
+    }
 
     private fun MealSchedule.toEntity() = MealScheduleEntity(
-        mealType = mealType.name,
-        label = label,
+        mealType = meal.type.name,
         hour = hour,
         minute = minute
     )
 
     private fun defaultSchedules() = listOf(
-        MealSchedule(MealType.BREAKFAST, "Café da Manhã", 8, 0),
-        MealSchedule(MealType.LUNCH, "Almoço", 13, 0),
-        MealSchedule(MealType.AFTERNOON_SNACK, "Lanche da Tarde", 17, 0),
-        MealSchedule(MealType.DINNER, "Jantar", 21, 0)
+        MealSchedule(mealFactory.factoryMeal(MealType.BREAKFAST), 8, 0),
+        MealSchedule(mealFactory.factoryMeal(MealType.LUNCH), 13, 0),
+        MealSchedule(mealFactory.factoryMeal(MealType.AFTERNOON_SNACK), 17, 0),
+        MealSchedule(mealFactory.factoryMeal(MealType.DINNER), 21, 0)
     )
 }

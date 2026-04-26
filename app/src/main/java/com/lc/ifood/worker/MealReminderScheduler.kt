@@ -30,7 +30,7 @@ class MealReminderScheduler @Inject constructor(
             .setInputData(schedule.toWorkData())
             .build()
         workManager.enqueueUniqueWork(
-            "MealReminder_${schedule.mealType.name}",
+            "MealReminder_${schedule.meal.type.name}",
             ExistingWorkPolicy.REPLACE,
             request
         )

@@ -7,6 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.work.WorkManager
 import com.lc.ifood.data.db.AppDatabase
+import com.lc.ifood.data.db.migration.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -39,6 +40,6 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "ifood_database"
-        ).build()
+        ).addMigrations(MIGRATION_1_2).build()
     }
 }
