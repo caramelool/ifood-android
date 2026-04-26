@@ -1,5 +1,6 @@
 package com.lc.ifood.di
 
+import com.lc.ifood.BuildConfig
 import com.lc.ifood.data.remote.MealReminderApiService
 import com.squareup.moshi.Moshi
 import dagger.Module
@@ -11,8 +12,6 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
-
-private const val BASE_URL = "https://api.placeholder.ifood.com/v1/"
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,7 +34,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+        .baseUrl(BuildConfig.BASE_URL)
         .client(client)
         .addConverterFactory(MoshiConverterFactory.create(moshi))
         .build()

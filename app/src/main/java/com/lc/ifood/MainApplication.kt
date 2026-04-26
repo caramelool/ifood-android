@@ -6,7 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.work.Configuration
-import com.lc.ifood.worker.MealReminderScheduler
+import com.lc.ifood.worker.MealRecommendationScheduler
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class MainApplication : Application(), Configuration.Provider,
     lateinit var workerFactory: HiltWorkerFactory
 
     @Inject
-    lateinit var mealReminderScheduler: MealReminderScheduler
+    lateinit var mealRecommendationScheduler: MealRecommendationScheduler
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -29,7 +29,7 @@ class MainApplication : Application(), Configuration.Provider,
     override fun onCreate() {
         super.onCreate()
         lifecycleScope.launch {
-            mealReminderScheduler.scheduleAll()
+            mealRecommendationScheduler.scheduleAll()
         }
     }
 }

@@ -16,16 +16,16 @@ class AlarmReceiver : BroadcastReceiver() {
     lateinit var workManager: WorkManager
 
     override fun onReceive(context: Context, intent: Intent) {
-        val mealType = intent.getStringExtra(MealReminderWorker.KEY_MEAL_TYPE) ?: return
-        val hour = intent.getIntExtra(MealReminderWorker.KEY_HOUR, -1).takeIf { it >= 0 } ?: return
-        val minute = intent.getIntExtra(MealReminderWorker.KEY_MINUTE, 0)
+        val mealType = intent.getStringExtra(MealRecommendationWorker.KEY_MEAL_TYPE) ?: return
+        val hour = intent.getIntExtra(MealRecommendationWorker.KEY_HOUR, -1).takeIf { it >= 0 } ?: return
+        val minute = intent.getIntExtra(MealRecommendationWorker.KEY_MINUTE, 0)
 
-        val request = OneTimeWorkRequestBuilder<MealReminderWorker>()
+        val request = OneTimeWorkRequestBuilder<MealRecommendationWorker>()
             .setInputData(
                 workDataOf(
-                    MealReminderWorker.KEY_MEAL_TYPE to mealType,
-                    MealReminderWorker.KEY_HOUR to hour,
-                    MealReminderWorker.KEY_MINUTE to minute,
+                    MealRecommendationWorker.KEY_MEAL_TYPE to mealType,
+                    MealRecommendationWorker.KEY_HOUR to hour,
+                    MealRecommendationWorker.KEY_MINUTE to minute,
                 )
             )
             .build()
