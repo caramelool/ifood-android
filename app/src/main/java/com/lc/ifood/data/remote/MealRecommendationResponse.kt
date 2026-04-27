@@ -5,13 +5,13 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class MealRecommendationResponse(
-    @Json(name = "userName") val userName: String?,
-    @Json(name = "mealType") val mealType: String,
-    @Json(name = "placeName") val placeName: String,
-    @Json(name = "placeAddress") val placeAddress: String,
-    @Json(name = "mealName") val mealName: String,
-    @Json(name = "mealDescription") val mealDescription: String,
-    @Json(name = "mealPrice") val mealPrice: Double,
-    @Json(name = "preferences") val preferences: List<String>,
-    @Json(name = "mealImageUrl") val mealImageUrl: String
+    @param:Json(name = "userName") val userName: String?,
+    @param:Json(name = "mealType") val mealType: String,
+    @param:Json(name = "placeName") val placeName: String,
+    @param:Json(name = "placeAddress") val placeAddress: String,
+    @param:Json(name = "mealName") val mealName: String,
+    @param:Json(name = "mealDescription") val mealDescription: String,
+    @param:Json(name = "mealPrice") val mealPrice: Double,
+    @param:Json(name = "preferences") val preferences: List<String>,
+    @param:Json(name = "mealImageUrl") val mealImageUrl: String
 )
