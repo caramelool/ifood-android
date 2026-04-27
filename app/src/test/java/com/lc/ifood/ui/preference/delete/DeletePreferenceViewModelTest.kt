@@ -2,12 +2,16 @@ package com.lc.ifood.ui.preference.delete
 
 import com.lc.ifood.domain.usecase.DeletePreferenceUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,7 +21,17 @@ class DeletePreferenceViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val deletePreference: DeletePreferenceUseCase = mockk()
+    @MockK private lateinit var deletePreference: DeletePreferenceUseCase
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createViewModel(): DeletePreferenceViewModel {
         coJustRun { deletePreference.invoke(any()) }

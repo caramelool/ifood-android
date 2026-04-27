@@ -5,18 +5,22 @@ import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealsUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -26,8 +30,18 @@ class AddPreferenceViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val getMeals: GetMealsUseCase = mockk()
-    private val savePreference: SavePreferenceUseCase = mockk()
+    @MockK private lateinit var getMeals: GetMealsUseCase
+    @MockK private lateinit var savePreference: SavePreferenceUseCase
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createViewModel(): AddPreferenceViewModel {
         coJustRun { savePreference.invoke(any(), any()) }

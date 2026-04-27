@@ -10,18 +10,22 @@ import com.lc.ifood.domain.usecase.GetUserUseCase
 import com.lc.ifood.domain.usecase.SaveUserUseCase
 import com.lc.ifood.domain.usecase.SeedDefaultSchedulesUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.runs
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -31,15 +35,25 @@ class HomeViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val getMealSchedules: GetMealSchedulesUseCase = mockk()
-    private val getPreferences: GetPreferencesUseCase = mockk()
-    private val getUser: GetUserUseCase = mockk()
-    private val saveUser: SaveUserUseCase = mockk()
-    private val seedDefaultSchedules: SeedDefaultSchedulesUseCase = mockk()
+    @MockK private lateinit var getMealSchedules: GetMealSchedulesUseCase
+    @MockK private lateinit var getPreferences: GetPreferencesUseCase
+    @MockK private lateinit var getUser: GetUserUseCase
+    @MockK private lateinit var saveUser: SaveUserUseCase
+    @MockK private lateinit var seedDefaultSchedules: SeedDefaultSchedulesUseCase
 
     private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val preference = UserPreference(1, "Saudável", listOf(BREAKFAST))
     private val user = User(1, "Lucas")
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createViewModel(): HomeViewModel {
         coEvery { seedDefaultSchedules.invoke() } just runs

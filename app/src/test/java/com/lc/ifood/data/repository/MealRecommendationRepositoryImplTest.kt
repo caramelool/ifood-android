@@ -7,21 +7,25 @@ import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.User
 import com.lc.ifood.domain.repository.UserRepository
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MealRecommendationRepositoryImplTest {
 
-    private val apiService: MealReminderApiService = mockk()
-    private val userRepository: UserRepository = mockk()
+    @MockK private lateinit var apiService: MealReminderApiService
+    @MockK private lateinit var userRepository: UserRepository
 
     private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val user = User(1, "Lucas")
@@ -36,6 +40,16 @@ class MealRecommendationRepositoryImplTest {
         preferences = listOf("Saudável"),
         mealImageUrl = "https://cafe-central.com/omelete.jpg"
     )
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createRepository() = MealRecommendationRepositoryImpl(apiService, userRepository)
 

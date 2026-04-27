@@ -2,15 +2,19 @@ package com.lc.ifood.ui.splash
 
 import com.lc.ifood.domain.usecase.GetOnboardingStatusUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -22,7 +26,17 @@ class SplashViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule(testDispatcher)
 
-    private val getOnboardingStatus: GetOnboardingStatusUseCase = mockk()
+    @MockK private lateinit var getOnboardingStatus: GetOnboardingStatusUseCase
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createViewModel() = SplashViewModel(getOnboardingStatus)
 

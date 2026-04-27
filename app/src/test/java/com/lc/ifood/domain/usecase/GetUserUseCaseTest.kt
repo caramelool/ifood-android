@@ -2,20 +2,35 @@ package com.lc.ifood.domain.usecase
 
 import com.lc.ifood.domain.model.User
 import com.lc.ifood.domain.repository.UserRepository
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetUserUseCaseTest {
 
-    private val repository: UserRepository = mockk()
-    private val useCase = GetUserUseCase(repository)
+    @MockK private lateinit var repository: UserRepository
+    private lateinit var useCase: GetUserUseCase
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        useCase = GetUserUseCase(repository)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `invoke returns flow from repository`() = runTest {

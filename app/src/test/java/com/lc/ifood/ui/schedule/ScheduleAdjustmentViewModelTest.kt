@@ -6,18 +6,22 @@ import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.UpdateMealScheduleUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
@@ -27,11 +31,21 @@ class ScheduleAdjustmentViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    private val getMealSchedules: GetMealSchedulesUseCase = mockk()
-    private val updateMealSchedule: UpdateMealScheduleUseCase = mockk()
+    @MockK private lateinit var getMealSchedules: GetMealSchedulesUseCase
+    @MockK private lateinit var updateMealSchedule: UpdateMealScheduleUseCase
 
     private val scheduleBreakfast = MealSchedule(BREAKFAST, 8, 0)
     private val scheduleLunch = MealSchedule(LUNCH, 12, 0)
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createViewModel(): ScheduleAdjustmentViewModel {
         coJustRun { updateMealSchedule.invoke(any()) }

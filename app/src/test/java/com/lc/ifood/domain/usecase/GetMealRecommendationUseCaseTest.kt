@@ -5,19 +5,24 @@ import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.MealRecommendationRepository
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.impl.annotations.MockK
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetMealRecommendationUseCaseTest {
 
-    private val repository: MealRecommendationRepository = mockk()
-    private val useCase = GetMealRecommendationUseCase(repository)
+    @MockK
+    private lateinit var repository: MealRecommendationRepository
+    private lateinit var useCase: GetMealRecommendationUseCase
 
     private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val preferences = listOf(
@@ -34,6 +39,17 @@ class GetMealRecommendationUseCaseTest {
         preferences = listOf("Saudável", "Vegano"),
         mealImageUrl = "https://rua-a.com/omelete.jpg"
     )
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        useCase = GetMealRecommendationUseCase(repository)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `invoke maps preference labels before calling repository`() = runTest {
