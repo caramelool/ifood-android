@@ -22,6 +22,18 @@ import com.lc.ifood.domain.usecase.GetPreferencesByMealTypeUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 
+/**
+ * WorkManager worker that fetches a meal recommendation and posts a notification.
+ *
+ * Enqueued by [AlarmReceiver] when an alarm fires. The worker:
+ * 1. Deserializes the [MealSchedule] from input data.
+ * 2. Loads the user's dietary preferences for that meal type.
+ * 3. Calls the backend for a recommendation (non-fatal on failure — no notification is shown).
+ * 4. Posts an expandable notification with restaurant and dish details.
+ * 5. Reschedules the alarm for the next day so the cycle repeats daily.
+ *
+ * Input data keys: [KEY_MEAL_TYPE], [KEY_HOUR], [KEY_MINUTE].
+ */
 @HiltWorker
 class MealRecommendationWorker @AssistedInject constructor(
     @Assisted private val context: Context,
@@ -40,6 +52,13 @@ class MealRecommendationWorker @AssistedInject constructor(
         private const val TAG = "MealReminderWorker"
     }
 
+    /**
+     * Entry point called by WorkManager on a background thread.
+     *
+     * Returns [Result.failure] if the input data cannot be parsed into a valid [MealSchedule].
+     * API errors are caught and logged; the worker still returns [Result.success] so WorkManager
+     * does not retry — the next alarm will try again the following day.
+     */
     override suspend fun doWork(): Result {
         val schedule = inputData.toMealSchedule() ?: return Result.failure()
         val mealType = schedule.mealType
