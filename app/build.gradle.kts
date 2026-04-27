@@ -81,30 +81,29 @@ kover {
         filters {
             excludes {
                 classes(
-                    // DI & generated
-                    "**/di/**",
-                    "**/*_Factory*",
-                    "**/*_HiltModules*",
-                    "**/*_MembersInjector*",
-                    "**/*ComposableSingletons*",
-                    "**/BuildConfig*",
-                    // Composable screens & UI components (tested via instrumented tests)
-                    "**/*Screen*",
-                    "**/SwipeToDeletePreference*",
-                    "**/MealTypeComposable*",
-                    // Theme / styling
-                    "**/ui/theme/**",
-                    // Navigation
-                    "**/ui/navigation/**",
-                    // Android framework entrypoints
-                    "**/MainActivity*",
-                    "**/MainApplication*",
-                    // WorkManager, Receivers, Scheduler
-                    "**/worker/**",
-                    // Room DB infra (entities, DAOs, AppDatabase, migration)
-                    "**/data/db/**",
-                    // Remote API interface & response data class (no logic)
-                    "**/data/remote/**",
+                    // DI & Hilt
+                    "*di.*", "*hilt.*", "hilt_aggregated_deps.*",
+                    "*_Factory*", "*_HiltModules*", "*_MembersInjector*",
+                    "*ComposableSingletons*", "*BuildConfig*",
+
+                    // Composable & UI
+                    "*ui.*Screen*", "*.SwipeToDeletePreference*", "*.MealTypeComposable*",
+                    "*ui.theme.*", "*ui.navigation.*",
+
+                    // Android Entrypoints
+                    "*.MainActivity", "*.MainApplication", "*worker.*",
+
+                    // Database
+                    "*data.db.*", "*_Impl*",
+
+                    // Networking
+                    "*data.remote.*"
+                )
+                // Compose
+                annotatedBy(
+                    "androidx.compose.runtime.Composable",
+                    "androidx.compose.runtime.Stable",
+                    "androidx.compose.ui.tooling.preview.Preview"
                 )
             }
         }
@@ -119,7 +118,6 @@ kover {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 }
 
