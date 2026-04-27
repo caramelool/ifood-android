@@ -39,27 +39,34 @@ cd ifood-android
 # → app/build/reports/kover/htmlDebug/index.html
 ```
 
-> **Backend:** The recommendation API lives in the `backend/` folder (Node.js/TypeScript). Start it separately and configure `BASE_URL` in `local.properties` before running the app.
+> **Backend:** The recommendation API lives in the `ifood-backend/` folder (Node.js/TypeScript). Start it separately and configure `BASE_URL` in `local.properties` before running the app.
 
 ---
 
 ## How It Works
 
 ```mermaid
-flowchart LR
-    User -->|sets schedule| App
-    App -->|AlarmManager T-30min| Worker
-    Worker -->|getRecommendation| Backend
-    Backend -->|restaurant + dish| Worker
-    Worker -->|notification| User
-    User -->|taps| App
+flowchart TD
+    A([First Launch]) --> B[Onboarding\nRegister name + select preferences]
+    B --> C[Schedule Screen\nSet times per meal type]
+    C --> D[AlarmManager\nregisters exact T-30 alarms]
+    D --> E{Alarm fires\n30 min before meal}
+    E --> F[MealRecommendationWorker]
+    F --> G[Fetch active preferences\nfrom Room DB]
+    G --> H[GET /recommendation\nifood-backend API]
+    H --> I[Rich Notification\nrestaurant · dish · price]
+    I --> J([User taps → App\nfull recommendation detail])
+    K([Device reboot]) --> L[BootReceiver\nreschedules all alarms]
+    L --> D
 ```
 
-1. User sets meal times (Breakfast, Lunch, Afternoon Snack, Dinner).
-2. App registers an exact alarm 30 minutes before each meal.
-3. When the alarm fires, a WorkManager worker fetches an AI recommendation from the backend, filtered by the user's dietary preferences.
-4. A rich notification shows the restaurant, dish, and price.
-5. Tapping the notification opens the full recommendation in the app.
+1. **Onboarding:** on first launch the user registers their name and selects dietary preferences.
+2. **Schedule:** the user sets a time for each meal slot (Breakfast, Lunch, Afternoon Snack, Dinner).
+3. **Alarms:** `MealRecommendationScheduler` registers an exact `AlarmManager` alarm 30 minutes before each scheduled meal.
+4. **Boot resilience:** `BootReceiver` listens for `BOOT_COMPLETED` and reschedules all alarms after a device restart.
+5. **Worker:** when an alarm fires, `MealRecommendationWorker` reads the user's active preferences from Room and calls `GET /recommendation` on the backend, passing the meal type and preference labels.
+6. **Notification:** a rich notification is posted showing the restaurant name, dish, and price.
+7. **Detail view:** tapping the notification opens `MainActivity` with the full recommendation (dish description, address, image).
 
 ---
 
@@ -71,7 +78,7 @@ flowchart LR
 | [Architecture](docs/architecture.md) | Clean Architecture layers, MVVM, DI modules, notification pipeline, Room schema |
 | [Dependencies](docs/dependencies.md) | All libraries with versions and rationale |
 | [Testing](docs/testing.md) | Test strategy, coverage breakdown, and tooling |
-| [CI](docs/ci.md) | GitHub Actions pipeline, build matrix, and coverage reporting |
+| [CI](docs/ci.md) | GitHub Actions pipelines: PR checks and signed release publishing |
 
 ---
 

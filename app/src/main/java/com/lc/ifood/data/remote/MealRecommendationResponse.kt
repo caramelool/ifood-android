@@ -12,5 +12,6 @@ data class MealRecommendationResponse(
     @Json(name = "mealName") val mealName: String,
     @Json(name = "mealDescription") val mealDescription: String,
     @Json(name = "mealPrice") val mealPrice: Double,
-    @Json(name = "preferences") val preferences: List<String>
+    @Json(name = "preferences") val preferences: List<String>,
+    @Json(name = "mealImageUrl") val mealImageUrl: String
 )

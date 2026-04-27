@@ -1,10 +1,15 @@
-# Continuous Integration
+# Continuous Integration & Release
 
-The project uses **GitHub Actions** to validate every pull request targeting `master`. The workflow is defined in [`.github/workflows/pr-checks.yml`](../.github/workflows/pr-checks.yml).
+The project uses **GitHub Actions** with two workflows:
+
+- **PR Checks** (`.github/workflows/pr-checks.yml`) — validates every pull request targeting `master`
+- **Release** (`.github/workflows/release.yml`) — publishes a signed release on every push to `master` that bumps the version
 
 ---
 
-## Trigger
+## PR Checks
+
+### Trigger
 
 ```yaml
 on:
@@ -12,71 +17,81 @@ on:
     branches: [ "master" ]
 ```
 
-Every PR opened or updated against `master` runs the full check suite before merge.
+### Job Pipeline
 
----
-
-## Build Matrix
-
-The workflow uses a **matrix strategy** to run `debug` and `release` variant checks in parallel. This ensures both APK variants are buildable on every PR — a broken release build would not block a debug-only check otherwise.
+Four jobs run on every PR. `build-debug` and `build-release` start in parallel; `unit-test` waits for `build-debug`; `coverage` waits for `unit-test`.
 
 ```mermaid
 flowchart TD
-    PR([Pull Request]) --> Matrix{Matrix\nbuild_type}
-    Matrix -- debug --> D[debug job]
-    Matrix -- release --> R[release job]
+    PR([Pull Request]) --> BD[build-debug]
+    PR --> BR[build-release]
 
-    D --> D1[Checkout]
-    D1 --> D2[Setup JDK 11 Temurin\nwith Gradle cache]
-    D2 --> D3[assembleDebug]
-    D3 --> D4[testDebugUnitTest]
-    D4 --> D5[koverXmlReportDebug\nkoverHtmlReportDebug]
-    D5 --> D6[koverVerifyDebug\nthreshold gate]
-    D6 --> D7[parse_coverage.py]
-    D7 --> D8[Comment coverage\non PR]
-    D8 --> D9[Upload HTML report\nartifact 7 days]
-    D9 --> D10[Upload test results\nartifact 7 days]
+    BD --> UT[unit-test\nneeds: build-debug]
+    UT --> COV[coverage\nneeds: unit-test]
 
-    R --> R1[Checkout]
-    R1 --> R2[Setup JDK 11 Temurin\nwith Gradle cache]
-    R2 --> R3[assembleRelease]
-    R3 --> R4[parse_coverage.py\nalways runs]
-    R4 --> R5[Comment coverage\non PR]
+    BD --> BD1[Checkout]
+    BD1 --> BD2[Setup JDK 11 Temurin\nwith Gradle cache]
+    BD2 --> BD3[assembleDebug]
+
+    BR --> BR1[Checkout]
+    BR1 --> BR2[Setup JDK 11 Temurin\nwith Gradle cache]
+    BR2 --> BR3[assembleRelease]
+
+    UT --> UT1[Checkout + JDK]
+    UT1 --> UT2[testDebugUnitTest]
+    UT2 --> UT3[Upload test results\nartifact 7 days]
+
+    COV --> COV1[Checkout + JDK]
+    COV1 --> COV2[koverXmlReportDebug\nkoverHtmlReportDebug]
+    COV2 --> COV3[koverVerifyDebug\nthreshold gate]
+    COV3 --> COV4[parse_coverage.py]
+    COV4 --> COV5[Upsert coverage\ncomment on PR]
+    COV5 --> COV6[Upload HTML report\nartifact 7 days]
 ```
 
----
+### Steps Breakdown
 
-## Steps Breakdown
-
-### Shared (both variants)
+#### `build-debug`
 
 | Step | Command / Action | Notes |
 |------|-----------------|-------|
 | Checkout | `actions/checkout@v4` | Full repo clone |
 | JDK Setup | `actions/setup-java@v4` (Temurin 11) | Gradle dependency cache enabled |
 | Grant permission | `chmod +x gradlew` | Required on Linux runners |
-| Build | `./gradlew assemble{Debug\|Release}` | Compiles and packages the APK |
-| Parse coverage | `python3 .github/scripts/parse_coverage.py` | Extracts metrics from Kover XML; always runs so a missing report yields a graceful fallback message |
-| Comment on PR | `gh pr comment` | Posts a Markdown table with line/branch/instruction coverage percentages |
+| Build | `./gradlew assembleDebug` | Compiles and packages the debug APK |
 
-### Debug only
+#### `build-release` (parallel with `build-debug`)
+
+| Step | Command / Action | Notes |
+|------|-----------------|-------|
+| Checkout | `actions/checkout@v4` | |
+| JDK Setup | `actions/setup-java@v4` (Temurin 11) | |
+| Grant permission | `chmod +x gradlew` | |
+| Build | `./gradlew assembleRelease` | Compiles and packages the release APK |
+
+#### `unit-test` (needs `build-debug`)
 
 | Step | Command | Notes |
 |------|---------|-------|
 | Unit tests | `./gradlew testDebugUnitTest` | Runs all JVM unit tests |
-| Coverage report | `./gradlew koverXmlReportDebug koverHtmlReportDebug` | Generates XML (for parsing) and HTML (for artifact) |
-| Coverage threshold | `./gradlew koverVerifyDebug` | Fails the job if coverage drops below the configured minimum |
-| Upload HTML report | `actions/upload-artifact@v4` | Retained 7 days; downloadable from the Actions run page |
 | Upload test results | `actions/upload-artifact@v4` | JUnit XML results; retained 7 days |
 
----
+#### `coverage` (needs `unit-test`)
 
-## PR Coverage Comment
+| Step | Command | Notes |
+|------|---------|-------|
+| Coverage report | `./gradlew koverXmlReportDebug koverHtmlReportDebug` | Generates XML (for parsing) and HTML (for artifact) |
+| Coverage threshold | `./gradlew koverVerifyDebug` | Fails the job if coverage drops below the configured minimum |
+| Parse coverage | `python3 .github/scripts/parse_coverage.py` | Extracts metrics from Kover XML; always runs so a missing report yields a graceful fallback message |
+| Upsert PR comment | `gh pr comment` / `gh api PATCH` | Posts or updates a Markdown coverage table on the PR |
+| Upload HTML report | `actions/upload-artifact@v4` | Retained 7 days; downloadable from the Actions run page |
 
-After each run, a comment is posted to the PR with a table like:
+### PR Coverage Comment
+
+After each run the coverage job upserts a single bot comment (updates it if it already exists, otherwise creates it):
 
 ```
-## Coverage Report — Debug
+## 📊 Coverage Report — Debug
 
 | Metric       | Covered | Total | %     |
 |--------------|---------|-------|-------|
@@ -89,16 +104,73 @@ If the coverage report is unavailable (e.g. the build failed before Kover ran), 
 
 > *Coverage data unavailable (build or verification may have failed).*
 
----
-
-## Artifacts
+### Artifacts
 
 | Artifact name | Contents | Retention |
 |--------------|----------|-----------|
 | `coverage-report-debug` | Kover HTML report | 7 days |
 | `test-results-debug` | JUnit XML test results | 7 days |
 
-Artifacts are downloadable from the **Actions** tab of the repository for post-mortem investigation.
+---
+
+## Release
+
+### Trigger
+
+```yaml
+on:
+  push:
+    branches: [ "master" ]
+```
+
+Runs on every push to `master`. A release is only published when the version actually changed.
+
+### Job Pipeline
+
+```mermaid
+flowchart TD
+    Push([Push to master]) --> CV[check-version]
+    CV --> REL{version_changed\nor release missing?}
+    REL -- Yes --> R[release\nenvironment: master]
+    REL -- No --> Skip([Skip])
+
+    R --> R1[Checkout full history]
+    R1 --> R2[Setup JDK 11]
+    R2 --> R3[Decode keystore\nfrom secret]
+    R3 --> R4[Create local.properties\nwith signing credentials]
+    R4 --> R5[assembleRelease\n-Psigning.enabled=true]
+    R5 --> R6[bundleRelease\n-Psigning.enabled=true]
+    R6 --> R7[Generate changelog\ngit log since last tag]
+    R7 --> R8[gh release create\nvName + APK + AAB]
+```
+
+### `check-version`
+
+Compares `app.versionName` and `app.versionCode` in `gradle.properties` between `HEAD` and `HEAD^`. Also checks whether the GitHub release tag `v{versionName}` already exists.
+
+Outputs: `version_changed`, `version_name`, `version_code`, `release_exists`.
+
+### `release` (needs `check-version`; skipped if version unchanged and release exists)
+
+Runs in the `master` environment (requires approval if configured).
+
+| Step | Notes |
+|------|-------|
+| Decode `ANDROID_KEYSTORE` | Base64-decode secret → `app/ifood.jks` |
+| Create `local.properties` | Writes signing credentials from secrets |
+| `assembleRelease -Psigning.enabled=true` | Signed APK |
+| `bundleRelease -Psigning.enabled=true` | Signed AAB |
+| Generate changelog | `git log <last-tag>..HEAD --pretty=format:"- %s"` (up to 30 commits) |
+| `gh release create` | Tag `v{versionName}`, attaches APK + AAB as release assets |
+
+### Required Secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `ANDROID_KEYSTORE` | Base64-encoded `.jks` keystore file |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | Key alias |
+| `ANDROID_KEY_PASSWORD` | Key password |
 
 ---
 

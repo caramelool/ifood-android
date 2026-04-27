@@ -10,7 +10,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Repository implementation that fetches AI-powered meal recommendations from the backend API.
+ * Repository implementation that fetches meal recommendations from the backend API.
  *
  * Requires a logged-in user; throws [IllegalArgumentException] if none is found.
  *
@@ -41,7 +41,8 @@ class MealRecommendationRepositoryImpl @Inject constructor(
             mealName = response.mealName,
             mealDescription = response.mealDescription,
             mealPrice = response.mealPrice,
-            preferences = response.preferences
+            preferences = response.preferences,
+            mealImageUrl = response.mealImageUrl
         )
     }
 }

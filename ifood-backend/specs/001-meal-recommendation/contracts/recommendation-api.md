@@ -27,7 +27,8 @@ A random meal for the given type is returned.
   "placeAddress": "Rua das Flores, 123 - São Paulo, SP",
   "mealName": "Bowl de Quinoa com Legumes",
   "mealDescription": "Bowl nutritivo com quinoa, legumes grelhados e molho tahine.",
-  "mealPrice": 32.90
+  "mealPrice": 32.90,
+  "mealImageUrl": "https://loremflickr.com/400/300/quinoa,bowl"
 }
 ```
 

@@ -25,6 +25,7 @@ Returned as JSON body.
 | `mealName`        | `string` | Name of the recommended meal         |
 | `mealDescription` | `string` | Short description of the meal        |
 | `mealPrice`       | `number` | Price in BRL (e.g., `32.90`)         |
+| `mealImageUrl`    | `string` | URL de imagem ilustrativa da refeição |
 
 ## Mock Meal Entity — `MockMeal`
 
@@ -38,6 +39,7 @@ Internal type used in `src/mock/meals.ts` seed data.
 | `mealName`        | `string` | Meal name                 |
 | `mealDescription` | `string` | Meal description          |
 | `mealPrice`       | `number` | Price in BRL              |
+| `mealImageUrl`    | `string` | URL da imagem ilustrativa |
 
 ## Selection Logic
 
