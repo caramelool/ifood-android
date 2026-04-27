@@ -5,21 +5,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-and-test:
+  build-debug:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: read
-
-    strategy:
-      matrix:
-        build_type: [debug, release]
-        include:
-          - build_type: debug
-            build_type_cap: Debug
-          - build_type: release
-            build_type_cap: Release
-
     steps:
       - uses: actions/checkout@v4
 
@@ -33,33 +20,90 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build (${{ matrix.build_type }})
-        run: ./gradlew assemble${{ matrix.build_type_cap }}
+      - name: Build (debug)
+        run: ./gradlew assembleDebug
+
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build (release)
+        run: ./gradlew assembleRelease
+
+  unit-test:
+    runs-on: ubuntu-latest
+    needs: build-debug
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: Run Unit Tests
-        if: matrix.build_type == 'debug'
         run: ./gradlew testDebugUnitTest
 
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-debug
+          path: app/build/reports/tests/testDebugUnitTest/
+          retention-days: 7
+
+  coverage:
+    runs-on: ubuntu-latest
+    needs: unit-test
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v4
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Generate Coverage Report
-        if: matrix.build_type == 'debug'
         run: ./gradlew koverXmlReportDebug koverHtmlReportDebug
 
-      - name: Verify Coverage Threshold (${{ matrix.build_type }})
-        if: matrix.build_type == 'debug'
+      - name: Verify Coverage Threshold
         id: verify_coverage
         run: ./gradlew koverVerifyDebug
 
-      - name: Parse Coverage Data (${{ matrix.build_type }})
-        if: always() && matrix.build_type == 'debug'
+      - name: Parse Coverage Data
+        if: always()
         id: coverage
         run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
 
-      - name: Comment Coverage on PR (${{ matrix.build_type }})
-        if: always() && github.event_name == 'pull_request' && matrix.build_type == 'debug'
+      - name: Comment Coverage on PR
+        if: always() && github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          BUILD_TYPE: ${{ matrix.build_type_cap }}
           VERIFY_OUTCOME: ${{ steps.verify_coverage.outcome }}
           COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           AVAILABLE: ${{ steps.coverage.outputs.available }}
@@ -84,19 +128,19 @@ jobs:
             STATUS_LINE="**Status:** ⚠️ Verificação de threshold não executada."
           fi
 
-          DESCRIPTION="_Este relatório mostra a cobertura de testes do build **$BUILD_TYPE** gerada para o commit \`$SHORT_SHA\`._"
+          DESCRIPTION="_Este relatório mostra a cobertura de testes do build **Debug** gerada para o commit \`$SHORT_SHA\`._"
 
           if [ "$AVAILABLE" = "true" ]; then
-            BODY=$(printf "%s\n## 📊 Coverage Report — %s\n\n%s\n\n%s\n\n| Métrica | Coberto | Total | %% |\n|---------|---------|-------|----|\n| Linhas | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instruções | %s | %s | %s%% |" \
-              "$MARKER" "$BUILD_TYPE" \
+            BODY=$(printf "%s\n## 📊 Coverage Report — Debug\n\n%s\n\n%s\n\n| Métrica | Coberto | Total | %% |\n|---------|---------|-------|----|\n| Linhas | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instruções | %s | %s | %s%% |" \
+              "$MARKER" \
               "$DESCRIPTION" \
               "$STATUS_LINE" \
               "$LINE_COVERED" "$LINE_TOTAL" "$LINE_PCT" \
               "$BRANCH_COVERED" "$BRANCH_TOTAL" "$BRANCH_PCT" \
               "$INSTR_COVERED" "$INSTR_TOTAL" "$INSTR_PCT")
           else
-            BODY=$(printf "%s\n## 📊 Coverage Report — %s\n\n%s\n\n**Status:** ⚠️ Dados de cobertura indisponíveis — o build ou a verificação pode ter falhado." \
-              "$MARKER" "$BUILD_TYPE" "$DESCRIPTION")
+            BODY=$(printf "%s\n## 📊 Coverage Report — Debug\n\n%s\n\n**Status:** ⚠️ Dados de cobertura indisponíveis — o build ou a verificação pode ter falhado." \
+              "$MARKER" "$DESCRIPTION")
           fi
 
           REPO="${{ github.repository }}"
@@ -110,17 +154,9 @@ jobs:
           fi
 
       - name: Upload Coverage Report (HTML)
-        if: matrix.build_type == 'debug'
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report-debug
           path: app/build/reports/kover/htmlDebug/
-          retention-days: 7
-
-      - name: Upload Test Results
-        if: always() && matrix.build_type == 'debug'
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-debug
-          path: app/build/reports/tests/testDebugUnitTest/
           retention-days: 7
