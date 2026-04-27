@@ -2,10 +2,9 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.remote.MealRecommendationResponse
 import com.lc.ifood.data.remote.MealReminderApiService
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.User
 import com.lc.ifood.domain.repository.UserRepository
 import io.mockk.coEvery
@@ -24,8 +23,7 @@ class MealRecommendationRepositoryImplTest {
     private val apiService: MealReminderApiService = mockk()
     private val userRepository: UserRepository = mockk()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val schedule = MealSchedule(breakfast, 8, 0)
+    private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val user = User(1, "Lucas")
     private val apiResponse = MealRecommendationResponse(
         userName = "Lucas",
@@ -63,7 +61,7 @@ class MealRecommendationRepositoryImplTest {
 
         assertEquals(
             MealRecommendation(
-                meal = breakfast,
+                mealType = BREAKFAST,
                 placeName = "Café Central",
                 placeAddress = "Rua das Flores, 10",
                 mealName = "Omelete",

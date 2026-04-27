@@ -2,7 +2,6 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
-import com.lc.ifood.domain.mapper.MealMapper
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.repository.MealScheduleRepository
@@ -13,8 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class MealScheduleRepositoryImpl @Inject constructor(
-    private val dao: MealScheduleDao,
-    private val mealMapper: MealMapper
+    private val dao: MealScheduleDao
 ) : MealScheduleRepository {
 
     override fun getMealSchedules(): Flow<List<MealSchedule>> =
@@ -37,24 +35,23 @@ class MealScheduleRepositoryImpl @Inject constructor(
     }
 
     private fun MealScheduleEntity.toDomain(): MealSchedule {
-        val type = MealType.valueOf(mealType)
         return MealSchedule(
-            meal = mealMapper.map(type),
+            mealType = MealType.valueOf(mealType),
             hour = hour,
             minute = minute
         )
     }
 
     private fun MealSchedule.toEntity() = MealScheduleEntity(
-        mealType = meal.type.name,
+        mealType = mealType.name,
         hour = hour,
         minute = minute
     )
 
     private fun defaultSchedules() = listOf(
-        MealSchedule(mealMapper.map(MealType.BREAKFAST), 8, 0),
-        MealSchedule(mealMapper.map(MealType.LUNCH), 13, 0),
-        MealSchedule(mealMapper.map(MealType.AFTERNOON_SNACK), 17, 0),
-        MealSchedule(mealMapper.map(MealType.DINNER), 21, 0)
+        MealSchedule(MealType.BREAKFAST, 8, 0),
+        MealSchedule(MealType.LUNCH, 13, 0),
+        MealSchedule(MealType.AFTERNOON_SNACK, 17, 0),
+        MealSchedule(MealType.DINNER, 21, 0)
     )
 }

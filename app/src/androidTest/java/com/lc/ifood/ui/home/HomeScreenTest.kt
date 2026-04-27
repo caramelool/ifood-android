@@ -8,9 +8,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.model.UserPreference
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -23,14 +23,12 @@ class HomeScreenTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
     private val schedules = listOf(
-        MealSchedule(breakfast, 8, 0),
-        MealSchedule(lunch, 12, 0)
+        MealSchedule(BREAKFAST, 8, 0),
+        MealSchedule(LUNCH, 12, 0)
     )
     private val preferences = listOf(
-        UserPreference(1, "Saudável", listOf(breakfast))
+        UserPreference(1, "Saudável", listOf(BREAKFAST))
     )
 
     private fun setContent(

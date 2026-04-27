@@ -1,9 +1,8 @@
 package com.lc.ifood.domain.usecase
 
 import app.cash.turbine.test
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.repository.MealScheduleRepository
 import io.mockk.every
 import io.mockk.mockk
@@ -19,8 +18,7 @@ class GetMealSchedulesUseCaseTest {
     private val repository: MealScheduleRepository = mockk()
     private val useCase = GetMealSchedulesUseCase(repository)
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val schedule = MealSchedule(breakfast, 8, 0)
+    private val schedule = MealSchedule(BREAKFAST, 8, 0)
 
     @Test
     fun `invoke returns flow of meal schedules from repository`() = runTest {

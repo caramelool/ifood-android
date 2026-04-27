@@ -10,9 +10,9 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.MealType.LUNCH
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,11 +23,9 @@ class ScheduleAdjustmentScreenTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
     private val schedules = listOf(
-        MealSchedule(breakfast, 8, 0),
-        MealSchedule(lunch, 12, 30)
+        MealSchedule(BREAKFAST, 8, 0),
+        MealSchedule(LUNCH, 12, 30)
     )
 
     private fun setContent(uiState: ScheduleAdjustmentUiState) {

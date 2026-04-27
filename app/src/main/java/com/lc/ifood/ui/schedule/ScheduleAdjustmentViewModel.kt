@@ -36,7 +36,7 @@ class ScheduleAdjustmentViewModel @Inject constructor(
         )
         _uiState.value = _uiState.value.copy(
             schedules = _uiState.value.schedules.map {
-                if (it.meal.type == schedule.meal.type) updated else it
+                if (it.mealType == schedule.mealType) updated else it
             }
         )
     }

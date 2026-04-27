@@ -3,10 +3,11 @@ package com.lc.ifood.data.repository
 import app.cash.turbine.test
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
-import com.lc.ifood.domain.mapper.MealMapper
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.AFTERNOON_SNACK
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.MealType.DINNER
+import com.lc.ifood.domain.model.MealType.LUNCH
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -23,30 +24,16 @@ import org.junit.Test
 class MealScheduleRepositoryImplTest {
 
     private val dao: MealScheduleDao = mockk()
-    private val mealMapper: MealMapper = mockk()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
-    private val afternoonSnack = Meal(MealType.AFTERNOON_SNACK, "Lanche da Tarde", "Lanche")
-    private val dinner = Meal(MealType.DINNER, "Jantar", "Jantar")
-
-    private fun createRepository() = MealScheduleRepositoryImpl(dao, mealMapper)
-
-    private fun setupDefaultMealMapper() {
-        every { mealMapper.map(MealType.BREAKFAST) } returns breakfast
-        every { mealMapper.map(MealType.LUNCH) } returns lunch
-        every { mealMapper.map(MealType.AFTERNOON_SNACK) } returns afternoonSnack
-        every { mealMapper.map(MealType.DINNER) } returns dinner
-    }
+    private fun createRepository() = MealScheduleRepositoryImpl(dao)
 
     @Test
     fun `getMealSchedules maps entities from dao to domain models`() = runTest {
         val entity = MealScheduleEntity(mealType = "BREAKFAST", hour = 8, minute = 0)
         every { dao.getAll() } returns flowOf(listOf(entity))
-        every { mealMapper.map(MealType.BREAKFAST) } returns breakfast
 
         createRepository().getMealSchedules().test {
-            assertEquals(listOf(MealSchedule(breakfast, 8, 0)), awaitItem())
+            assertEquals(listOf(MealSchedule(BREAKFAST, 8, 0)), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -54,18 +41,17 @@ class MealScheduleRepositoryImplTest {
     @Test
     fun `getMealSchedules returns default schedules when dao emits empty list`() = runTest {
         every { dao.getAll() } returns flowOf(emptyList())
-        setupDefaultMealMapper()
 
         createRepository().getMealSchedules().test {
             val result = awaitItem()
             assertEquals(4, result.size)
-            assertEquals(MealType.BREAKFAST, result[0].meal.type)
+            assertEquals(BREAKFAST, result[0].mealType)
             assertEquals(8, result[0].hour)
-            assertEquals(MealType.LUNCH, result[1].meal.type)
+            assertEquals(LUNCH, result[1].mealType)
             assertEquals(13, result[1].hour)
-            assertEquals(MealType.AFTERNOON_SNACK, result[2].meal.type)
+            assertEquals(AFTERNOON_SNACK, result[2].mealType)
             assertEquals(17, result[2].hour)
-            assertEquals(MealType.DINNER, result[3].meal.type)
+            assertEquals(DINNER, result[3].mealType)
             assertEquals(21, result[3].hour)
             cancelAndIgnoreRemainingEvents()
         }
@@ -75,7 +61,7 @@ class MealScheduleRepositoryImplTest {
     fun `updateMealSchedule upserts entity into dao`() = runTest {
         coEvery { dao.upsert(any()) } just runs
 
-        createRepository().updateMealSchedule(MealSchedule(breakfast, 9, 30))
+        createRepository().updateMealSchedule(MealSchedule(BREAKFAST, 9, 30))
 
         coVerify {
             dao.upsert(MealScheduleEntity(mealType = "BREAKFAST", hour = 9, minute = 30))
@@ -86,7 +72,6 @@ class MealScheduleRepositoryImplTest {
     fun `seedDefaultsIfEmpty inserts defaults when dao count is zero`() = runTest {
         coEvery { dao.count() } returns 0
         coEvery { dao.insertAll(any()) } just runs
-        setupDefaultMealMapper()
 
         createRepository().seedDefaultsIfEmpty()
 

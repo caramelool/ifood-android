@@ -37,13 +37,13 @@ class MealRecommendationScheduler @Inject constructor(
 
     private fun buildPendingIntent(schedule: MealSchedule): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
-            putExtra(MealRecommendationWorker.KEY_MEAL_TYPE, schedule.meal.type.name)
+            putExtra(MealRecommendationWorker.KEY_MEAL_TYPE, schedule.mealType.name)
             putExtra(MealRecommendationWorker.KEY_HOUR, schedule.hour)
             putExtra(MealRecommendationWorker.KEY_MINUTE, schedule.minute)
         }
         return PendingIntent.getBroadcast(
             context,
-            schedule.meal.type.ordinal,
+            schedule.mealType.ordinal,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )

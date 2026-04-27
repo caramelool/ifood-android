@@ -1,7 +1,7 @@
 package com.lc.ifood.domain.usecase
 
-import com.lc.ifood.domain.model.Meal
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.PreferenceRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -18,14 +18,17 @@ class SavePreferenceUseCaseTest {
     private val repository: PreferenceRepository = mockk()
     private val useCase = SavePreferenceUseCase(repository)
 
-    private val meals = listOf(Meal(MealType.BREAKFAST, "Café da Manhã", "Café"))
 
     @Test
     fun `invoke delegates to repository addPreference with label and meals`() = runTest {
-        coEvery { repository.addPreference("Saudável", meals) } just runs
+        coEvery { repository.addPreference(any()) } just runs
 
-        useCase("Saudável", meals)
+        useCase("Saudável", listOf(BREAKFAST))
 
-        coVerify { repository.addPreference("Saudável", meals) }
+        coVerify {
+            repository.addPreference(
+                UserPreference(id = 0, label = "Saudável", listOf(BREAKFAST))
+            )
+        }
     }
 }

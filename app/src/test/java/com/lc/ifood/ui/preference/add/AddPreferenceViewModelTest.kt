@@ -1,8 +1,8 @@
 package com.lc.ifood.ui.preference.add
 
 import app.cash.turbine.test
-import com.lc.ifood.domain.model.Meal
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealsUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import com.lc.ifood.util.MainDispatcherRule
@@ -29,9 +29,6 @@ class AddPreferenceViewModelTest {
     private val getMeals: GetMealsUseCase = mockk()
     private val savePreference: SavePreferenceUseCase = mockk()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
-
     private fun createViewModel(): AddPreferenceViewModel {
         coJustRun { savePreference.invoke(any(), any()) }
         return AddPreferenceViewModel(getMeals, savePreference)
@@ -39,11 +36,11 @@ class AddPreferenceViewModelTest {
 
     @Test
     fun `mealOptions are populated from use case`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast, lunch))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST, LUNCH))
         val vm = createViewModel()
         vm.uiState.test {
             val state = awaitItem()
-            assertEquals(listOf(breakfast, lunch), state.mealOptions)
+            assertEquals(listOf(BREAKFAST, LUNCH), state.mealTypeOptions)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -58,32 +55,32 @@ class AddPreferenceViewModelTest {
 
     @Test
     fun `toggleMeal adds meal to selectedMeals`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
-        vm.toggleMeal(breakfast)
-        assertTrue(vm.uiState.value.selectedMeals.contains(breakfast))
+        vm.toggleMealType(BREAKFAST)
+        assertTrue(vm.uiState.value.selectedMealTypes.contains(BREAKFAST))
     }
 
     @Test
     fun `toggleMeal removes meal when already selected`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
-        vm.toggleMeal(breakfast)
-        vm.toggleMeal(breakfast)
-        assertFalse(vm.uiState.value.selectedMeals.contains(breakfast))
+        vm.toggleMealType(BREAKFAST)
+        vm.toggleMealType(BREAKFAST)
+        assertFalse(vm.uiState.value.selectedMealTypes.contains(BREAKFAST))
     }
 
     @Test
     fun `canSave is false when label is blank`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
-        vm.toggleMeal(breakfast)
+        vm.toggleMealType(BREAKFAST)
         assertFalse(vm.uiState.value.canSave)
     }
 
     @Test
     fun `canSave is false when no meal selected`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.onLabelChange("Saudável")
         assertFalse(vm.uiState.value.canSave)
@@ -91,30 +88,30 @@ class AddPreferenceViewModelTest {
 
     @Test
     fun `canSave is true when label and meal are set`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.onLabelChange("Saudável")
-        vm.toggleMeal(breakfast)
+        vm.toggleMealType(BREAKFAST)
         assertTrue(vm.uiState.value.canSave)
     }
 
     @Test
     fun `save calls SavePreferenceUseCase with trimmed label and selected meals`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.onLabelChange("  Saudável  ")
-        vm.toggleMeal(breakfast)
+        vm.toggleMealType(BREAKFAST)
         vm.save {}
         advanceUntilIdle()
-        coVerify { savePreference.invoke("Saudável", listOf(breakfast)) }
+        coVerify { savePreference.invoke("Saudável", listOf(BREAKFAST)) }
     }
 
     @Test
     fun `save invokes onDone callback on success`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.onLabelChange("Saudável")
-        vm.toggleMeal(breakfast)
+        vm.toggleMealType(BREAKFAST)
         var doneCalled = false
         vm.save { doneCalled = true }
         advanceUntilIdle()
@@ -123,7 +120,7 @@ class AddPreferenceViewModelTest {
 
     @Test
     fun `save does not call SavePreferenceUseCase when canSave is false`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.save {}
         advanceUntilIdle()
@@ -132,10 +129,10 @@ class AddPreferenceViewModelTest {
 
     @Test
     fun `save sets saved true after completion`() = runTest {
-        every { getMeals.invoke() } returns flowOf(listOf(breakfast))
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.onLabelChange("Saudável")
-        vm.toggleMeal(breakfast)
+        vm.toggleMealType(BREAKFAST)
         vm.save {}
         advanceUntilIdle()
         assertTrue(vm.uiState.value.saved)

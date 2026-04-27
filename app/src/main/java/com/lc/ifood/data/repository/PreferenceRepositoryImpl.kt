@@ -2,8 +2,6 @@ package com.lc.ifood.data.repository
 
 import com.lc.ifood.data.db.dao.UserPreferenceDao
 import com.lc.ifood.data.db.entity.UserPreferenceEntity
-import com.lc.ifood.domain.mapper.MealMapper
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.PreferenceRepository
@@ -14,8 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class PreferenceRepositoryImpl @Inject constructor(
-    private val dao: UserPreferenceDao,
-    private val mealMapper: MealMapper
+    private val dao: UserPreferenceDao
 ) : PreferenceRepository {
 
     override fun getPreferences(): Flow<List<UserPreference>> =
@@ -24,15 +21,7 @@ class PreferenceRepositoryImpl @Inject constructor(
     override suspend fun getPreferencesByMealType(mealType: MealType): List<UserPreference> =
         dao.getByMealType(mealType.name).map { it.toDomain() }
 
-    override suspend fun addPreference(
-        label: String,
-        meals: List<Meal>
-    ) {
-        val preference = UserPreference(
-            id = 0,
-            label = label,
-            meals = meals
-        )
+    override suspend fun addPreference(preference: UserPreference) {
         dao.insert(preference.toEntity())
     }
 
@@ -43,14 +32,13 @@ class PreferenceRepositoryImpl @Inject constructor(
     private fun UserPreferenceEntity.toDomain() = UserPreference(
         id = id,
         label = label,
-        meals = mealTypes.split(",")
+        mealTypes = mealTypes.split(",")
             .map { MealType.valueOf(it) }
-            .map { mealMapper.map(it) }
     )
 
     private fun UserPreference.toEntity() = UserPreferenceEntity(
         id = id,
         label = label,
-        mealTypes = meals.joinToString(",") { it.type.name }
+        mealTypes = mealTypes.joinToString(",") { it.name }
     )
 }

@@ -40,7 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.Meal
+import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.ui.composable.composable
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -57,7 +58,7 @@ fun AddPreferenceScreen(
     AddPreferenceContent(
         uiState = uiState,
         onLabelChange = viewModel::onLabelChange,
-        onToggleMeal = viewModel::toggleMeal,
+        onToggleMealType = viewModel::toggleMealType,
         onSave = { viewModel.save(onBack) },
         onBack = onBack
     )
@@ -68,7 +69,7 @@ fun AddPreferenceScreen(
 internal fun AddPreferenceContent(
     uiState: AddPreferenceUiState,
     onLabelChange: (String) -> Unit,
-    onToggleMeal: (Meal) -> Unit,
+    onToggleMealType: (MealType) -> Unit,
     onSave: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -138,11 +139,11 @@ internal fun AddPreferenceContent(
                 elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    uiState.mealOptions.forEach { meal ->
+                    uiState.mealTypeOptions.forEach { type ->
                         MealTypeCheckboxRow(
-                            label = meal.label,
-                            checked = meal in uiState.selectedMeals,
-                            onCheckedChange = { onToggleMeal(meal) }
+                            label = type.composable().label,
+                            checked = type in uiState.selectedMealTypes,
+                            onCheckedChange = { onToggleMealType(type) }
                         )
                     }
                 }

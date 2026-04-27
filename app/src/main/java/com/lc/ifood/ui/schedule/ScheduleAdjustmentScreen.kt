@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
 import com.lc.ifood.domain.model.MealSchedule
+import com.lc.ifood.ui.composable.composable
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -170,7 +171,7 @@ private fun ScheduleCard(
         ) {
             Column {
                 Text(
-                    text = schedule.meal.label,
+                    text = schedule.mealType.composable().label,
                     fontSize = 14.sp,
                     color = IfoodTextSecondary
                 )

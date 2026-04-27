@@ -1,9 +1,8 @@
 package com.lc.ifood.domain.usecase
 
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.MealRecommendationRepository
 import io.mockk.coEvery
@@ -20,14 +19,13 @@ class GetMealRecommendationUseCaseTest {
     private val repository: MealRecommendationRepository = mockk()
     private val useCase = GetMealRecommendationUseCase(repository)
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val schedule = MealSchedule(breakfast, 8, 0)
+    private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val preferences = listOf(
         UserPreference(1, "Saudável"),
         UserPreference(2, "Vegano")
     )
     private val recommendation = MealRecommendation(
-        meal = breakfast,
+        mealType = BREAKFAST,
         placeName = "Restaurante",
         placeAddress = "Rua A",
         mealName = "Omelete",

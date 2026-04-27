@@ -2,7 +2,7 @@ package com.lc.ifood.ui.preference.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.lc.ifood.domain.model.Meal
+import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.usecase.GetMealsUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +26,7 @@ class AddPreferenceViewModel @Inject constructor(
         viewModelScope.launch {
             getMeals().collect { options ->
                 _uiState.update {
-                    it.copy(mealOptions = options)
+                    it.copy(mealTypeOptions = options)
                 }
             }
         }
@@ -36,10 +36,10 @@ class AddPreferenceViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(label = label)
     }
 
-    fun toggleMeal(meal: Meal) {
-        val current = _uiState.value.selectedMeals.toMutableSet()
-        if (meal in current) current.remove(meal) else current.add(meal)
-        _uiState.value = _uiState.value.copy(selectedMeals = current)
+    fun toggleMealType(mealType: MealType) {
+        val current = _uiState.value.selectedMealTypes.toMutableSet()
+        if (mealType in current) current.remove(mealType) else current.add(mealType)
+        _uiState.value = _uiState.value.copy(selectedMealTypes = current)
     }
 
     fun save(onDone: () -> Unit) {
@@ -49,7 +49,7 @@ class AddPreferenceViewModel @Inject constructor(
             _uiState.value = state.copy(isSaving = true)
             savePreference(
                 label = state.label.trim(),
-                meals = state.selectedMeals.toList()
+                mealTypes = state.selectedMealTypes.toList()
             )
             _uiState.value = _uiState.value.copy(isSaving = false, saved = true)
             onDone()

@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class MealRecommendation(
-    val meal: Meal,
+    val mealType: MealType,
     val placeName: String,
     val placeAddress: String,
     val mealName: String,

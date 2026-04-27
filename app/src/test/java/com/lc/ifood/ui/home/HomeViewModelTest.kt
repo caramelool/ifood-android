@@ -1,9 +1,8 @@
 package com.lc.ifood.ui.home
 
 import app.cash.turbine.test
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.User
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
@@ -38,9 +37,8 @@ class HomeViewModelTest {
     private val saveUser: SaveUserUseCase = mockk()
     private val seedDefaultSchedules: SeedDefaultSchedulesUseCase = mockk()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val schedule = MealSchedule(breakfast, 8, 0)
-    private val preference = UserPreference(1, "Saudável", listOf(breakfast))
+    private val schedule = MealSchedule(BREAKFAST, 8, 0)
+    private val preference = UserPreference(1, "Saudável", listOf(BREAKFAST))
     private val user = User(1, "Lucas")
 
     private fun createViewModel(): HomeViewModel {

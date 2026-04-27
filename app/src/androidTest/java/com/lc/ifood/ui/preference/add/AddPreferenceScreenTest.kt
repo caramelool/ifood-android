@@ -9,8 +9,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -21,20 +21,17 @@ class AddPreferenceScreenTest {
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
-
     private fun setContent(
         uiState: AddPreferenceUiState = AddPreferenceUiState(),
         onLabelChange: (String) -> Unit = {},
-        onToggleMeal: (Meal) -> Unit = {},
+        onToggleMealType: (MealType) -> Unit = {},
         onSave: () -> Unit = {}
     ) {
         composeRule.setContent {
             AddPreferenceContent(
                 uiState = uiState,
                 onLabelChange = onLabelChange,
-                onToggleMeal = onToggleMeal,
+                onToggleMealType = onToggleMealType,
                 onSave = onSave,
                 onBack = {}
             )
@@ -51,7 +48,7 @@ class AddPreferenceScreenTest {
 
     @Test
     fun mealOptions_areDisplayed() {
-        setContent(uiState = AddPreferenceUiState(mealOptions = listOf(breakfast, lunch)))
+        setContent(uiState = AddPreferenceUiState(mealTypeOptions = listOf(BREAKFAST, MealType.LUNCH)))
         composeRule.onNodeWithText("Café da Manhã").assertIsDisplayed()
         composeRule.onNodeWithText("Almoço").assertIsDisplayed()
     }
@@ -61,8 +58,8 @@ class AddPreferenceScreenTest {
         setContent(
             uiState = AddPreferenceUiState(
                 label = "",
-                mealOptions = listOf(breakfast),
-                selectedMeals = emptySet()
+                mealTypeOptions = listOf(BREAKFAST),
+                selectedMealTypes = emptySet()
             )
         )
         composeRule
@@ -75,8 +72,8 @@ class AddPreferenceScreenTest {
         setContent(
             uiState = AddPreferenceUiState(
                 label = "Saudável",
-                mealOptions = listOf(breakfast),
-                selectedMeals = setOf(breakfast)
+                mealTypeOptions = listOf(BREAKFAST),
+                selectedMealTypes = setOf(BREAKFAST)
             )
         )
         composeRule
@@ -89,7 +86,7 @@ class AddPreferenceScreenTest {
         setContent(
             uiState = AddPreferenceUiState(
                 label = "Saudável",
-                selectedMeals = setOf(breakfast),
+                selectedMealTypes = setOf(BREAKFAST),
                 isSaving = true
             )
         )
@@ -103,7 +100,7 @@ class AddPreferenceScreenTest {
         setContent(
             uiState = AddPreferenceUiState(
                 label = "Saudável",
-                selectedMeals = setOf(breakfast),
+                selectedMealTypes = setOf(BREAKFAST),
                 isSaving = true
             )
         )

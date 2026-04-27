@@ -1,9 +1,9 @@
 package com.lc.ifood.ui.schedule
 
 import app.cash.turbine.test
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
+import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.UpdateMealScheduleUseCase
 import com.lc.ifood.util.MainDispatcherRule
@@ -30,10 +30,8 @@ class ScheduleAdjustmentViewModelTest {
     private val getMealSchedules: GetMealSchedulesUseCase = mockk()
     private val updateMealSchedule: UpdateMealScheduleUseCase = mockk()
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val lunch = Meal(MealType.LUNCH, "Almoço", "Almoço")
-    private val scheduleBreakfast = MealSchedule(breakfast, 8, 0)
-    private val scheduleLunch = MealSchedule(lunch, 12, 0)
+    private val scheduleBreakfast = MealSchedule(BREAKFAST, 8, 0)
+    private val scheduleLunch = MealSchedule(LUNCH, 12, 0)
 
     private fun createViewModel(): ScheduleAdjustmentViewModel {
         coJustRun { updateMealSchedule.invoke(any()) }
@@ -67,7 +65,7 @@ class ScheduleAdjustmentViewModelTest {
         every { getMealSchedules.invoke() } returns flowOf(listOf(scheduleBreakfast, scheduleLunch))
         val vm = createViewModel()
         vm.updateTime(scheduleBreakfast, 9, 30)
-        val lunchSchedule = vm.uiState.value.schedules.find { it.meal.type == MealType.LUNCH }
+        val lunchSchedule = vm.uiState.value.schedules.find { it.mealType == LUNCH }
         assertEquals(12, lunchSchedule?.hour)
         assertEquals(0, lunchSchedule?.minute)
     }

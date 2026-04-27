@@ -1,8 +1,7 @@
 package com.lc.ifood.domain.usecase
 
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.repository.MealScheduleRepository
 import com.lc.ifood.worker.MealRecommendationScheduler
 import io.mockk.coEvery
@@ -23,8 +22,7 @@ class UpdateMealScheduleUseCaseTest {
     private val scheduler: MealRecommendationScheduler = mockk()
     private val useCase = UpdateMealScheduleUseCase(repository, scheduler)
 
-    private val breakfast = Meal(MealType.BREAKFAST, "Café da Manhã", "Café")
-    private val schedule = MealSchedule(breakfast, 9, 30)
+    private val schedule = MealSchedule(BREAKFAST, 9, 30)
 
     @Test
     fun `invoke updates schedule in repository`() = runTest {
