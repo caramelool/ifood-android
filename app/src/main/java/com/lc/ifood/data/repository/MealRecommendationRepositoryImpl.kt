@@ -9,6 +9,14 @@ import kotlinx.coroutines.flow.lastOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Repository implementation that fetches AI-powered meal recommendations from the backend API.
+ *
+ * Requires a logged-in user; throws [IllegalArgumentException] if none is found.
+ *
+ * The [com.lc.ifood.domain.model.MealType] enum value is converted to lowercase before being
+ * sent to the API (e.g. `BREAKFAST` → `"breakfast"`) to match the backend's expected format.
+ */
 @Singleton
 class MealRecommendationRepositoryImpl @Inject constructor(
     private val apiService: MealReminderApiService,
