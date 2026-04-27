@@ -21,6 +21,13 @@ object NetworkModule {
     @Singleton
     fun provideMoshi(): Moshi = Moshi.Builder().build()
 
+    /**
+     * OkHttp client with full request/response body logging.
+     *
+     * [HttpLoggingInterceptor.Level.BODY] logs headers and body for every call, which aids
+     * debugging during development. In a production build this should be gated behind
+     * [BuildConfig.DEBUG] to avoid logging sensitive data.
+     */
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
@@ -31,6 +38,12 @@ object NetworkModule {
         )
         .build()
 
+    /**
+     * Retrofit instance pointed at [BuildConfig.BASE_URL].
+     *
+     * Uses [MoshiConverterFactory] to deserialize JSON responses into Kotlin data classes
+     * without requiring `@JsonClass(generateAdapter = true)` on every model.
+     */
     @Provides
     @Singleton
     fun provideRetrofit(client: OkHttpClient, moshi: Moshi): Retrofit = Retrofit.Builder()

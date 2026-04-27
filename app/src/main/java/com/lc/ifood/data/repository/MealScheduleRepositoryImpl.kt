@@ -10,6 +10,19 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Repository implementation for meal schedule persistence.
+ *
+ * On first launch the database is empty, so [getMealSchedules] returns in-memory defaults
+ * rather than an empty list. Calling [seedDefaultsIfEmpty] writes those defaults to the DB
+ * so that subsequent edits by the user are persisted.
+ *
+ * Default schedule times:
+ * - BREAKFAST — 08:00
+ * - LUNCH — 13:00
+ * - AFTERNOON_SNACK — 17:00
+ * - DINNER — 21:00
+ */
 @Singleton
 class MealScheduleRepositoryImpl @Inject constructor(
     private val dao: MealScheduleDao
@@ -28,6 +41,11 @@ class MealScheduleRepositoryImpl @Inject constructor(
         dao.upsert(schedule.toEntity())
     }
 
+    /**
+     * Writes the default schedules to the database only if no rows exist yet.
+     *
+     * This guard prevents overwriting user-customized times on subsequent app launches.
+     */
     override suspend fun seedDefaultsIfEmpty() {
         if (dao.count() == 0) {
             dao.insertAll(defaultSchedules().map { it.toEntity() })

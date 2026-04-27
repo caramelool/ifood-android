@@ -9,6 +9,16 @@ import androidx.work.workDataOf
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+/**
+ * BroadcastReceiver that bridges AlarmManager alarms to WorkManager.
+ *
+ * When an alarm set by [MealRecommendationScheduler] fires, Android delivers the broadcast here.
+ * The receiver extracts the meal schedule extras from the intent and enqueues a one-time
+ * [MealRecommendationWorker] so the heavy work (network call, notification) runs off the main
+ * thread with WorkManager's retry and lifecycle guarantees.
+ *
+ * Uses `@AndroidEntryPoint` to allow Hilt field injection of [WorkManager].
+ */
 @AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver() {
 

@@ -15,6 +15,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel for the Home screen.
+ *
+ * On creation, seeds the default meal schedules (no-op if already seeded) and begins
+ * observing the three data streams needed by the screen.
+ */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getMealSchedulesUseCase: GetMealSchedulesUseCase,
@@ -34,6 +40,12 @@ class HomeViewModel @Inject constructor(
         observeData()
     }
 
+    /**
+     * Combines the meal schedules, preferences, and user flows into a single [HomeUiState].
+     *
+     * Using [combine] ensures the UI always reflects the latest value from all three sources
+     * and only recomposes when any one of them changes.
+     */
     private fun observeData() {
         viewModelScope.launch {
             combine(

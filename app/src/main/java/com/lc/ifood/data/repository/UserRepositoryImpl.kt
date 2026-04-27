@@ -10,6 +10,16 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * Repository implementation for the user profile.
+ *
+ * Holds an in-memory [user] cache to avoid repeated database reads. After the first successful
+ * query (or after [saveUser] is called), subsequent [getUser] invocations return a pre-built
+ * [Flow] wrapping the cached value instead of re-querying the DAO.
+ *
+ * The app only ever stores a single user row, so the cache is a plain nullable field rather than
+ * a more complex structure.
+ */
 @Singleton
 class UserRepositoryImpl @Inject constructor(
     private val dao: UserDao

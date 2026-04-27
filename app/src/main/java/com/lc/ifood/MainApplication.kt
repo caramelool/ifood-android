@@ -11,6 +11,19 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * Application entry point for the iFood app.
+ *
+ * Responsibilities:
+ * - Triggers Hilt component generation via `@HiltAndroidApp`.
+ * - Provides a custom [Configuration] so WorkManager uses [HiltWorkerFactory] and can inject
+ *   dependencies into workers (e.g. [com.lc.ifood.worker.MealRecommendationWorker]).
+ * - Schedules all meal reminder alarms on every cold start so the alarm chain is never broken
+ *   (AlarmManager alarms do not survive device reboots, so rescheduling here covers that case).
+ *
+ * Implements [LifecycleOwner] via delegation to [ProcessLifecycleOwner] to get access to
+ * [lifecycleScope] for the initial alarm scheduling coroutine.
+ */
 @HiltAndroidApp
 class MainApplication : Application(), Configuration.Provider,
     LifecycleOwner by ProcessLifecycleOwner.get() {

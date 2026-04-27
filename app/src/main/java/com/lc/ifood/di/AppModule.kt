@@ -19,6 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
+    /** Single DataStore instance backed by the `"ifood_prefs"` preferences file. */
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "ifood_prefs")
 
     @Provides
@@ -33,6 +34,12 @@ object AppModule {
         return WorkManager.getInstance(context)
     }
 
+    /**
+     * Provides the Room database instance with all registered migrations.
+     *
+     * [MIGRATION_1_2] must be listed here; without it Room would throw
+     * [IllegalStateException] if an existing installation has schema v1.
+     */
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
