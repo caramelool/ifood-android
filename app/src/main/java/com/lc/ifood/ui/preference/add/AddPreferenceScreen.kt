@@ -40,6 +40,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
+import com.lc.ifood.domain.model.MealType
+import com.lc.ifood.ui.composable.composable
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -53,7 +55,24 @@ fun AddPreferenceScreen(
     viewModel: AddPreferenceViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    AddPreferenceContent(
+        uiState = uiState,
+        onLabelChange = viewModel::onLabelChange,
+        onToggleMealType = viewModel::toggleMealType,
+        onSave = { viewModel.save(onBack) },
+        onBack = onBack
+    )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun AddPreferenceContent(
+    uiState: AddPreferenceUiState,
+    onLabelChange: (String) -> Unit,
+    onToggleMealType: (MealType) -> Unit,
+    onSave: () -> Unit,
+    onBack: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,7 +108,7 @@ fun AddPreferenceScreen(
 
             OutlinedTextField(
                 value = uiState.label,
-                onValueChange = viewModel::onLabelChange,
+                onValueChange = onLabelChange,
                 label = { Text(stringResource(R.string.add_preference_label_field)) },
                 placeholder = { Text(stringResource(R.string.add_preference_label_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -120,11 +139,11 @@ fun AddPreferenceScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
             ) {
                 Column(modifier = Modifier.padding(vertical = 8.dp)) {
-                    uiState.mealOptions.forEach { meal ->
+                    uiState.mealTypeOptions.forEach { type ->
                         MealTypeCheckboxRow(
-                            label = meal.label,
-                            checked = meal in uiState.selectedMeals,
-                            onCheckedChange = { viewModel.toggleMeal(meal) }
+                            label = type.composable().label,
+                            checked = type in uiState.selectedMealTypes,
+                            onCheckedChange = { onToggleMealType(type) }
                         )
                     }
                 }
@@ -133,7 +152,7 @@ fun AddPreferenceScreen(
             Spacer(Modifier.height(32.dp))
 
             Button(
-                onClick = { viewModel.save(onBack) },
+                onClick = onSave,
                 enabled = uiState.canSave && !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = IfoodRed),

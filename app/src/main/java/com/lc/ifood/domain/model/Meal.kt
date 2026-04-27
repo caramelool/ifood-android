@@ -1,15 +1,8 @@
 package com.lc.ifood.domain.model
 
-import android.os.Parcelable
 import androidx.annotation.Keep
-import kotlinx.parcelize.Parcelize
-
-@Parcelize
-data class Meal(
-    val type: MealType,
-    val label: String,
-    val sortLabel: String
-) : Parcelable
+import androidx.annotation.StringRes
+import com.lc.ifood.R
 
 @Keep
 enum class MealType {
@@ -17,10 +10,28 @@ enum class MealType {
 }
 
 data class MealSchedule(
-    val meal: Meal,
+    val mealType: MealType,
     val hour: Int,
     val minute: Int = 0
 ) {
     val time: String
         get() = "%02d:%02d".format(hour, minute)
 }
+
+@get:StringRes
+val MealType.labelId: Int
+    get() = when (this) {
+        MealType.BREAKFAST -> R.string.meal_type_breakfast
+        MealType.LUNCH -> R.string.meal_type_lunch
+        MealType.AFTERNOON_SNACK -> R.string.meal_type_afternoon_snack
+        MealType.DINNER -> R.string.meal_type_dinner
+    }
+
+@get:StringRes
+val MealType.sortLabelId: Int
+    get() = when (this) {
+        MealType.BREAKFAST -> R.string.meal_type_breakfast_short
+        MealType.LUNCH -> R.string.meal_type_lunch
+        MealType.AFTERNOON_SNACK -> R.string.meal_type_afternoon_snack_short
+        MealType.DINNER -> R.string.meal_type_dinner
+    }

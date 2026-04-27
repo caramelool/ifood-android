@@ -54,13 +54,28 @@ fun OnboardingScreen(
     onOnboardingComplete: () -> Unit,
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
-    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    OnboardingContent(
+        uiState = uiState,
+        onPageChanged = viewModel::onPageChanged,
+        onCompleteOnboarding = viewModel::completeOnboarding,
+        onOnboardingComplete = onOnboardingComplete
+    )
+}
+
+@Composable
+internal fun OnboardingContent(
+    uiState: OnboardingUiState,
+    onPageChanged: (Int) -> Unit,
+    onCompleteOnboarding: () -> Unit,
+    onOnboardingComplete: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { uiState.pages.size })
 
     if (uiState.isOnboardCompleted.not()) {
         LaunchedEffect(pagerState.currentPage) {
-            viewModel.onPageChanged(pagerState.currentPage)
+            onPageChanged(pagerState.currentPage)
         }
     }
 
@@ -72,7 +87,7 @@ fun OnboardingScreen(
                 isVisible = uiState.isFabVisible,
                 onClick = {
                     if (uiState.isOnboardCompleted) {
-                        viewModel.completeOnboarding()
+                        onCompleteOnboarding()
                         onOnboardingComplete()
                     } else {
                         scope.launch {

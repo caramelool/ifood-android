@@ -8,5 +8,5 @@ data class User(
 data class UserPreference(
     val id: Int,
     val label: String,
-    val meals: List<Meal> = emptyList()
+    val mealTypes: List<MealType> = emptyList()
 )

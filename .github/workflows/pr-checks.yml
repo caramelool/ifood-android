@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      contents: read
 
     strategy:
       matrix:
@@ -43,42 +44,70 @@ jobs:
         if: matrix.build_type == 'debug'
         run: ./gradlew koverXmlReportDebug koverHtmlReportDebug
 
-# enable when the development is completed
-#      - name: Verify Coverage Threshold (${{ matrix.build_type }})
-#        run: ./gradlew koverVerify${{ matrix.build_type_cap }}
-#
-#      - name: Parse Coverage Data (${{ matrix.build_type }})
-#        if: always()
-#        id: coverage
-#        run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
-#
-#      - name: Comment Coverage on PR (${{ matrix.build_type }})
-#        if: always() && github.event_name == 'pull_request'
-#        env:
-#          GH_TOKEN: ${{ github.token }}
-#          PR_NUMBER: ${{ github.event.pull_request.number }}
-#          BUILD_TYPE: ${{ matrix.build_type_cap }}
-#          AVAILABLE: ${{ steps.coverage.outputs.available }}
-#          LINE_PCT: ${{ steps.coverage.outputs.line_pct }}
-#          LINE_COVERED: ${{ steps.coverage.outputs.line_covered }}
-#          LINE_TOTAL: ${{ steps.coverage.outputs.line_total }}
-#          BRANCH_PCT: ${{ steps.coverage.outputs.branch_pct }}
-#          BRANCH_COVERED: ${{ steps.coverage.outputs.branch_covered }}
-#          BRANCH_TOTAL: ${{ steps.coverage.outputs.branch_total }}
-#          INSTR_PCT: ${{ steps.coverage.outputs.instruction_pct }}
-#          INSTR_COVERED: ${{ steps.coverage.outputs.instruction_covered }}
-#          INSTR_TOTAL: ${{ steps.coverage.outputs.instruction_total }}
-#        run: |
-#          if [ "$AVAILABLE" = "true" ]; then
-#            BODY=$(printf "## Coverage Report — %s\n\n| Metric | Covered | Total | %% |\n|--------|---------|-------|----|\n| Lines | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instructions | %s | %s | %s%% |" \
-#              "$BUILD_TYPE" \
-#              "$LINE_COVERED" "$LINE_TOTAL" "$LINE_PCT" \
-#              "$BRANCH_COVERED" "$BRANCH_TOTAL" "$BRANCH_PCT" \
-#              "$INSTR_COVERED" "$INSTR_TOTAL" "$INSTR_PCT")
-#          else
-#            BODY=$(printf "## Coverage Report — %s\n\n_Coverage data unavailable (build or verification may have failed)._" "$BUILD_TYPE")
-#          fi
-#          gh pr comment "$PR_NUMBER" --body "$BODY"
+      - name: Verify Coverage Threshold (${{ matrix.build_type }})
+        if: matrix.build_type == 'debug'
+        id: verify_coverage
+        run: ./gradlew koverVerifyDebug
+
+      - name: Parse Coverage Data (${{ matrix.build_type }})
+        if: always() && matrix.build_type == 'debug'
+        id: coverage
+        run: python3 .github/scripts/parse_coverage.py app/build/reports/kover
+
+      - name: Comment Coverage on PR (${{ matrix.build_type }})
+        if: always() && github.event_name == 'pull_request' && matrix.build_type == 'debug'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BUILD_TYPE: ${{ matrix.build_type_cap }}
+          VERIFY_OUTCOME: ${{ steps.verify_coverage.outcome }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          AVAILABLE: ${{ steps.coverage.outputs.available }}
+          LINE_PCT: ${{ steps.coverage.outputs.line_pct }}
+          LINE_COVERED: ${{ steps.coverage.outputs.line_covered }}
+          LINE_TOTAL: ${{ steps.coverage.outputs.line_total }}
+          BRANCH_PCT: ${{ steps.coverage.outputs.branch_pct }}
+          BRANCH_COVERED: ${{ steps.coverage.outputs.branch_covered }}
+          BRANCH_TOTAL: ${{ steps.coverage.outputs.branch_total }}
+          INSTR_PCT: ${{ steps.coverage.outputs.instruction_pct }}
+          INSTR_COVERED: ${{ steps.coverage.outputs.instruction_covered }}
+          INSTR_TOTAL: ${{ steps.coverage.outputs.instruction_total }}
+        run: |
+          MARKER="<!-- coverage-report-bot -->"
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+
+          if [ "$VERIFY_OUTCOME" = "success" ]; then
+            STATUS_LINE="**Status:** ✅ Todos os thresholds foram atingidos — ótimo trabalho, continue assim!"
+          elif [ "$VERIFY_OUTCOME" = "failure" ]; then
+            STATUS_LINE="**Status:** ❌ Alguns thresholds não foram atingidos — adicione mais testes e você chegará lá!"
+          else
+            STATUS_LINE="**Status:** ⚠️ Verificação de threshold não executada."
+          fi
+
+          DESCRIPTION="_Este relatório mostra a cobertura de testes do build **$BUILD_TYPE** gerada para o commit \`$SHORT_SHA\`._"
+
+          if [ "$AVAILABLE" = "true" ]; then
+            BODY=$(printf "%s\n## 📊 Coverage Report — %s\n\n%s\n\n%s\n\n| Métrica | Coberto | Total | %% |\n|---------|---------|-------|----|\n| Linhas | %s | %s | %s%% |\n| Branches | %s | %s | %s%% |\n| Instruções | %s | %s | %s%% |" \
+              "$MARKER" "$BUILD_TYPE" \
+              "$DESCRIPTION" \
+              "$STATUS_LINE" \
+              "$LINE_COVERED" "$LINE_TOTAL" "$LINE_PCT" \
+              "$BRANCH_COVERED" "$BRANCH_TOTAL" "$BRANCH_PCT" \
+              "$INSTR_COVERED" "$INSTR_TOTAL" "$INSTR_PCT")
+          else
+            BODY=$(printf "%s\n## 📊 Coverage Report — %s\n\n%s\n\n**Status:** ⚠️ Dados de cobertura indisponíveis — o build ou a verificação pode ter falhado." \
+              "$MARKER" "$BUILD_TYPE" "$DESCRIPTION")
+          fi
+
+          REPO="${{ github.repository }}"
+          COMMENT_ID=$(gh api "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | head -1)
+          if [ -n "$COMMENT_ID" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$COMMENT_ID" \
+              --field body="$BODY"
+          else
+            gh pr comment "$PR_NUMBER" --body "$BODY"
+          fi
 
       - name: Upload Coverage Report (HTML)
         if: matrix.build_type == 'debug'

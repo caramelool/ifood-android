@@ -46,6 +46,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
 import com.lc.ifood.domain.model.MealSchedule
+import com.lc.ifood.ui.composable.composable
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodSurface
@@ -59,6 +60,22 @@ fun ScheduleAdjustmentScreen(
     viewModel: ScheduleAdjustmentViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    ScheduleAdjustmentContent(
+        uiState = uiState,
+        onUpdateTime = viewModel::updateTime,
+        onSaveAll = { viewModel.saveAll(onBack) },
+        onBack = onBack
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun ScheduleAdjustmentContent(
+    uiState: ScheduleAdjustmentUiState,
+    onUpdateTime: (MealSchedule, Int, Int) -> Unit,
+    onSaveAll: () -> Unit,
+    onBack: () -> Unit
+) {
     var editingSchedule by remember { mutableStateOf<MealSchedule?>(null) }
 
     Scaffold(
@@ -105,7 +122,7 @@ fun ScheduleAdjustmentScreen(
             Spacer(Modifier.height(8.dp))
 
             Button(
-                onClick = { viewModel.saveAll(onBack) },
+                onClick = onSaveAll,
                 enabled = !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = IfoodRed),
@@ -126,7 +143,7 @@ fun ScheduleAdjustmentScreen(
             initialHour = schedule.hour,
             initialMinute = schedule.minute,
             onConfirm = { hour, minute ->
-                viewModel.updateTime(schedule, hour, minute)
+                onUpdateTime(schedule, hour, minute)
                 editingSchedule = null
             },
             onDismiss = { editingSchedule = null }
@@ -154,7 +171,7 @@ private fun ScheduleCard(
         ) {
             Column {
                 Text(
-                    text = schedule.meal.label,
+                    text = schedule.mealType.composable().label,
                     fontSize = 14.sp,
                     color = IfoodTextSecondary
                 )

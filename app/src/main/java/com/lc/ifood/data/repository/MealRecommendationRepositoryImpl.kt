@@ -23,11 +23,11 @@ class MealRecommendationRepositoryImpl @Inject constructor(
         requireNotNull(user) { "User not found" }
         val response = apiService.getRecommendation(
             userName = user.name,
-            mealType = schedule.meal.type.name.lowercase(),
+            mealType = schedule.mealType.name.lowercase(),
             preferences = preferences
         )
         return MealRecommendation(
-            meal = schedule.meal,
+            mealType = schedule.mealType,
             placeName = response.placeName,
             placeAddress = response.placeAddress,
             mealName = response.mealName,

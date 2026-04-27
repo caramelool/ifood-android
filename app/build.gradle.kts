@@ -68,6 +68,12 @@ android {
         compose = true
         buildConfig = true
     }
+
+    testOptions {
+        unitTests.all {
+            it.jvmArgs("-XX:+EnableDynamicAgentLoading")
+        }
+    }
 }
 
 kover {
@@ -75,11 +81,29 @@ kover {
         filters {
             excludes {
                 classes(
-                    "**/di/**",
-                    "**/*_Factory*",
-                    "**/*_HiltModules*",
-                    "**/*ComposableSingletons*",
-                    "**/BuildConfig*"
+                    // DI & Hilt
+                    "*di.*", "*hilt.*", "*Hilt_*", "hilt_aggregated_deps.*",
+                    "*_Factory*", "*_HiltModules*", "*_MembersInjector*",
+                    "*ComposableSingletons*", "*BuildConfig*",
+
+                    // Composable & UI
+                    "*ui.*Screen*", "*.SwipeToDeletePreference*", "*.MealTypeComposable*",
+                    "*ui.theme.*", "*ui.navigation.*",
+
+                    // Android Entrypoints
+                    "*MainActivity*", "*MainApplication*", "*worker.*",
+
+                    // Database
+                    "*data.db.*", "*_Impl*",
+
+                    // Networking
+                    "*data.remote.*"
+                )
+                // Compose
+                annotatedBy(
+                    "androidx.compose.runtime.Composable",
+                    "androidx.compose.runtime.Stable",
+                    "androidx.compose.ui.tooling.preview.Preview"
                 )
             }
         }
@@ -94,7 +118,6 @@ kover {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
-        freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
 }
 
@@ -162,6 +185,7 @@ dependencies {
     testImplementation(libs.androidx.junit)
     testImplementation(libs.androidx.core)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockk)
 
     // Instrumented Tests
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -58,9 +58,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.Meal
 import com.lc.ifood.domain.model.MealSchedule
+import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
+import com.lc.ifood.ui.composable.composable
 import com.lc.ifood.ui.preference.delete.SwipeToDeletePreference
 import com.lc.ifood.ui.preference.delete.rememberDeletePreferenceState
 import com.lc.ifood.ui.theme.IfoodBackground
@@ -86,6 +87,21 @@ fun HomeScreen(
         }
     }
 
+    HomeContent(
+        uiState = uiState,
+        onEditSchedules = onEditSchedules,
+        onAddPreference = onAddPreference,
+        onSaveUserName = viewModel::saveUserName
+    )
+}
+
+@Composable
+internal fun HomeContent(
+    uiState: HomeUiState,
+    onEditSchedules: () -> Unit,
+    onAddPreference: () -> Unit,
+    onSaveUserName: (String) -> Unit
+) {
     Scaffold(
         containerColor = IfoodRed
     ) { innerPadding ->
@@ -100,7 +116,7 @@ fun HomeScreen(
             HomeHeader(
                 userName = uiState.userName,
                 isUserLoaded = uiState.isUserLoaded,
-                onSaveName = viewModel::saveUserName
+                onSaveName = onSaveUserName
             )
             MealSchedulesSection(
                 schedules = uiState.mealSchedules,
@@ -269,7 +285,7 @@ private fun MealScheduleCard(schedule: MealSchedule) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = schedule.meal.label,
+            text = schedule.mealType.composable().label,
             fontSize = 12.sp,
             color = IfoodTextSecondary,
             textAlign = TextAlign.Center
@@ -387,11 +403,11 @@ private fun PreferenceCard(
                     fontWeight = FontWeight.SemiBold,
                     color = IfoodTextPrimary
                 )
-                if (preference.meals.isNotEmpty()) {
+                if (preference.mealTypes.isNotEmpty()) {
                     Spacer(Modifier.height(6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        preference.meals.forEach { meal ->
-                            MealTypeChip(meal)
+                        preference.mealTypes.forEach { type ->
+                            MealTypeChip(type)
                         }
                     }
                 }
@@ -415,13 +431,13 @@ private fun PreferenceCard(
 }
 
 @Composable
-private fun MealTypeChip(meal: Meal) {
+private fun MealTypeChip(mealType: MealType) {
     Surface(
         shape = RoundedCornerShape(50),
         color = IfoodRed.copy(alpha = 0.1f)
     ) {
         Text(
-            text = meal.sortLabel,
+            text = mealType.composable().sortLabel,
             fontSize = 11.sp,
             color = IfoodRed,
             fontWeight = FontWeight.Medium,

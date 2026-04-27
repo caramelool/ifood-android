@@ -6,17 +6,17 @@ import android.app.PendingIntent
 import android.content.Context
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
-import androidx.work.workDataOf
 import com.lc.ifood.MainActivity
 import com.lc.ifood.R
 import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType
-import com.lc.ifood.domain.usecase.CreateMealScheduleUseCase
+import com.lc.ifood.domain.model.labelId
 import com.lc.ifood.domain.usecase.GetMealRecommendationUseCase
 import com.lc.ifood.domain.usecase.GetPreferencesByMealTypeUseCase
 import dagger.assisted.Assisted
@@ -24,11 +24,10 @@ import dagger.assisted.AssistedInject
 
 @HiltWorker
 class MealRecommendationWorker @AssistedInject constructor(
-    @Assisted context: Context,
+    @Assisted private val context: Context,
     @Assisted workerParams: WorkerParameters,
     private val mealRecommendationScheduler: MealRecommendationScheduler,
     private val getPreferencesByMealType: GetPreferencesByMealTypeUseCase,
-    private val createMealSchedule: CreateMealScheduleUseCase,
     private val getMealRecommendation: GetMealRecommendationUseCase,
 ) : CoroutineWorker(context, workerParams) {
 
@@ -43,18 +42,19 @@ class MealRecommendationWorker @AssistedInject constructor(
 
     override suspend fun doWork(): Result {
         val schedule = inputData.toMealSchedule() ?: return Result.failure()
-        val meal = schedule.meal
+        val mealType = schedule.mealType
+        val mealLabel = ContextCompat.getString(context, mealType.labelId)
 
-        val preferences = getPreferencesByMealType(meal.type)
+        val preferences = getPreferencesByMealType(mealType)
 
         val recommendation = runCatching {
             getMealRecommendation(schedule, preferences)
-        }.onFailure { Log.e(TAG, "Recommendation failed for ${meal.type}", it) }.getOrNull()
+        }.onFailure { Log.e(TAG, "Recommendation failed for ${mealType}", it) }.getOrNull()
 
         createNotificationChannel()
 
         if (recommendation != null) {
-            showEnhancedNotification(meal.label, recommendation)
+            showEnhancedNotification(mealLabel, recommendation)
         }
 
         mealRecommendationScheduler.schedule(schedule)
@@ -81,7 +81,7 @@ class MealRecommendationWorker @AssistedInject constructor(
         val tapIntent = MainActivity.intentRecommendation(applicationContext, rec)
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
-            rec.meal.type.hashCode(),
+            rec.mealType.hashCode(),
             tapIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -110,12 +110,6 @@ class MealRecommendationWorker @AssistedInject constructor(
             ?.let { MealType.valueOf(it) } ?: return null
         val hour = getInt(KEY_HOUR, -1).takeIf { it >= 0 } ?: return null
         val minute = getInt(KEY_MINUTE, 0)
-        return createMealSchedule(mealType, hour, minute)
+        return MealSchedule(mealType, hour, minute)
     }
 }
-
-fun MealSchedule.toWorkData() = workDataOf(
-    MealRecommendationWorker.KEY_MEAL_TYPE to meal.type.name,
-    MealRecommendationWorker.KEY_HOUR to hour,
-    MealRecommendationWorker.KEY_MINUTE to minute
-)
