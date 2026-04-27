@@ -1,64 +1,73 @@
 # ifood-android
 
-App Android de agendamento de refeições com preferências alimentares.
+Android meal scheduling app with dietary preference support.
 
 ## Stack
 
-- **Linguagem:** Kotlin
+- **Language:** Kotlin
 - **UI:** Jetpack Compose
-- **Arquitetura:** MVVM + Clean Architecture (domain / data / ui)
+- **Architecture:** MVVM + Clean Architecture (domain / data / ui)
 - **DI:** Hilt
-- **Banco local:** Room
-- **Navegação:** Navigation3 + Compose Navigation
-- **Rede:** Retrofit + OkHttp + Moshi
-- **Background:** WorkManager (`MealReminderWorker`)
+- **Local DB:** Room
+- **Navigation:** Navigation3 + Compose Navigation
+- **Networking:** Retrofit + OkHttp + Moshi
+- **Background:** WorkManager + AlarmManager (`MealRecommendationWorker`, `MealRecommendationScheduler`)
 - **Build:** Gradle KTS, Version Catalog (`gradle/libs.versions.toml`)
 
-## Estrutura de pacotes
+## Package Structure
 
 ```
 app/src/main/java/com/lc/ifood/
 ├── data/
 │   ├── db/
 │   │   ├── AppDatabase.kt
-│   │   ├── dao/          # MealScheduleDao, UserPreferenceDao
-│   │   └── entity/       # MealScheduleEntity, UserPreferenceEntity
-│   ├── remote/           # MealReminderApiService, MealReminderRequest
-│   └── repository/       # Impl: MealReminder, Onboarding, Preference, Schedule
+│   │   ├── dao/          # MealScheduleDao, UserPreferenceDao, UserDao
+│   │   ├── entity/       # MealScheduleEntity, UserPreferenceEntity, UserEntity
+│   │   └── migration/    # MIGRATION_1_2
+│   ├── remote/           # MealReminderApiService, MealRecommendationResponse
+│   └── repository/       # Impl: MealRecommendation, MealSchedule, Onboarding, Preference, User
 ├── di/                   # AppModule, DaoModule, NetworkModule, RepositoryModule
 ├── domain/
-│   ├── model/            # MealSchedule, MealType, UserPreference
-│   ├── repository/       # Interfaces: MealReminder, Onboarding, Preference, Schedule
-│   └── usecase/          # CompleteOnboarding, DeletePreference, GetMealSchedules,
-│                         # GetOnboardingStatus, GetPreferences, SavePreference,
-│                         # UpdateMealSchedule
+│   ├── model/            # Meal, MealRecommendation, MealSchedule, MealType, User, UserPreference
+│   ├── repository/       # Interfaces: MealRecommendation, MealSchedule, Onboarding, Preference, User
+│   └── usecase/          # CompleteOnboarding, DeletePreference, GetMealRecommendation, GetMealSchedules,
+│                         # GetMeals, GetOnboardingStatus, GetPreferences, GetPreferencesByMealType,
+│                         # GetUser, SavePreference, SaveUser, SeedDefaultSchedules, UpdateMealSchedule
 ├── ui/
+│   ├── composable/       # Shared composable components
 │   ├── home/             # HomeScreen, HomeViewModel, HomeUiState
 │   ├── onboarding/       # OnboardingScreen, OnboardingViewModel, OnboardingUiState
-│   ├── preference/       # AddPreferenceScreen, AddPreferenceViewModel, AddPreferenceUiState
+│   ├── preference/
+│   │   ├── add/          # AddPreferenceScreen, AddPreferenceViewModel, AddPreferenceUiState
+│   │   └── delete/       # DeletePreferenceState
 │   ├── schedule/         # ScheduleAdjustmentScreen, ScheduleAdjustmentViewModel, ScheduleAdjustmentUiState
 │   ├── splash/           # SplashScreen, SplashViewModel, SplashUiState
-│   ├── navigation/       # AppRoutes
+│   ├── navigation/       # AppRoutes, MainNavHost
 │   ├── theme/            # Color, Theme, Type, SystemStatusBar
 │   └── MealTypeStrings.kt
-├── worker/               # MealReminderWorker, MealReminderScheduler
+├── worker/               # AlarmReceiver, BootReceiver, MealRecommendationScheduler, MealRecommendationWorker
 ├── MainActivity.kt
 └── MainApplication.kt
 ```
 
-## Banco de dados (Room)
+## Database (Room)
 
-- `MealScheduleEntity` + `MealScheduleDao` — horários de refeições
-- `UserPreferenceEntity` + `UserPreferenceDao` — preferências do usuário
-- `AppDatabase`
+- `MealScheduleEntity` + `MealScheduleDao` — meal time slots
+- `UserPreferenceEntity` + `UserPreferenceDao` — user dietary preferences
+- `UserEntity` + `UserDao` — user profile
+- `AppDatabase` — schema v2 (MIGRATION_1_2 adds the `users` table)
 
 ## Backend
 
-Pasta `backend/` contém um projeto Node.js/TypeScript separado (não faz parte do build Android).
+The `ifood-backend/` folder contains a separate Node.js/TypeScript project (not part of the Android build).
 
-## Convenções
+## Documentation
 
-- ViewModels expõem `StateFlow<UiState>` imutável
-- Use Cases são classes com operador `invoke`
-- Repositórios têm interface em `domain/` e impl em `data/`
-- Sem comentários no código, exceto quando o "porquê" não é óbvio
+- All documentation (README, specs, comments, CLAUDE.md) must be written in English.
+
+## Conventions
+
+- ViewModels expose an immutable `StateFlow<UiState>`
+- Use Cases are classes with an `invoke` operator
+- Repositories have an interface in `domain/` and an implementation in `data/`
+- No comments in code unless the *why* is non-obvious

@@ -33,7 +33,8 @@ class MealRecommendationRepositoryImplTest {
         mealName = "Omelete",
         mealDescription = "Omelete com queijo",
         mealPrice = 18.90,
-        preferences = listOf("Saudável")
+        preferences = listOf("Saudável"),
+        mealImageUrl = "https://cafe-central.com/omelete.jpg"
     )
 
     private fun createRepository() = MealRecommendationRepositoryImpl(apiService, userRepository)
@@ -67,7 +68,8 @@ class MealRecommendationRepositoryImplTest {
                 mealName = "Omelete",
                 mealDescription = "Omelete com queijo",
                 mealPrice = 18.90,
-                preferences = listOf("Saudável")
+                preferences = listOf("Saudável"),
+                mealImageUrl = "https://cafe-central.com/omelete.jpg"
             ),
             result
         )

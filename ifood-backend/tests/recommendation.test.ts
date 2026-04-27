@@ -16,6 +16,7 @@ it('returns 200 with all fields and echoes mealType', async () => {
     mealName: expect.any(String),
     mealDescription: expect.any(String),
     mealPrice: expect.any(Number),
+    mealImageUrl: expect.any(String),
   });
 });
 
@@ -63,7 +64,7 @@ it('returns 404 when no meal matches the given mealType', async () => {
 it('returns 200 for afternoon_snack and echoes mealType', async () => {
   const res = await request(app)
     .get('/recommendation')
-    .query({ mealType: 'afternoon_snack', preferences: ['healthy'] });
+    .query({ userName: 'Carlos', mealType: 'afternoon_snack', preferences: ['healthy'] });
 
   expect(res.status).toBe(200);
   expect(res.body.mealType).toBe('afternoon_snack');
@@ -73,7 +74,7 @@ it('returns 200 for afternoon_snack and echoes mealType', async () => {
 it('returns 404 when mealType does not exist in mocks', async () => {
   const res = await request(app)
     .get('/recommendation')
-    .query({ mealType: 'supper', preferences: ['spicy'] });
+    .query({ userName: 'Maria', mealType: 'supper', preferences: ['spicy'] });
 
   expect(res.status).toBe(404);
   expect(res.body.error).toBeDefined();
@@ -83,7 +84,7 @@ it('returns 404 when mealType does not exist in mocks', async () => {
 it('returns 400 when preferences is missing', async () => {
   const res = await request(app)
     .get('/recommendation')
-    .query({ mealType: 'lunch' });
+    .query({ userName: 'Pedro', mealType: 'lunch' });
 
   expect(res.status).toBe(400);
   expect(res.body.error).toMatch(/preferences/);
@@ -93,7 +94,7 @@ it('returns 400 when preferences is missing', async () => {
 it('returns 400 when preferences is an empty array', async () => {
   const res = await request(app)
     .get('/recommendation')
-    .query({ mealType: 'lunch', preferences: [] });
+    .query({ userName: 'Pedro', mealType: 'lunch', preferences: [] });
 
   expect(res.status).toBe(400);
   expect(res.body.error).toMatch(/preferences/);

@@ -39,6 +39,7 @@ recommendationRouter.get('/', (req: Request, res: Response) => {
     mealName: pick.mealName,
     mealDescription: pick.mealDescription,
     mealPrice: pick.mealPrice,
+    mealImageUrl: pick.mealImageUrl,
     preferences: preferences
   });
 });

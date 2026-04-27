@@ -31,7 +31,8 @@ class GetMealRecommendationUseCaseTest {
         mealName = "Omelete",
         mealDescription = "Delicioso",
         mealPrice = 15.0,
-        preferences = listOf("Saudável", "Vegano")
+        preferences = listOf("Saudável", "Vegano"),
+        mealImageUrl = "https://rua-a.com/omelete.jpg"
     )
 
     @Test
