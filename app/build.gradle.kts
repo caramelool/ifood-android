@@ -82,7 +82,7 @@ kover {
             excludes {
                 classes(
                     // DI & Hilt
-                    "*di.*", "*hilt.*", "hilt_aggregated_deps.*",
+                    "*di.*", "*hilt.*", "*Hilt_*", "hilt_aggregated_deps.*",
                     "*_Factory*", "*_HiltModules*", "*_MembersInjector*",
                     "*ComposableSingletons*", "*BuildConfig*",
 
@@ -91,7 +91,7 @@ kover {
                     "*ui.theme.*", "*ui.navigation.*",
 
                     // Android Entrypoints
-                    "*.MainActivity", "*.MainApplication", "*worker.*",
+                    "*MainActivity*", "*MainApplication*", "*worker.*",
 
                     // Database
                     "*data.db.*", "*_Impl*",
