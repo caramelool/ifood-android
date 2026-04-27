@@ -16,7 +16,7 @@ import kotlinx.parcelize.Parcelize
  * @property mealDescription short description of the dish.
  * @property mealPrice price in BRL.
  * @property preferences dietary tags that influenced this recommendation.
- * @property mealImageUrl illustrated image of the recommended dish.
+ * @property mealImageUrl an illustrative image URL of the recommended dish.
  */
 @Parcelize
 data class MealRecommendation(
