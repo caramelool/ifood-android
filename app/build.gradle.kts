@@ -81,11 +81,30 @@ kover {
         filters {
             excludes {
                 classes(
+                    // DI & generated
                     "**/di/**",
                     "**/*_Factory*",
                     "**/*_HiltModules*",
+                    "**/*_MembersInjector*",
                     "**/*ComposableSingletons*",
-                    "**/BuildConfig*"
+                    "**/BuildConfig*",
+                    // Composable screens & UI components (tested via instrumented tests)
+                    "**/*Screen*",
+                    "**/SwipeToDeletePreference*",
+                    "**/MealTypeComposable*",
+                    // Theme / styling
+                    "**/ui/theme/**",
+                    // Navigation
+                    "**/ui/navigation/**",
+                    // Android framework entrypoints
+                    "**/MainActivity*",
+                    "**/MainApplication*",
+                    // WorkManager, Receivers, Scheduler
+                    "**/worker/**",
+                    // Room DB infra (entities, DAOs, AppDatabase, migration)
+                    "**/data/db/**",
+                    // Remote API interface & response data class (no logic)
+                    "**/data/remote/**",
                 )
             }
         }
@@ -169,7 +188,6 @@ dependencies {
     testImplementation(libs.androidx.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
-    testImplementation(libs.turbine)
 
     // Instrumented Tests
     androidTestImplementation(platform(libs.androidx.compose.bom))

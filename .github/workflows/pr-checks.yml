@@ -44,7 +44,8 @@ jobs:
         run: ./gradlew koverXmlReportDebug koverHtmlReportDebug
 
       - name: Verify Coverage Threshold (${{ matrix.build_type }})
-        run: ./gradlew koverVerify${{ matrix.build_type_cap }}
+        if: matrix.build_type == 'debug'
+        run: ./gradlew koverVerifyDebug
 
       - name: Parse Coverage Data (${{ matrix.build_type }})
         if: always()

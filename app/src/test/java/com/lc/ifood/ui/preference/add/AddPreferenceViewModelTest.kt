@@ -1,6 +1,5 @@
 package com.lc.ifood.ui.preference.add
 
-import app.cash.turbine.test
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealsUseCase
@@ -11,6 +10,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -38,11 +38,8 @@ class AddPreferenceViewModelTest {
     fun `mealOptions are populated from use case`() = runTest {
         every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST, LUNCH))
         val vm = createViewModel()
-        vm.uiState.test {
-            val state = awaitItem()
-            assertEquals(listOf(BREAKFAST, LUNCH), state.mealTypeOptions)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = vm.uiState.first()
+        assertEquals(listOf(BREAKFAST, LUNCH), state.mealTypeOptions)
     }
 
     @Test

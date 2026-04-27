@@ -1,6 +1,5 @@
 package com.lc.ifood.data.repository
 
-import app.cash.turbine.test
 import com.lc.ifood.data.db.dao.MealScheduleDao
 import com.lc.ifood.data.db.entity.MealScheduleEntity
 import com.lc.ifood.domain.model.MealSchedule
@@ -15,6 +14,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -32,29 +32,23 @@ class MealScheduleRepositoryImplTest {
         val entity = MealScheduleEntity(mealType = "BREAKFAST", hour = 8, minute = 0)
         every { dao.getAll() } returns flowOf(listOf(entity))
 
-        createRepository().getMealSchedules().test {
-            assertEquals(listOf(MealSchedule(BREAKFAST, 8, 0)), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertEquals(listOf(MealSchedule(BREAKFAST, 8, 0)), createRepository().getMealSchedules().first())
     }
 
     @Test
     fun `getMealSchedules returns default schedules when dao emits empty list`() = runTest {
         every { dao.getAll() } returns flowOf(emptyList())
 
-        createRepository().getMealSchedules().test {
-            val result = awaitItem()
-            assertEquals(4, result.size)
-            assertEquals(BREAKFAST, result[0].mealType)
-            assertEquals(8, result[0].hour)
-            assertEquals(LUNCH, result[1].mealType)
-            assertEquals(13, result[1].hour)
-            assertEquals(AFTERNOON_SNACK, result[2].mealType)
-            assertEquals(17, result[2].hour)
-            assertEquals(DINNER, result[3].mealType)
-            assertEquals(21, result[3].hour)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val result = createRepository().getMealSchedules().first()
+        assertEquals(4, result.size)
+        assertEquals(BREAKFAST, result[0].mealType)
+        assertEquals(8, result[0].hour)
+        assertEquals(LUNCH, result[1].mealType)
+        assertEquals(13, result[1].hour)
+        assertEquals(AFTERNOON_SNACK, result[2].mealType)
+        assertEquals(17, result[2].hour)
+        assertEquals(DINNER, result[3].mealType)
+        assertEquals(21, result[3].hour)
     }
 
     @Test

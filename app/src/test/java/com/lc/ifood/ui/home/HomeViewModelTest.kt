@@ -1,6 +1,5 @@
 package com.lc.ifood.ui.home
 
-import app.cash.turbine.test
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.User
@@ -18,6 +17,7 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -53,11 +53,8 @@ class HomeViewModelTest {
         every { getUser.invoke() } returns flowOf(null)
 
         val vm = createViewModel()
-        vm.uiState.test {
-            val state = awaitItem()
-            assertEquals(listOf(schedule), state.mealSchedules)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = vm.uiState.first()
+        assertEquals(listOf(schedule), state.mealSchedules)
     }
 
     @Test
@@ -67,11 +64,8 @@ class HomeViewModelTest {
         every { getUser.invoke() } returns flowOf(null)
 
         val vm = createViewModel()
-        vm.uiState.test {
-            val state = awaitItem()
-            assertEquals(listOf(preference), state.preferences)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = vm.uiState.first()
+        assertEquals(listOf(preference), state.preferences)
     }
 
     @Test
@@ -81,12 +75,9 @@ class HomeViewModelTest {
         every { getUser.invoke() } returns flowOf(user)
 
         val vm = createViewModel()
-        vm.uiState.test {
-            val state = awaitItem()
-            assertEquals("Lucas", state.userName)
-            assertTrue(state.isUserLoaded)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = vm.uiState.first()
+        assertEquals("Lucas", state.userName)
+        assertTrue(state.isUserLoaded)
     }
 
     @Test
@@ -96,12 +87,9 @@ class HomeViewModelTest {
         every { getUser.invoke() } returns flowOf(null)
 
         val vm = createViewModel()
-        vm.uiState.test {
-            val state = awaitItem()
-            assertEquals(null, state.userName)
-            assertTrue(state.isUserLoaded)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val state = vm.uiState.first()
+        assertEquals(null, state.userName)
+        assertTrue(state.isUserLoaded)
     }
 
     @Test

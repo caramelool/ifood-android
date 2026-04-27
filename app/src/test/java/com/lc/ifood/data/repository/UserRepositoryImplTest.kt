@@ -1,6 +1,5 @@
 package com.lc.ifood.data.repository
 
-import app.cash.turbine.test
 import com.lc.ifood.data.db.dao.UserDao
 import com.lc.ifood.data.db.entity.UserEntity
 import com.lc.ifood.domain.model.User
@@ -12,6 +11,7 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -28,20 +28,14 @@ class UserRepositoryImplTest {
     fun `getUser maps entity from dao to domain model`() = runTest {
         every { dao.getUser() } returns flowOf(UserEntity(id = 1, name = "Lucas"))
 
-        createRepository().getUser().test {
-            assertEquals(User(1, "Lucas"), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertEquals(User(1, "Lucas"), createRepository().getUser().first())
     }
 
     @Test
     fun `getUser emits null when dao emits null entity`() = runTest {
         every { dao.getUser() } returns flowOf(null)
 
-        createRepository().getUser().test {
-            assertEquals(null, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertEquals(null, createRepository().getUser().first())
     }
 
     @Test
@@ -49,15 +43,8 @@ class UserRepositoryImplTest {
         every { dao.getUser() } returns flowOf(UserEntity(id = 1, name = "Lucas"))
         val repo = createRepository()
 
-        repo.getUser().test {
-            awaitItem()
-            cancelAndIgnoreRemainingEvents()
-        }
-
-        repo.getUser().test {
-            assertEquals(User(1, "Lucas"), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        repo.getUser().first()
+        assertEquals(User(1, "Lucas"), repo.getUser().first())
 
         verify(exactly = 1) { dao.getUser() }
     }
@@ -78,10 +65,7 @@ class UserRepositoryImplTest {
 
         repo.saveUser("Lucas")
 
-        repo.getUser().test {
-            assertEquals(User(0, "Lucas"), awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertEquals(User(0, "Lucas"), repo.getUser().first())
         verify(exactly = 0) { dao.getUser() }
     }
 }

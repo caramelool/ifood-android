@@ -1,12 +1,13 @@
 package com.lc.ifood.ui.splash
 
-import app.cash.turbine.test
 import com.lc.ifood.domain.usecase.GetOnboardingStatusUseCase
 import com.lc.ifood.util.MainDispatcherRule
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -29,21 +30,17 @@ class SplashViewModelTest {
     fun `destination emits Loading then Home when onboarding is completed`() = runTest(testDispatcher) {
         every { getOnboardingStatus.invoke() } returns flowOf(true)
         val vm = createViewModel()
-        vm.destination.test {
-            assertEquals(SplashDestination.Loading, awaitItem())
-            assertEquals(SplashDestination.Home, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        val items = vm.destination.take(2).toList()
+        assertEquals(SplashDestination.Loading, items[0])
+        assertEquals(SplashDestination.Home, items[1])
     }
 
     @Test
     fun `destination emits Loading then Onboarding when onboarding is not completed`() = runTest(testDispatcher) {
         every { getOnboardingStatus.invoke() } returns flowOf(false)
         val vm = createViewModel()
-        vm.destination.test {
-            assertEquals(SplashDestination.Loading, awaitItem())
-            assertEquals(SplashDestination.Onboarding, awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        val items = vm.destination.take(2).toList()
+        assertEquals(SplashDestination.Loading, items[0])
+        assertEquals(SplashDestination.Onboarding, items[1])
     }
 }

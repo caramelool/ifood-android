@@ -5,12 +5,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
-import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
@@ -31,22 +31,14 @@ class OnboardingRepositoryImplTest {
     @Test
     fun `isOnboardingCompleted emits false when key is not set`() = runTest {
         val repo = createRepository()
-
-        repo.isOnboardingCompleted.test {
-            assertFalse(awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertFalse(repo.isOnboardingCompleted.first())
     }
 
     @Test
     fun `isOnboardingCompleted emits true when key is set to true`() = runTest {
         every { dataStore.data } returns flowOf(preferencesOf(onboardingKey to true))
         val repo = OnboardingRepositoryImpl(dataStore)
-
-        repo.isOnboardingCompleted.test {
-            assertTrue(awaitItem())
-            cancelAndIgnoreRemainingEvents()
-        }
+        assertTrue(repo.isOnboardingCompleted.first())
     }
 
     @Test

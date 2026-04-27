@@ -1,6 +1,5 @@
 package com.lc.ifood.ui.schedule
 
-import app.cash.turbine.test
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.LUNCH
@@ -12,6 +11,7 @@ import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -42,11 +42,8 @@ class ScheduleAdjustmentViewModelTest {
     fun `uiState schedules are populated from use case`() = runTest {
         every { getMealSchedules.invoke() } returns flowOf(listOf(scheduleBreakfast, scheduleLunch))
         val vm = createViewModel()
-        vm.uiState.test {
-            val initial = awaitItem()
-            assertEquals(listOf(scheduleBreakfast, scheduleLunch), initial.schedules)
-            cancelAndIgnoreRemainingEvents()
-        }
+        val initial = vm.uiState.first()
+        assertEquals(listOf(scheduleBreakfast, scheduleLunch), initial.schedules)
     }
 
     @Test
