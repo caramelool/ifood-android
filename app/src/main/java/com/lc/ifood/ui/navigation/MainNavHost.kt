@@ -3,17 +3,21 @@ package com.lc.ifood.ui.navigation
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.ui.home.HomeScreen
+import com.lc.ifood.ui.home.HomeViewModel
 import com.lc.ifood.ui.onboarding.OnboardingScreen
 import com.lc.ifood.ui.preference.add.AddPreferenceScreen
 import com.lc.ifood.ui.schedule.ScheduleAdjustmentScreen
 import com.lc.ifood.ui.splash.SplashScreen
 
 @Composable
-fun MainNavHost() {
+fun MainNavHost(pendingRecommendation: MealRecommendation? = null) {
     val navController = rememberNavController()
 
     NavHost(
@@ -50,9 +54,14 @@ fun MainNavHost() {
         }
 
         composable<HomeRoute> {
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            LaunchedEffect(pendingRecommendation) {
+                pendingRecommendation?.let { homeViewModel.showRecommendation(it) }
+            }
             HomeScreen(
                 onEditSchedules = { navController.navigate(ScheduleAdjustmentRoute) },
-                onAddPreference = { navController.navigate(AddPreferenceRoute) }
+                onAddPreference = { navController.navigate(AddPreferenceRoute) },
+                viewModel = homeViewModel
             )
         }
 

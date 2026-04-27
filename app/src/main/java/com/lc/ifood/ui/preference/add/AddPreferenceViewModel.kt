@@ -44,7 +44,10 @@ class AddPreferenceViewModel @Inject constructor(
 
     fun save(onDone: () -> Unit) {
         val state = _uiState.value
-        if (!state.canSave) return
+        if (!state.canSave) {
+            _uiState.update { it.copy(showErrors = true) }
+            return
+        }
         viewModelScope.launch {
             _uiState.value = state.copy(isSaving = true)
             savePreference(

@@ -7,10 +7,10 @@ import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.UpdateMealScheduleUseCase
 import com.lc.ifood.util.MainDispatcherRule
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

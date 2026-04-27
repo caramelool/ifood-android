@@ -6,8 +6,8 @@ import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.repository.MealScheduleRepository
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

@@ -54,7 +54,7 @@ class AddPreferenceScreenTest {
     }
 
     @Test
-    fun saveButton_isDisabled_whenCanSaveIsFalse() {
+    fun saveButton_isEnabled_whenFormIsInvalid() {
         setContent(
             uiState = AddPreferenceUiState(
                 label = "",
@@ -64,7 +64,35 @@ class AddPreferenceScreenTest {
         )
         composeRule
             .onNodeWithText(composeRule.activity.getString(R.string.common_save))
-            .assertIsNotEnabled()
+            .assertIsEnabled()
+    }
+
+    @Test
+    fun labelError_isDisplayed_whenShowErrorsAndLabelIsBlank() {
+        setContent(
+            uiState = AddPreferenceUiState(
+                label = "",
+                showErrors = true
+            )
+        )
+        composeRule
+            .onNodeWithText(composeRule.activity.getString(R.string.add_preference_label_error))
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun mealTypesError_isDisplayed_whenShowErrorsAndNoMealSelected() {
+        setContent(
+            uiState = AddPreferenceUiState(
+                label = "Saudável",
+                mealTypeOptions = listOf(BREAKFAST),
+                selectedMealTypes = emptySet(),
+                showErrors = true
+            )
+        )
+        composeRule
+            .onNodeWithText(composeRule.activity.getString(R.string.add_preference_meal_types_error))
+            .assertIsDisplayed()
     }
 
     @Test

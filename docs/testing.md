@@ -7,12 +7,12 @@ The project has two test suites: **unit tests** (JVM-only, no Android runtime) a
 ## Test Distribution
 
 ```mermaid
-pie title Test files by layer (32 total)
+pie title Test files by layer (36 total)
     "UseCase (unit)" : 13
     "Repository (unit)" : 5
     "ViewModel (unit)" : 6
     "DAO (instrumented)" : 3
-    "UI Screen (instrumented)" : 4
+    "UI Screen (instrumented)" : 8
     "Utility" : 1
 ```
 
@@ -69,6 +69,7 @@ Tests verify **StateFlow emissions** and use-case delegation:
 |-----------|---------------|
 | `HomeViewModelTest` | `combine` of three flows emits correct `HomeUiState`; `seedDefaultSchedules` called on init |
 | `AddPreferenceViewModelTest` | `canSave` gate prevents save when label blank or no meal selected; trimmed label sent to use case |
+| `DeletePreferenceViewModelTest` | `delete` delegates to use case with the correct preference ID |
 | `ScheduleAdjustmentViewModelTest` | `updateTime` modifies only the targeted schedule; `saveAll` iterates all items |
 | `SplashViewModelTest` | `Loading → Home` and `Loading → Onboarding` transitions from flow |
 | `OnboardingViewModelTest` | FAB visibility delay; last-page completion flag |
@@ -131,6 +132,10 @@ rule.onNodeWithText("Breakfast").assertIsDisplayed()
 | Test Class | Key scenarios |
 |-----------|---------------|
 | `HomeScreenTest` | Schedule labels visible; edit/add button callbacks fire |
+| `HomeHeaderTest` | Welcome text visible; user name displayed; name dialog shown when user loaded with null name; dialog confirms with trimmed name; blank name does not trigger callback |
+| `MealSchedulesSectionTest` | Section title visible; meal labels and formatted times displayed; edit button fires callback |
+| `PreferencesSectionTest` | Section title and preference labels visible; add button fires callback; empty state message shown when no preferences |
+| `MealRecommendationBottomSheetTest` | Meal name, description, place name, address, price displayed; meal type badge shown; preference tags visible or hidden based on list; buy button fires dismiss callback |
 | `ScheduleAdjustmentScreenTest` | Save button enabled/disabled based on `isSaving`; time picker opens on edit icon |
 | `OnboardingScreenTest` | Page content; FAB text changes on last page; FAB hidden when `isFabVisible = false` |
 | `AddPreferenceScreenTest` | Save button disabled when `canSave = false`; label field propagates changes |
