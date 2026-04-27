@@ -4,25 +4,40 @@ import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.repository.MealScheduleRepository
 import com.lc.ifood.worker.MealRecommendationScheduler
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.runs
+import io.mockk.unmockkAll
 import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UpdateMealScheduleUseCaseTest {
 
-    private val repository: MealScheduleRepository = mockk()
-    private val scheduler: MealRecommendationScheduler = mockk()
-    private val useCase = UpdateMealScheduleUseCase(repository, scheduler)
+    @MockK private lateinit var repository: MealScheduleRepository
+    @MockK private lateinit var scheduler: MealRecommendationScheduler
+    private lateinit var useCase: UpdateMealScheduleUseCase
 
     private val schedule = MealSchedule(BREAKFAST, 9, 30)
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        useCase = UpdateMealScheduleUseCase(repository, scheduler)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `invoke updates schedule in repository`() = runTest {

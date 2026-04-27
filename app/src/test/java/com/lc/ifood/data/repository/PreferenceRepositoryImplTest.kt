@@ -5,23 +5,37 @@ import com.lc.ifood.data.db.entity.UserPreferenceEntity
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.model.UserPreference
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.just
-import io.mockk.mockk
 import io.mockk.runs
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PreferenceRepositoryImplTest {
 
-    private val dao: UserPreferenceDao = mockk()
+    @MockK private lateinit var dao: UserPreferenceDao
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     private fun createRepository() = PreferenceRepositoryImpl(dao)
 

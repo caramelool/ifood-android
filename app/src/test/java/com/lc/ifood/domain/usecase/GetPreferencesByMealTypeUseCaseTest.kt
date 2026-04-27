@@ -3,18 +3,33 @@ package com.lc.ifood.domain.usecase
 import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.domain.repository.PreferenceRepository
+import io.mockk.MockKAnnotations
+import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
-import io.mockk.mockk
+import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetPreferencesByMealTypeUseCaseTest {
 
-    private val repository: PreferenceRepository = mockk()
-    private val useCase = GetPreferencesByMealTypeUseCase(repository)
+    @MockK private lateinit var repository: PreferenceRepository
+    private lateinit var useCase: GetPreferencesByMealTypeUseCase
+
+    @Before
+    fun setUp() {
+        MockKAnnotations.init(this)
+        useCase = GetPreferencesByMealTypeUseCase(repository)
+    }
+
+    @After
+    fun tearDown() {
+        unmockkAll()
+    }
 
     @Test
     fun `invoke returns preferences filtered by meal type`() = runTest {
