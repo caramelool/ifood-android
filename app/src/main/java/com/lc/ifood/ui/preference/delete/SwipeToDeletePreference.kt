@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.lc.ifood.R
 import com.lc.ifood.domain.model.UserPreference
 import com.lc.ifood.ui.theme.IfoodRed
@@ -38,7 +37,7 @@ import kotlinx.coroutines.launch
 fun SwipeToDeletePreference(
     preference: UserPreference,
     state: DeletePreferenceState,
-    viewModel: DeletePreferenceViewModel = hiltViewModel(),
+    onDeleteConfirmed: (Int) -> Unit,
     content: @Composable () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -70,7 +69,7 @@ fun SwipeToDeletePreference(
         DeleteConfirmationDialog(
             preferenceName = preference.label,
             onConfirm = {
-                state.confirmDelete()?.let { viewModel.delete(it.id) }
+                state.confirmDelete()?.let { onDeleteConfirmed(it.id) }
             },
             onDismiss = {
                 state.dismiss()
