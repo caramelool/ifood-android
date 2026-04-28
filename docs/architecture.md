@@ -148,6 +148,7 @@ Screen ──collect──▶ StateFlow<UiState>  ◀──emit── ViewModel
 | `NetworkModule` | `SingletonComponent` | `Moshi`, `OkHttpClient`, `Retrofit`, `MealReminderApiService` |
 | `DaoModule` | `SingletonComponent` | `MealScheduleDao`, `UserPreferenceDao`, `UserDao` |
 | `RepositoryModule` | `SingletonComponent` | All repository bindings (interface → impl) |
+| `PermissionModule` | `SingletonComponent` | `NotificationPermissionChecker` binding |
 
 ViewModels are injected via `@HiltViewModel`. The `MealRecommendationWorker` uses `@HiltWorker` + `@AssistedInject` and requires the custom `HiltWorkerFactory` configured in `MainApplication`.
 
@@ -155,4 +156,4 @@ ViewModels are injected via `@HiltViewModel`. The `MealRecommendationWorker` use
 
 ## Navigation
 
-Navigation is handled by **Jetpack Navigation Compose** (`navigation-compose 2.9.x`). Routes are defined as sealed objects/data objects in `AppRoutes`. The `SplashViewModel` determines the initial destination (`Loading → Home | Onboarding`) by reading the DataStore-backed onboarding flag.
+Navigation is handled by **Jetpack Navigation Compose** (`navigation-compose 2.9.8`). Routes are type-safe `@Serializable` data objects defined in `AppRoutes`. The `SplashViewModel` determines the initial destination (`Loading → Home | Onboarding | PermissionDenied`) by combining the DataStore-backed onboarding flag with a runtime `POST_NOTIFICATIONS` permission check via `NotificationPermissionChecker`.

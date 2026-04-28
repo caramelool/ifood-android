@@ -1,25 +1,30 @@
-<img width="192" height="192" alt="ic_launcher" src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" />
+<div align="center">
+  <img width="120" height="120" alt="ic_launcher" src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" />
+  <h1>iFood Android</h1>
+  <p>Meal scheduling app with AI-powered restaurant recommendations</p>
 
-# iFood Android — Meal Scheduling App
-
-A native Android application built for the **iFood Selection Process**. The app lets users schedule daily meal times, define dietary preferences, and receive AI-powered restaurant recommendations 30 minutes before each meal via push notifications.
+  ![Kotlin](https://img.shields.io/badge/Kotlin-2.3.21-7F52FF?logo=kotlin&logoColor=white)
+  ![Android](https://img.shields.io/badge/API-29%2B-green?logo=android&logoColor=white)
+  ![License](https://img.shields.io/badge/License-All%20rights%20reserved-red)
+  ![CI](https://img.shields.io/github/actions/workflow/status/caramelool/ifood-android/pr-checks.yml?label=CI&logo=github)
+</div>
 
 ---
 
 ## Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
-| Language | Kotlin 2.3 |
+|-------|------------|
+| Language | Kotlin 2.3.21 |
 | UI | Jetpack Compose + Material 3 |
 | Architecture | MVVM + Clean Architecture |
 | DI | Hilt 2.59.2 |
 | Local DB | Room 2.8.4 |
-| Preferences | DataStore |
-| Networking | Retrofit 3 + OkHttp 5 + Moshi |
-| Background | WorkManager + AlarmManager |
+| Preferences | DataStore 1.2.1 |
+| Networking | Retrofit 3.0.0 + OkHttp 5.3.2 + Moshi 1.15.2 |
+| Background | WorkManager 2.11.2 + AlarmManager |
 | Navigation | Navigation Compose 2.9.8 |
-| Testing | JUnit 4 · MockK · Kover · Espresso · Compose Test |
+| Testing | JUnit 4.13.2 · MockK 1.14.9 · Kover 0.9.8 · Espresso · Compose Test |
 | CI | GitHub Actions |
 
 ---
@@ -27,7 +32,7 @@ A native Android application built for the **iFood Selection Process**. The app 
 ## Quick Start
 
 ```bash
-git clone https://github.com/<your-org>/ifood-android.git
+git clone https://github.com/caramelool/ifood-android.git
 cd ifood-android
 
 # Build & install debug
@@ -41,46 +46,29 @@ cd ifood-android
 # → app/build/reports/kover/htmlDebug/index.html
 ```
 
-> **Backend:** The recommendation API lives in the `ifood-backend/` folder (Node.js/TypeScript). Start it separately and configure `BASE_URL` in `local.properties` before running the app.
+> **Backend:** The recommendation API lives in the `ifood-backend/` folder (Node.js/TypeScript) and is already deployed on Vercel — the app points to it automatically via a `BuildConfig` field baked into the build. To run the backend locally, start it separately and override `BASE_URL` in `local.properties`.
 
 ---
 
 ## How It Works
 
-```mermaid
-flowchart TD
-    A([First Launch]) --> B[Onboarding\nRegister name + select preferences]
-    B --> C[Schedule Screen\nSet times per meal type]
-    C --> D[AlarmManager\nregisters exact T-30 alarms]
-    D --> E{Alarm fires\n30 min before meal}
-    E --> F[MealRecommendationWorker]
-    F --> G[Fetch active preferences\nfrom Room DB]
-    G --> H[GET /recommendation\nifood-backend API]
-    H --> I[Rich Notification\nrestaurant · dish · price]
-    I --> J([User taps → App\nfull recommendation detail])
-    K([Device reboot]) --> L[BootReceiver\nreschedules all alarms]
-    L --> D
-```
+Alarms fire **30 minutes before** each scheduled meal. A `WorkManager` job fetches an AI restaurant recommendation from the backend and posts a rich notification. Tapping it opens the full detail view inside the app.
 
-1. **Onboarding:** on first launch the user registers their name and selects dietary preferences.
-2. **Schedule:** the user sets a time for each meal slot (Breakfast, Lunch, Afternoon Snack, Dinner).
-3. **Alarms:** `MealRecommendationScheduler` registers an exact `AlarmManager` alarm 30 minutes before each scheduled meal.
-4. **Boot resilience:** `BootReceiver` listens for `BOOT_COMPLETED` and reschedules all alarms after a device restart.
-5. **Worker:** when an alarm fires, `MealRecommendationWorker` reads the user's active preferences from Room and calls `GET /recommendation` on the backend, passing the meal type and preference labels.
-6. **Notification:** a rich notification is posted showing the restaurant name, dish, and price.
-7. **Detail view:** tapping the notification opens `MainActivity` with the full recommendation (dish description, address, image).
+→ Full user journey and feature list: [docs/overview.md](docs/overview.md)  
+→ Architecture diagrams and notification pipeline: [docs/architecture.md](docs/architecture.md)
 
 ---
 
 ## Documentation
 
 | Document | Contents |
-|----------|---------|
+|----------|----------|
 | [Overview](docs/overview.md) | App purpose, user journey, and full feature list |
 | [Architecture](docs/architecture.md) | Clean Architecture layers, MVVM, DI modules, notification pipeline, Room schema |
 | [Dependencies](docs/dependencies.md) | All libraries with versions and rationale |
 | [Testing](docs/testing.md) | Test strategy, coverage breakdown, and tooling |
 | [CI](docs/ci.md) | GitHub Actions pipelines: PR checks and signed release publishing |
+| [Roadmap](docs/roadmap.md) | Roadmap — Future Improvements & Technical Debt |
 
 ---
 
@@ -88,11 +76,27 @@ flowchart TD
 
 ```
 app/src/main/java/com/lc/ifood/
-├── data/          # Room DAOs, entities, Retrofit service, repository implementations
-├── di/            # Hilt modules (App, Network, Dao, Repository)
-├── domain/        # Models, repository interfaces, use cases
-├── ui/            # Composable screens, ViewModels, UiState classes
-├── worker/        # AlarmReceiver, BootReceiver, MealRecommendationWorker, Scheduler
+├── data/
+│   ├── db/             # AppDatabase, DAOs, entities, migrations
+│   ├── permission/
+│   ├── remote/
+│   └── repository/
+├── di/
+├── domain/
+│   ├── model/
+│   ├── permission/
+│   ├── repository/
+│   └── usecase/        # 13 use cases
+├── ui/
+│   ├── composable/
+│   ├── home/
+│   ├── onboarding/
+│   ├── preference/
+│   ├── schedule/
+│   ├── splash/
+│   ├── navigation/
+│   └── theme/
+├── worker/             # AlarmReceiver, BootReceiver, MealRecommendationScheduler, MealRecommendationWorker
 ├── MainActivity.kt
 └── MainApplication.kt
 ```

@@ -9,7 +9,7 @@ Android meal scheduling app with dietary preference support.
 - **Architecture:** MVVM + Clean Architecture (domain / data / ui)
 - **DI:** Hilt
 - **Local DB:** Room
-- **Navigation:** Navigation3 + Compose Navigation
+- **Navigation:** Jetpack Navigation Compose (type-safe routes via `@Serializable` data objects)
 - **Networking:** Retrofit + OkHttp + Moshi
 - **Background:** WorkManager + AlarmManager (`MealRecommendationWorker`, `MealRecommendationScheduler`)
 - **Build:** Gradle KTS, Version Catalog (`gradle/libs.versions.toml`)
@@ -24,26 +24,33 @@ app/src/main/java/com/lc/ifood/
 │   │   ├── dao/          # MealScheduleDao, UserPreferenceDao, UserDao
 │   │   ├── entity/       # MealScheduleEntity, UserPreferenceEntity, UserEntity
 │   │   └── migration/    # MIGRATION_1_2
+│   ├── permission/       # NotificationPermissionCheckerImpl
 │   ├── remote/           # MealReminderApiService, MealRecommendationResponse
 │   └── repository/       # Impl: MealRecommendation, MealSchedule, Onboarding, Preference, User
-├── di/                   # AppModule, DaoModule, NetworkModule, RepositoryModule
+├── di/                   # AppModule, DaoModule, NetworkModule, PermissionModule, RepositoryModule
 ├── domain/
 │   ├── model/            # Meal, MealRecommendation, MealSchedule, MealType, User, UserPreference
+│   ├── permission/       # NotificationPermissionChecker (interface)
 │   ├── repository/       # Interfaces: MealRecommendation, MealSchedule, Onboarding, Preference, User
 │   └── usecase/          # CompleteOnboarding, DeletePreference, GetMealRecommendation, GetMealSchedules,
 │                         # GetMeals, GetOnboardingStatus, GetPreferences, GetPreferencesByMealType,
 │                         # GetUser, SavePreference, SaveUser, SeedDefaultSchedules, UpdateMealSchedule
 ├── ui/
 │   ├── composable/       # Shared composable components
-│   ├── home/             # HomeScreen, HomeViewModel, HomeUiState
+│   ├── home/
+│   │   ├── components/   # HomeHeader, MealSchedulesSection, PreferencesSection, MealRecommendationBottomSheet
+│   │   ├── HomeScreen.kt
+│   │   ├── HomeViewModel.kt
+│   │   └── HomeUiState.kt
 │   ├── onboarding/       # OnboardingScreen, OnboardingViewModel, OnboardingUiState
 │   ├── preference/
 │   │   ├── add/          # AddPreferenceScreen, AddPreferenceViewModel, AddPreferenceUiState
-│   │   └── delete/       # DeletePreferenceState
+│   │   └── delete/       # DeletePreferenceViewModel, DeletePreferenceState, SwipeToDeletePreference
 │   ├── schedule/         # ScheduleAdjustmentScreen, ScheduleAdjustmentViewModel, ScheduleAdjustmentUiState
 │   ├── splash/           # SplashScreen, SplashViewModel, SplashUiState
 │   ├── navigation/       # AppRoutes, MainNavHost
-│   └── theme/            # Color, Theme, Type, SystemStatusBar
+│   ├── theme/            # Color, Theme, Type, SystemStatusBar
+│   └── PermissionDeniedDialog.kt
 ├── worker/               # AlarmReceiver, BootReceiver, MealRecommendationScheduler, MealRecommendationWorker
 ├── MainActivity.kt
 └── MainApplication.kt
