@@ -29,7 +29,7 @@
     <string name="onboarding_btn_start">Começar</string>
 
     <!-- Home -->
-    <string name="home_welcome">Bem vindo,</string>
+    <string name="home_welcome">Bem-vindo,</string>
     <string name="home_username_dialog_title">Queremos te conhecer</string>
     <string name="home_username_dialog_message">Qual é o seu nome?</string>
     <string name="home_username_dialog_hint">Seu nome</string>
