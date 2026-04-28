@@ -155,6 +155,7 @@
     }
     .badge-high   { background: rgba(255,255,255,0.25); color: #fff; }
     .badge-medium { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
+    .badge-low    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
 
     #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--ifood-red); z-index: 100; transition: width 0.3s ease; width: 0%; }
     #slide-counter { position: fixed; top: 20px; right: 24px; font-size: 0.75rem; font-weight: 600; color: var(--gray); z-index: 100; letter-spacing: 0.05em; }
@@ -173,6 +174,33 @@
     #nav.on-red #nav-label { color: rgba(255,255,255,0.7); }
 
     .accent { color: var(--ifood-red); }
+
+    .phone-frame {
+      background: #1A1A1A;
+      border-radius: 36px;
+      padding: 10px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .phone-notch {
+      background: #000;
+      width: 60px;
+      height: 6px;
+      border-radius: 6px;
+      margin: 0 auto 4px;
+    }
+    .phone-screen {
+      border-radius: 22px;
+      overflow: hidden;
+      line-height: 0;
+    }
+    .phone-screen img {
+      width: 100%;
+      display: block;
+      transform: translateZ(0);
+      image-rendering: auto;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
 
     .slide-icon {
       position: absolute;
@@ -201,16 +229,28 @@
 <!-- SLIDE 1: Capa -->
 <section class="slide slide-red active" data-slide="1">
   <div class="slide-inner">
-    <div class="eyebrow reveal">LUCAS CARAMELO · ABRIL 2026</div>
-    <h1 class="reveal delay-1">ifood-android</h1>
-    <p class="subtitle reveal delay-2">App Android de agendamento de refeições com recomendações personalizadas por IA — construído do zero com Kotlin e Jetpack Compose.</p>
-    <div style="display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;" class="reveal delay-3">
-      <span class="tag tag-white">Kotlin</span>
-      <span class="tag tag-white">Jetpack Compose</span>
-      <span class="tag tag-white">Clean Architecture</span>
-      <span class="tag tag-white">MVVM</span>
-      <span class="tag tag-white">Hilt</span>
-      <span class="tag tag-white">Room</span>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:center;">
+      <div>
+        <div class="eyebrow reveal">LUCAS CARAMELO · ABRIL 2026</div>
+        <h1 class="reveal delay-1">ifood-android</h1>
+        <p class="subtitle reveal delay-2">App Android de agendamento de refeições com recomendações personalizadas por IA — construído do zero com Kotlin e Jetpack Compose.</p>
+        <div style="display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;" class="reveal delay-3">
+          <span class="tag tag-white">Kotlin</span>
+          <span class="tag tag-white">Jetpack Compose</span>
+          <span class="tag tag-white">Clean Architecture</span>
+          <span class="tag tag-white">MVVM</span>
+          <span class="tag tag-white">Hilt</span>
+          <span class="tag tag-white">Room</span>
+        </div>
+      </div>
+      <div class="reveal delay-2" style="display:flex;justify-content:center;align-items:center;">
+        <div style="width:280px;">
+          <div style="background:#1A1A1A;border-radius:36px;padding:10px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 4px 16px rgba(0,0,0,0.12);">
+            <div class="phone-notch"></div>
+            <div class="phone-screen"><img src="screenshots/1-onboard.png" alt="Tela de onboarding"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -365,23 +405,35 @@
 <section class="slide slide-white" data-slide="6">
   <div class="slide-inner">
     <div class="eyebrow reveal">FEATURES · AGENDAMENTO & PREFERÊNCIAS</div>
-    <h2 class="reveal delay-1">Controle total<br>sobre as refeições</h2>
-    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">Quatro slots fixos com horários padrão inteligentes. Alarmes reagendados a cada alteração. Preferências por tipo de refeição com persistência imediata.</p>
-    <div class="grid-2 reveal delay-3">
-      <div class="card-white card-top-red">
-        <div style="font-size:1.4rem;margin-bottom:12px;">🗓️</div>
-        <h3>Agendamento de Refeições</h3>
-        <p style="margin-top:8px;">Quatro slots fixos: <strong>Café 08h · Almoço 13h · Lanche 17h · Jantar 21h</strong>. Defaults semeados por <code>SeedDefaultSchedules</code> na primeira execução. <code>UpdateMealSchedule</code> persiste e reagenda o alarme imediatamente.</p>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:center;">
+      <div>
+        <h2 class="reveal delay-1">Controle total<br>sobre as refeições</h2>
+        <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">Quatro slots fixos com horários padrão inteligentes. Alarmes reagendados a cada alteração. Preferências por tipo de refeição com persistência imediata.</p>
+        <div class="grid-2 reveal delay-3">
+          <div class="card-white card-top-red">
+            <div style="font-size:1.4rem;margin-bottom:12px;">🗓️</div>
+            <h3>Agendamento de Refeições</h3>
+            <p style="margin-top:8px;">Quatro slots fixos: <strong>Café 08h · Almoço 13h · Lanche 17h · Jantar 21h</strong>. Defaults semeados por <code>SeedDefaultSchedules</code> na primeira execução. <code>UpdateMealSchedule</code> persiste e reagenda o alarme imediatamente.</p>
+          </div>
+          <div class="card-white card-top-orange">
+            <div style="font-size:1.4rem;margin-bottom:12px;">🥗</div>
+            <h3>Preferências Dietéticas</h3>
+            <p style="margin-top:8px;">Tags de preferência associadas a um ou mais <code>MealType</code>. Armazenadas como CSV no Room (<code>mealTypes</code>). Filtradas por tipo com <code>GetPreferencesByMealType</code>. Swipe-to-delete com confirmação visual.</p>
+          </div>
+          <div class="card-white card-top-green" style="grid-column: 1 / -1;">
+            <div style="font-size:1.4rem;margin-bottom:12px;">🔔</div>
+            <h3>Ciclo Diário de Alarmes</h3>
+            <p style="margin-top:8px;">Após o disparo e envio da notificação, o alarme é automaticamente reagendado para o dia seguinte. <code>BootReceiver</code> escuta <code>BOOT_COMPLETED</code> e restaura todos os alarmes após reinicialização do dispositivo — sem intervenção do usuário.</p>
+          </div>
+        </div>
       </div>
-      <div class="card-white card-top-orange">
-        <div style="font-size:1.4rem;margin-bottom:12px;">🥗</div>
-        <h3>Preferências Dietéticas</h3>
-        <p style="margin-top:8px;">Tags de preferência associadas a um ou mais <code>MealType</code>. Armazenadas como CSV no Room (<code>mealTypes</code>). Filtradas por tipo com <code>GetPreferencesByMealType</code>. Swipe-to-delete com confirmação visual.</p>
-      </div>
-      <div class="card-white card-top-green" style="grid-column: 1 / -1;">
-        <div style="font-size:1.4rem;margin-bottom:12px;">🔔</div>
-        <h3>Ciclo Diário de Alarmes</h3>
-        <p style="margin-top:8px;">Após o disparo e envio da notificação, o alarme é automaticamente reagendado para o dia seguinte. <code>BootReceiver</code> escuta <code>BOOT_COMPLETED</code> e restaura todos os alarmes após reinicialização do dispositivo — sem intervenção do usuário.</p>
+      <div class="reveal delay-2" style="display:flex;justify-content:center;align-items:center;">
+        <div style="position:relative;width:280px;">
+          <div style="background:#1A1A1A;border-radius:36px;padding:10px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 4px 16px rgba(0,0,0,0.12);">
+            <div class="phone-notch"></div>
+            <div class="phone-screen"><img src="screenshots/5-home.png" alt="Home screen com horários e preferências"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -392,8 +444,9 @@
   <div class="slide-inner">
     <div class="eyebrow reveal">FEATURES · PIPELINE DE NOTIFICAÇÕES</div>
     <h2 class="reveal delay-1">Notificações proativas<br>30 minutos antes</h2>
-    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:8px;">AlarmManager garante pontualidade. WorkManager garante robustez. A separação é intencional — alarmes são precisos, Workers são resilientes a reinicializações e restrições de bateria.</p>
-    <div class="pipeline reveal delay-3">
+    <p class="reveal delay-2" style="margin-top:10px;margin-bottom:16px;">AlarmManager garante pontualidade. WorkManager garante robustez. Alarmes são precisos; Workers são resilientes a reinicializações e restrições de bateria.</p>
+
+    <div class="pipeline reveal delay-3" style="justify-content:center;">
       <div class="pipe-step"><span>📱</span>App Start</div>
       <div class="pipe-arrow">→</div>
       <div class="pipe-step"><span>⏰</span>Alarm<br>Manager</div>
@@ -408,7 +461,17 @@
       <div class="pipe-arrow">→</div>
       <div class="pipe-step" style="border-top:3px solid var(--ifood-red);"><span>🔄</span>Re<br>schedule</div>
     </div>
-    <div class="grid-2 reveal delay-4" style="margin-top:24px;">
+
+    <div class="reveal delay-4" style="display:flex;justify-content:center;margin-top:16px;">
+      <div style="width:320px;">
+        <div style="background:#1A1A1A;border-radius:36px;padding:10px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 4px 16px rgba(0,0,0,0.12);">
+          <div class="phone-notch"></div>
+          <div class="phone-screen"><img src="screenshots/6-notification.jpeg" alt="Notificação de refeição"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2 reveal delay-5" style="margin-top:16px;">
       <div class="card-white">
         <h3>Por que AlarmManager?</h3>
         <p style="margin-top:6px;">Precisão de disparo no horário exato, mesmo com o app em background. <code>setExactAndAllowWhileIdle</code> para contornar Doze Mode.</p>
@@ -425,43 +488,32 @@
 <section class="slide slide-white" data-slide="8">
   <div class="slide-inner">
     <div class="eyebrow reveal">FEATURES · RECOMENDAÇÕES POR IA</div>
-    <h2 class="reveal delay-1">Recomendação personalizada<br>para cada refeição</h2>
-    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">O backend Node.js/TypeScript recebe o contexto do usuário e retorna uma sugestão completa de restaurante. A recomendação é exibida num BottomSheet interativo na HomeScreen.</p>
-    <div class="reveal delay-3">
-      <div class="code-block">
-        <div class="code-dots">
-          <div class="code-dot" style="background:#ff5f57"></div>
-          <div class="code-dot" style="background:#febc2e"></div>
-          <div class="code-dot" style="background:#28c840"></div>
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:40px;align-items:center;">
+      <div>
+        <h2 class="reveal delay-1">Recomendação personalizada<br>para cada refeição</h2>
+        <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">O backend Node.js/TypeScript recebe o contexto do usuário e retorna uma sugestão completa de restaurante. A recomendação é exibida num BottomSheet interativo na HomeScreen.</p>
+        <div class="grid-3 reveal delay-3" style="margin-top:20px;">
+          <div class="card-white card-top-red">
+            <h3>Contexto Rico</h3>
+            <p style="margin-top:6px;">Nome do usuário + tipo de refeição + lista de preferências dietéticas ativas para aquele horário.</p>
+          </div>
+          <div class="card-white card-top-orange">
+            <h3>Backend Separado</h3>
+            <p style="margin-top:6px;"><code>ifood-backend/</code> é um projeto Node.js/TypeScript independente, não incluído no build Android.</p>
+          </div>
+          <div class="card-white card-top-green">
+            <h3>UI não bloqueante</h3>
+            <p style="margin-top:6px;">BottomSheet com estado de loading/success/error. ViewModel expõe via StateFlow; coroutine no IO dispatcher.</p>
+          </div>
         </div>
-        <div class="code-body"><span class="cm">// Request → Backend API</span>
-<span class="kw">data class</span> <span class="ty">MealRecommendationRequest</span>(
-    <span class="kw">val</span> userName: <span class="ty">String</span>,
-    <span class="kw">val</span> mealType: <span class="ty">String</span>,       <span class="cm">// "LUNCH"</span>
-    <span class="kw">val</span> preferences: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;  <span class="cm">// ["vegetariano", "sem glúten"]</span>
-)
-
-<span class="cm">// Response ← Backend API</span>
-<span class="kw">data class</span> <span class="ty">MealRecommendationResponse</span>(
-    <span class="kw">val</span> restaurantName: <span class="ty">String</span>,
-    <span class="kw">val</span> dish: <span class="ty">String</span>,
-    <span class="kw">val</span> price: <span class="ty">Double</span>,
-    <span class="kw">val</span> address: <span class="ty">String</span>
-)</div>
       </div>
-    </div>
-    <div class="grid-3 reveal delay-4" style="margin-top:20px;">
-      <div class="card-white card-top-red">
-        <h3>Contexto Rico</h3>
-        <p style="margin-top:6px;">Nome do usuário + tipo de refeição + lista de preferências dietéticas ativas para aquele horário.</p>
-      </div>
-      <div class="card-white card-top-orange">
-        <h3>Backend Separado</h3>
-        <p style="margin-top:6px;"><code>ifood-backend/</code> é um projeto Node.js/TypeScript independente, não incluído no build Android.</p>
-      </div>
-      <div class="card-white card-top-green">
-        <h3>UI não bloqueante</h3>
-        <p style="margin-top:6px;">BottomSheet com estado de loading/success/error. ViewModel expõe via StateFlow; coroutine no IO dispatcher.</p>
+      <div class="reveal delay-2" style="display:flex;justify-content:center;align-items:center;">
+        <div style="width:280px;">
+          <div style="background:#1A1A1A;border-radius:36px;padding:10px;box-shadow:0 24px 64px rgba(0,0,0,0.22),0 4px 16px rgba(0,0,0,0.12);">
+            <div class="phone-notch"></div>
+            <div class="phone-screen"><img src="screenshots/7-recommendation.png" alt="BottomSheet de recomendação"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -584,8 +636,8 @@
       <div class="roadmap-item">
         <span class="roadmap-badge badge-high">Alta</span>
         <div>
-          <strong style="color:#fff;">Agendamentos dinâmicos</strong>
-          <p>Permitir que o usuário crie, remova e personalize slots de refeição além dos 4 fixos.</p>
+          <strong style="color:#fff;">Integração com Checkout</strong>
+          <p>Conectar os resultados de <code style="background:rgba(255,255,255,0.15);color:#fff;">MealRecommendation</code> diretamente ao fluxo de compra — o usuário pedindo sem sair do app.</p>
         </div>
       </div>
       <div class="roadmap-item">
@@ -596,6 +648,13 @@
         </div>
       </div>
       <div class="roadmap-item">
+        <span class="roadmap-badge badge-high">Alta</span>
+        <div>
+          <strong style="color:#fff;">Crash Reporting & Analytics</strong>
+          <p>Firebase Crashlytics ou Sentry para observabilidade em produção.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
         <span class="roadmap-badge badge-medium">Média</span>
         <div>
           <strong style="color:#fff;">Modularização</strong>
@@ -603,10 +662,10 @@
         </div>
       </div>
       <div class="roadmap-item">
-        <span class="roadmap-badge badge-medium">Média</span>
+        <span class="roadmap-badge badge-low">Baixa</span>
         <div>
-          <strong style="color:#fff;">Crash Reporting & Analytics</strong>
-          <p>Firebase Crashlytics ou Sentry para observabilidade em produção.</p>
+          <strong style="color:#fff;">Agendamentos dinâmicos</strong>
+          <p>Permitir que o usuário crie, remova e personalize slots de refeição além dos 4 fixos.</p>
         </div>
       </div>
     </div>
