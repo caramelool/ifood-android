@@ -1,6 +1,5 @@
 <img width="192" height="192" alt="ic_launcher" src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" />
 
-
 # iFood Android — Meal Scheduling App
 
 A native Android application built for the **iFood Selection Process**. The app lets users schedule daily meal times, define dietary preferences, and receive AI-powered restaurant recommendations 30 minutes before each meal via push notifications.
