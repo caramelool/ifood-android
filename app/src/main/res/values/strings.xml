@@ -53,13 +53,17 @@
     <string name="add_preference_label_error">Informe uma descrição</string>
     <string name="add_preference_meal_types_error">Selecione pelo menos um tipo de refeição</string>
 
-    <!-- Splash – Notification permission -->
-    <string name="splash_notification_required_title">Permissão necessária</string>
-    <string name="splash_notification_required_message">Este app precisa de permissão para enviar notificações de recomendação de refeições. Sem ela o app não pode funcionar corretamente.</string>
-    <string name="splash_notification_required_confirm">Fechar app</string>
+    <!-- Notification permission -->
+    <string name="notification_permission_required_title">Permissão necessária</string>
+    <string name="notification_permission_required_message">Este app precisa de permissão para enviar notificações de recomendação de refeições. Sem ela o app não pode funcionar corretamente.</string>
+    <string name="notification_permission_required_confirm">Fechar app</string>
 
     <!-- Delete preference -->
     <string name="delete_preference_dialog_title">Remover preferência?</string>
     <string name="delete_preference_dialog_message">"%s" será removida permanentemente.</string>
     <string name="delete_preference_confirm">Remover</string>
+
+    <!-- Channel -->
+    <string name="worker_meal_recommendation_channel_name">Lembretes de Refeição</string>
+    <string name="worker_meal_recommendation_channel_description">Lembretes para horários de refeição</string>
 </resources>
