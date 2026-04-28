@@ -49,7 +49,6 @@ internal fun PreferencesSection(
 
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .padding(top = 24.dp, bottom = 8.dp)
     ) {
         Row(
