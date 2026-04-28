@@ -6,6 +6,7 @@ import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.UpdateMealScheduleUseCase
 import com.lc.ifood.util.MainDispatcherRule
+import com.lc.ifood.worker.MealRecommendationScheduler
 import io.mockk.MockKAnnotations
 import io.mockk.coJustRun
 import io.mockk.coVerify
@@ -33,6 +34,7 @@ class ScheduleAdjustmentViewModelTest {
 
     @MockK private lateinit var getMealSchedules: GetMealSchedulesUseCase
     @MockK private lateinit var updateMealSchedule: UpdateMealScheduleUseCase
+    @MockK private lateinit var scheduler: MealRecommendationScheduler
 
     private val scheduleBreakfast = MealSchedule(BREAKFAST, 8, 0)
     private val scheduleLunch = MealSchedule(LUNCH, 12, 0)
@@ -49,7 +51,10 @@ class ScheduleAdjustmentViewModelTest {
 
     private fun createViewModel(): ScheduleAdjustmentViewModel {
         coJustRun { updateMealSchedule.invoke(any()) }
-        return ScheduleAdjustmentViewModel(getMealSchedules, updateMealSchedule)
+        return ScheduleAdjustmentViewModel(
+            getMealSchedules,
+            updateMealSchedule,
+            scheduler)
     }
 
     @Test
@@ -82,7 +87,7 @@ class ScheduleAdjustmentViewModelTest {
     }
 
     @Test
-    fun `saveAll calls UpdateMealScheduleUseCase for each schedule`() = runTest {
+    fun `saveAll calls MealRecommendationScheduler for each schedule`() = runTest {
         every { getMealSchedules.invoke() } returns flowOf(listOf(scheduleBreakfast, scheduleLunch))
         val vm = createViewModel()
         var doneCalled = false
@@ -90,6 +95,18 @@ class ScheduleAdjustmentViewModelTest {
         advanceUntilIdle()
         coVerify { updateMealSchedule.invoke(scheduleBreakfast) }
         coVerify { updateMealSchedule.invoke(scheduleLunch) }
+        assertTrue(doneCalled)
+    }
+
+    @Test
+    fun `reschedule recommendations call UpdateMealScheduleUseCase for each schedule`() = runTest {
+        every { getMealSchedules.invoke() } returns flowOf(listOf(scheduleBreakfast, scheduleLunch))
+        val vm = createViewModel()
+        var doneCalled = false
+        vm.saveAll { doneCalled = true }
+        advanceUntilIdle()
+        coVerify { scheduler.schedule(scheduleBreakfast) }
+        coVerify { scheduler.schedule(scheduleLunch) }
         assertTrue(doneCalled)
     }
 

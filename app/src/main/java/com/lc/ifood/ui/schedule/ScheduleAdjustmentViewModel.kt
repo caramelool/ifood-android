@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.UpdateMealScheduleUseCase
+import com.lc.ifood.worker.MealRecommendationScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleAdjustmentViewModel @Inject constructor(
     private val getMealSchedulesUseCase: GetMealSchedulesUseCase,
-    private val updateMealScheduleUseCase: UpdateMealScheduleUseCase
+    private val updateMealScheduleUseCase: UpdateMealScheduleUseCase,
+    private val mealRecommendationScheduler: MealRecommendationScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ScheduleAdjustmentUiState())
@@ -44,7 +46,10 @@ class ScheduleAdjustmentViewModel @Inject constructor(
     fun saveAll(onDone: () -> Unit) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isSaving = true)
-            _uiState.value.schedules.forEach { updateMealScheduleUseCase(it) }
+            _uiState.value.schedules.forEach {
+                updateMealScheduleUseCase(it)
+                mealRecommendationScheduler.schedule(it)
+            }
             _uiState.value = _uiState.value.copy(isSaving = false, saved = true)
             onDone()
         }

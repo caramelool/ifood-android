@@ -4,6 +4,7 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,7 +18,7 @@ import com.lc.ifood.ui.schedule.ScheduleAdjustmentScreen
 import com.lc.ifood.ui.splash.SplashScreen
 
 @Composable
-fun MainNavHost(pendingRecommendation: MealRecommendation? = null) {
+fun MainNavHost(pendingRecommendation: MutableState<MealRecommendation?>) {
     val navController = rememberNavController()
 
     NavHost(
@@ -56,7 +57,10 @@ fun MainNavHost(pendingRecommendation: MealRecommendation? = null) {
         composable<HomeRoute> {
             val homeViewModel: HomeViewModel = hiltViewModel()
             LaunchedEffect(pendingRecommendation) {
-                pendingRecommendation?.let { homeViewModel.showRecommendation(it) }
+                pendingRecommendation.value?.let {
+                    homeViewModel.showRecommendation(it)
+                    pendingRecommendation.value = null
+                }
             }
             HomeScreen(
                 onEditSchedules = { navController.navigate(ScheduleAdjustmentRoute) },

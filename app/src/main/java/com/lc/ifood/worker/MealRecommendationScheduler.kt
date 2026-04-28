@@ -8,6 +8,7 @@ import android.os.Build
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import java.util.Calendar
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +30,7 @@ import javax.inject.Singleton
 @Singleton
 class MealRecommendationScheduler @Inject constructor(
     @param:ApplicationContext private val context: Context,
-    private val getMealSchedules: GetMealSchedulesUseCase,
+    private val getMealSchedules: GetMealSchedulesUseCase
 ) {
     /**
      * Schedules alarms for all meal types by collecting the current schedules flow once.
@@ -37,8 +38,8 @@ class MealRecommendationScheduler @Inject constructor(
      * Called at app startup from [com.lc.ifood.MainApplication.onCreate].
      */
     suspend fun scheduleAll() {
-        getMealSchedules.invoke().collect { schedules ->
-            schedules.forEach { schedule -> schedule(schedule) }
+        getMealSchedules.invoke().first().forEach { schedule ->
+            schedule(schedule)
         }
     }
 

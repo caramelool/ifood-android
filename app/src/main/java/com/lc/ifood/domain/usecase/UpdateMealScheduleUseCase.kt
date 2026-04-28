@@ -14,11 +14,9 @@ import javax.inject.Inject
  * @param schedule the updated meal schedule to persist and reschedule.
  */
 class UpdateMealScheduleUseCase @Inject constructor(
-    private val repository: MealScheduleRepository,
-    private val mealRecommendationScheduler: MealRecommendationScheduler
+    private val repository: MealScheduleRepository
 ) {
     suspend operator fun invoke(schedule: MealSchedule) {
         repository.updateMealSchedule(schedule)
-        mealRecommendationScheduler.schedule(schedule)
     }
 }
