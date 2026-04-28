@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ifood-android · Lucas Caramelo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ifood-red: #EA1D2C;
+      --ifood-red-dark: #C41523;
+      --ifood-red-light: #FFEDEF;
+      --green: #10B981;
+      --green-dark: #059669;
+      --orange: #FF6A00;
+      --dark: #1A1A1A;
+      --gray: #6B7280;
+      --gray-light: #F8F9FA;
+      --gray-border: #E5E7EB;
+      --code-bg: #1A1A1A;
+      --code-text: #e4e4e7;
+      --slide-padding: clamp(2rem, 5vw, 5rem);
+      --duration: 0.6s;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; }
+
+    html { scroll-snap-type: y mandatory; overflow-y: scroll; scroll-behavior: smooth; }
+
+    .slide {
+      scroll-snap-align: start;
+      width: 100vw; min-height: 100dvh;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: var(--slide-padding); position: relative; overflow: hidden;
+    }
+    .slide-red   { background: linear-gradient(140deg, #7A0E1A 0%, #C41523 60%, #EA1D2C 100%); color: #fff; }
+    .slide-white { background: #fff; color: var(--dark); }
+    .slide-gray  { background: var(--gray-light); color: var(--dark); }
+
+    .slide-inner { max-width: 1100px; width: 100%; margin: 0 auto; }
+
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity var(--duration) cubic-bezier(0.16,1,0.3,1),
+                  transform var(--duration) cubic-bezier(0.16,1,0.3,1);
+    }
+    .slide.active .reveal { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.1s; }
+    .delay-2 { transition-delay: 0.2s; }
+    .delay-3 { transition-delay: 0.3s; }
+    .delay-4 { transition-delay: 0.4s; }
+    .delay-5 { transition-delay: 0.5s; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
+    h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); font-weight: 900; line-height: 1.05; letter-spacing: -0.03em; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.6rem); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+    h3 { font-size: clamp(0.9rem, 1.4vw, 1.05rem); font-weight: 800; margin-bottom: 6px; }
+    .eyebrow { font-size: clamp(0.65rem, 1vw, 0.78rem); font-weight: 700; letter-spacing: 0.13em;
+               text-transform: uppercase; opacity: 0.55; margin-bottom: 16px; }
+    .subtitle { font-size: clamp(1rem, 2vw, 1.3rem); font-weight: 400; opacity: 0.82;
+                margin-top: 16px; line-height: 1.55; }
+    p { font-size: clamp(0.875rem, 1.3vw, 1rem); line-height: 1.65; color: var(--gray); }
+    .slide-red p { color: rgba(255,255,255,0.72); }
+
+    .tag { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px;
+           border-radius: 20px; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.02em; }
+    .tag-white { background: rgba(255,255,255,0.2); color: #fff; }
+    .tag-gray  { background: #fff; color: var(--dark); border: 1px solid var(--gray-border); }
+    .tag-red   { background: var(--ifood-red-light); color: var(--ifood-red-dark); }
+
+    .card-white {
+      background: #fff; border: 1px solid var(--gray-border);
+      border-radius: 16px; padding: 24px;
+    }
+    .card-top-red    { border-top: 4px solid var(--ifood-red); }
+    .card-top-green  { border-top: 4px solid var(--green); }
+    .card-top-orange { border-top: 4px solid var(--orange); }
+    .card-top-dark   { border-top: 4px solid var(--dark); }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+    @media (max-width: 760px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    }
+
+    .signal-row {
+      display: flex; align-items: flex-start; gap: 12px; padding: 11px 0;
+      border-bottom: 1px solid var(--gray-border); font-size: 0.9rem; line-height: 1.55; color: var(--dark);
+    }
+    .signal-row:last-child { border-bottom: none; }
+    .signal-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+
+    .pipeline {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+      margin-top: 28px;
+    }
+    .pipe-step {
+      background: #fff; border: 1px solid var(--gray-border); border-radius: 10px;
+      padding: 10px 16px; font-size: 0.82rem; font-weight: 700; color: var(--dark);
+      display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 90px; text-align: center;
+    }
+    .pipe-step span { font-size: 1.2rem; }
+    .pipe-arrow { color: var(--gray); font-size: 1.1rem; font-weight: 700; }
+
+    .code-block { background: var(--code-bg); border-radius: 12px; overflow: hidden;
+                  font-family: 'Monaco','Consolas',monospace; font-size: clamp(0.72rem, 1.1vw, 0.85rem); }
+    .code-dots  { padding: 10px 16px; display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .code-dot   { width: 10px; height: 10px; border-radius: 50%; }
+    .code-body  { padding: 18px 22px; color: var(--code-text); line-height: 1.8; white-space: pre; overflow-x: auto; }
+    .kw  { color: #ff79c6; }
+    .fn  { color: #50fa7b; }
+    .str { color: #f1fa8c; }
+    .cm  { color: #6272a4; }
+    .ty  { color: #8be9fd; }
+
+    code { background: var(--ifood-red-light); padding: 2px 7px; border-radius: 6px;
+           font-family: 'Monaco','Consolas',monospace; font-size: 0.83em; color: var(--ifood-red-dark); }
+
+    .red-panel {
+      background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 14px; padding: 20px 22px;
+    }
+    .red-panel strong { display: block; font-size: 1rem; margin-bottom: 4px; color: #fff; }
+
+    .stat-box {
+      background: #fff; border: 1px solid var(--gray-border); border-radius: 14px;
+      padding: 20px; text-align: center;
+    }
+    .stat-num { font-size: clamp(1.8rem, 3.5vw, 2.8rem); font-weight: 900; color: var(--ifood-red); line-height: 1; }
+    .stat-label { font-size: 0.78rem; font-weight: 700; color: var(--gray); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+    .layer-card {
+      background: #fff; border: 1px solid var(--gray-border); border-radius: 14px;
+      padding: 20px 22px;
+    }
+    .layer-card h3 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+    .layer-tag { display: inline-block; background: var(--gray-light); border: 1px solid var(--gray-border);
+                 border-radius: 6px; padding: 3px 9px; font-size: 0.73rem; font-weight: 600;
+                 margin: 3px; color: var(--dark); }
+
+    .roadmap-item {
+      display: flex; align-items: flex-start; gap: 14px; padding: 13px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .roadmap-item:last-child { border-bottom: none; }
+    .roadmap-badge {
+      flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;
+      margin-top: 2px;
+    }
+    .badge-high   { background: rgba(255,255,255,0.25); color: #fff; }
+    .badge-medium { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.8); }
+
+    #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--ifood-red); z-index: 100; transition: width 0.3s ease; width: 0%; }
+    #slide-counter { position: fixed; top: 20px; right: 24px; font-size: 0.75rem; font-weight: 600; color: var(--gray); z-index: 100; letter-spacing: 0.05em; }
+    #slide-counter.on-red { color: rgba(255,255,255,0.6); }
+
+    #nav { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; z-index: 100;
+           background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border: 1px solid var(--gray-border);
+           border-radius: 40px; padding: 6px 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
+    #nav.on-red { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.2); }
+    .nav-btn { background: none; border: none; font-size: 1rem; cursor: pointer; padding: 4px 10px;
+               border-radius: 20px; color: var(--dark); transition: background 0.2s; }
+    .nav-btn:hover { background: var(--gray-light); }
+    #nav.on-red .nav-btn { color: #fff; }
+    #nav.on-red .nav-btn:hover { background: rgba(255,255,255,0.2); }
+    #nav-label { font-size: 0.75rem; font-weight: 600; color: var(--gray); min-width: 56px; text-align: center; }
+    #nav.on-red #nav-label { color: rgba(255,255,255,0.7); }
+
+    .accent { color: var(--ifood-red); }
+
+    .slide-icon {
+      position: absolute;
+      width: 72px; height: 72px;
+      border-radius: 12px;
+      object-fit: cover;
+      opacity: 0.92;
+      pointer-events: none;
+      user-select: none;
+    }
+    .slide-red   .slide-icon { top: clamp(1.2rem, 3vw, 2.4rem); left: clamp(1.2rem, 3vw, 2.4rem); }
+    .slide-white .slide-icon,
+    .slide-gray  .slide-icon { bottom: clamp(1.2rem, 3vw, 2.4rem); right: clamp(1.2rem, 3vw, 2.4rem); opacity: 0.55; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+<div id="slide-counter"></div>
+<div id="nav">
+  <button class="nav-btn" onclick="navigate(-1)">←</button>
+  <span id="nav-label"></span>
+  <button class="nav-btn" onclick="navigate(1)">→</button>
+</div>
+
+<!-- SLIDE 1: Capa -->
+<section class="slide slide-red active" data-slide="1">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">LUCAS CARAMELO · ABRIL 2026</div>
+    <h1 class="reveal delay-1">ifood-android</h1>
+    <p class="subtitle reveal delay-2">App Android de agendamento de refeições com recomendações personalizadas por IA — construído do zero com Kotlin e Jetpack Compose.</p>
+    <div style="display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;" class="reveal delay-3">
+      <span class="tag tag-white">Kotlin</span>
+      <span class="tag tag-white">Jetpack Compose</span>
+      <span class="tag tag-white">Clean Architecture</span>
+      <span class="tag tag-white">MVVM</span>
+      <span class="tag tag-white">Hilt</span>
+      <span class="tag tag-white">Room</span>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2: O App -->
+<section class="slide slide-white" data-slide="2">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">VISÃO GERAL · O QUE É O APP</div>
+    <h2 class="reveal delay-1">Planejamento de refeições<br>com inteligência artificial</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">O ifood-android combina gerenciamento local de horários de refeição com recomendações de restaurantes via IA. O usuário define seus horários e preferências dietéticas — o app notifica 30 minutos antes de cada refeição e sugere onde pedir.</p>
+    <div class="grid-3 reveal delay-3">
+      <div class="card-white card-top-red">
+        <div style="font-size:1.6rem;margin-bottom:12px;">🕐</div>
+        <h3>Agendamento de Refeições</h3>
+        <p style="margin-top:6px;">4 refeições fixas com horários ajustáveis — Café, Almoço, Lanche e Jantar — persistidos em Room.</p>
+      </div>
+      <div class="card-white card-top-green">
+        <div style="font-size:1.6rem;margin-bottom:12px;">🥗</div>
+        <h3>Preferências Dietéticas</h3>
+        <p style="margin-top:6px;">Tags de preferência por tipo de refeição. Swipe para deletar. Filtragem por <code>MealType</code> via Room.</p>
+      </div>
+      <div class="card-white card-top-orange">
+        <div style="font-size:1.6rem;margin-bottom:12px;">✨</div>
+        <h3>Recomendações por IA</h3>
+        <p style="margin-top:6px;">Backend Node.js consome preferências do usuário e retorna restaurante, prato, preço e endereço.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: Jornada do Usuário -->
+<section class="slide slide-gray" data-slide="3">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">UX · JORNADA DO USUÁRIO</div>
+    <h2 class="reveal delay-1">Do primeiro acesso<br>à recomendação</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;"><code>SplashViewModel</code> determina a rota inicial checando a flag de onboarding no DataStore e a permissão <code>POST_NOTIFICATIONS</code>.</p>
+    <div class="reveal delay-3">
+      <div class="signal-row">
+        <div class="signal-dot" style="background:var(--ifood-red)"></div>
+        <div><strong>Onboarding (4 páginas):</strong> Pager com apresentação do app. Dados do usuário coletados. Flag salva no DataStore — executado uma única vez.</div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-dot" style="background:var(--ifood-red)"></div>
+        <div><strong>Permissão de Notificação:</strong> Solicitação de <code>POST_NOTIFICATIONS</code> no Android 13+. Tela de fallback se negada.</div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-dot" style="background:var(--ifood-red)"></div>
+        <div><strong>Home Screen:</strong> Exibe horários das 4 refeições, preferências ativas e acesso à recomendação de IA. Defaults semeados na primeira execução via <code>SeedDefaultSchedules</code>.</div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-dot" style="background:var(--orange)"></div>
+        <div><strong>Ajuste de Horário:</strong> <code>ScheduleAdjustmentScreen</code> permite editar hora e minuto de cada refeição. Alarme reagendado automaticamente.</div>
+      </div>
+      <div class="signal-row">
+        <div class="signal-dot" style="background:var(--green)"></div>
+        <div><strong>Notificação Proativa:</strong> 30 minutos antes da refeição, o AlarmManager dispara → WorkManager consulta a API → notificação com recomendação exibida.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: Arquitetura -->
+<section class="slide slide-white" data-slide="4">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">ENGENHARIA · ARQUITETURA</div>
+    <h2 class="reveal delay-1">Clean Architecture<br>com MVVM</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">Três camadas explícitas — UI, Domain e Data — com fluxo de dependência unidirecional. A camada de Worker é transversal, orquestrando Background tasks sem depender da UI.</p>
+    <div class="grid-2 reveal delay-3">
+      <div class="layer-card" style="border-top:4px solid var(--ifood-red);">
+        <h3 style="color:var(--ifood-red);">UI Layer</h3>
+        <p style="margin-bottom:12px;font-size:0.85rem;">Composables + ViewModels. StateFlow imutável. Sem lógica de negócio.</p>
+        <div>
+          <span class="layer-tag">HomeViewModel</span>
+          <span class="layer-tag">OnboardingViewModel</span>
+          <span class="layer-tag">SplashViewModel</span>
+          <span class="layer-tag">AddPreferenceViewModel</span>
+          <span class="layer-tag">ScheduleAdjustmentViewModel</span>
+        </div>
+      </div>
+      <div class="layer-card" style="border-top:4px solid var(--orange);">
+        <h3 style="color:var(--orange);">Domain Layer</h3>
+        <p style="margin-bottom:12px;font-size:0.85rem;">Use Cases com operador <code>invoke</code>. Interfaces de Repository. Sem dependência de framework.</p>
+        <div>
+          <span class="layer-tag">GetMealSchedules</span>
+          <span class="layer-tag">SavePreference</span>
+          <span class="layer-tag">GetMealRecommendation</span>
+          <span class="layer-tag">SeedDefaultSchedules</span>
+          <span class="layer-tag">CompleteOnboarding</span>
+        </div>
+      </div>
+      <div class="layer-card" style="border-top:4px solid var(--green);">
+        <h3 style="color:var(--green-dark);">Data Layer</h3>
+        <p style="margin-bottom:12px;font-size:0.85rem;">Implementações de Repository. Room DAOs. Retrofit API. DataStore.</p>
+        <div>
+          <span class="layer-tag">MealScheduleDao</span>
+          <span class="layer-tag">UserPreferenceDao</span>
+          <span class="layer-tag">MealReminderApiService</span>
+          <span class="layer-tag">AppDatabase v2</span>
+          <span class="layer-tag">MIGRATION_1_2</span>
+        </div>
+      </div>
+      <div class="layer-card" style="border-top:4px solid var(--dark);">
+        <h3>Worker Layer</h3>
+        <p style="margin-bottom:12px;font-size:0.85rem;">Background orchestration. AlarmManager para pontualidade. WorkManager para robustez.</p>
+        <div>
+          <span class="layer-tag">MealRecommendationWorker</span>
+          <span class="layer-tag">MealRecommendationScheduler</span>
+          <span class="layer-tag">AlarmReceiver</span>
+          <span class="layer-tag">BootReceiver</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: Stack -->
+<section class="slide slide-gray" data-slide="5">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">STACK · TECNOLOGIAS</div>
+    <h2 class="reveal delay-1">Kotlin-first,<br>production-grade</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">Versões gerenciadas centralmente em <code>gradle/libs.versions.toml</code>. Kotlin 2.3, Compose BOM 2026, AGP 9.2.</p>
+    <div class="grid-3 reveal delay-3">
+      <div class="card-white card-top-red">
+        <h3>UI</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">Jetpack Compose + Material 3<br>Navigation Compose (type-safe <code>@Serializable</code>)<br>Coil para imagens</p>
+      </div>
+      <div class="card-white card-top-orange">
+        <h3>Injeção de Dependência</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">Hilt 2.59<br>5 módulos: App, Network, Dao, Repository, Permission<br>hilt-navigation-compose</p>
+      </div>
+      <div class="card-white card-top-green">
+        <h3>Persistência</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">Room 2.8 (3 entidades, migração v1→v2)<br>DataStore Preferences<br>KSP para geração de código</p>
+      </div>
+      <div class="card-white card-top-dark">
+        <h3>Rede</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">Retrofit 3 + OkHttp 5<br>Moshi para serialização JSON<br>Logging Interceptor</p>
+      </div>
+      <div class="card-white" style="border-top:4px solid #6366F1;">
+        <h3>Background</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">WorkManager 2.11<br>AlarmManager (framework)<br>BootReceiver para resiliência</p>
+      </div>
+      <div class="card-white" style="border-top:4px solid #0EA5E9;">
+        <h3>Qualidade</h3>
+        <p style="margin-top:8px;font-size:0.85rem;">MockK 1.14 para testes unitários<br>Kover para cobertura<br>GitHub Actions para CI/CD</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: Agendamento & Preferências -->
+<section class="slide slide-white" data-slide="6">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">FEATURES · AGENDAMENTO & PREFERÊNCIAS</div>
+    <h2 class="reveal delay-1">Controle total<br>sobre as refeições</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">Quatro slots fixos com horários padrão inteligentes. Alarmes reagendados a cada alteração. Preferências por tipo de refeição com persistência imediata.</p>
+    <div class="grid-2 reveal delay-3">
+      <div class="card-white card-top-red">
+        <div style="font-size:1.4rem;margin-bottom:12px;">🗓️</div>
+        <h3>Agendamento de Refeições</h3>
+        <p style="margin-top:8px;">Quatro slots fixos: <strong>Café 08h · Almoço 13h · Lanche 17h · Jantar 21h</strong>. Defaults semeados por <code>SeedDefaultSchedules</code> na primeira execução. <code>UpdateMealSchedule</code> persiste e reagenda o alarme imediatamente.</p>
+      </div>
+      <div class="card-white card-top-orange">
+        <div style="font-size:1.4rem;margin-bottom:12px;">🥗</div>
+        <h3>Preferências Dietéticas</h3>
+        <p style="margin-top:8px;">Tags de preferência associadas a um ou mais <code>MealType</code>. Armazenadas como CSV no Room (<code>mealTypes</code>). Filtradas por tipo com <code>GetPreferencesByMealType</code>. Swipe-to-delete com confirmação visual.</p>
+      </div>
+      <div class="card-white card-top-green" style="grid-column: 1 / -1;">
+        <div style="font-size:1.4rem;margin-bottom:12px;">🔔</div>
+        <h3>Ciclo Diário de Alarmes</h3>
+        <p style="margin-top:8px;">Após o disparo e envio da notificação, o alarme é automaticamente reagendado para o dia seguinte. <code>BootReceiver</code> escuta <code>BOOT_COMPLETED</code> e restaura todos os alarmes após reinicialização do dispositivo — sem intervenção do usuário.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: Notificações Proativas -->
+<section class="slide slide-gray" data-slide="7">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">FEATURES · PIPELINE DE NOTIFICAÇÕES</div>
+    <h2 class="reveal delay-1">Notificações proativas<br>30 minutos antes</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:8px;">AlarmManager garante pontualidade. WorkManager garante robustez. A separação é intencional — alarmes são precisos, Workers são resilientes a reinicializações e restrições de bateria.</p>
+    <div class="pipeline reveal delay-3">
+      <div class="pipe-step"><span>📱</span>App Start</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span>⏰</span>Alarm<br>Manager</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span>📡</span>Alarm<br>Receiver</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span>⚙️</span>Work<br>Manager</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span>🌐</span>Backend<br>API</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span>🔔</span>Notifi<br>cation</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step" style="border-top:3px solid var(--ifood-red);"><span>🔄</span>Re<br>schedule</div>
+    </div>
+    <div class="grid-2 reveal delay-4" style="margin-top:24px;">
+      <div class="card-white">
+        <h3>Por que AlarmManager?</h3>
+        <p style="margin-top:6px;">Precisão de disparo no horário exato, mesmo com o app em background. <code>setExactAndAllowWhileIdle</code> para contornar Doze Mode.</p>
+      </div>
+      <div class="card-white">
+        <h3>Por que WorkManager?</h3>
+        <p style="margin-top:6px;">Trabalho garantido mesmo com restrições de rede ou bateria. Integração nativa com Hilt via <code>HiltWorker</code>. Retry automático em falha.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: Recomendações por IA -->
+<section class="slide slide-white" data-slide="8">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">FEATURES · RECOMENDAÇÕES POR IA</div>
+    <h2 class="reveal delay-1">Recomendação personalizada<br>para cada refeição</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">O backend Node.js/TypeScript recebe o contexto do usuário e retorna uma sugestão completa de restaurante. A recomendação é exibida num BottomSheet interativo na HomeScreen.</p>
+    <div class="reveal delay-3">
+      <div class="code-block">
+        <div class="code-dots">
+          <div class="code-dot" style="background:#ff5f57"></div>
+          <div class="code-dot" style="background:#febc2e"></div>
+          <div class="code-dot" style="background:#28c840"></div>
+        </div>
+        <div class="code-body"><span class="cm">// Request → Backend API</span>
+<span class="kw">data class</span> <span class="ty">MealRecommendationRequest</span>(
+    <span class="kw">val</span> userName: <span class="ty">String</span>,
+    <span class="kw">val</span> mealType: <span class="ty">String</span>,       <span class="cm">// "LUNCH"</span>
+    <span class="kw">val</span> preferences: <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;  <span class="cm">// ["vegetariano", "sem glúten"]</span>
+)
+
+<span class="cm">// Response ← Backend API</span>
+<span class="kw">data class</span> <span class="ty">MealRecommendationResponse</span>(
+    <span class="kw">val</span> restaurantName: <span class="ty">String</span>,
+    <span class="kw">val</span> dish: <span class="ty">String</span>,
+    <span class="kw">val</span> price: <span class="ty">Double</span>,
+    <span class="kw">val</span> address: <span class="ty">String</span>
+)</div>
+      </div>
+    </div>
+    <div class="grid-3 reveal delay-4" style="margin-top:20px;">
+      <div class="card-white card-top-red">
+        <h3>Contexto Rico</h3>
+        <p style="margin-top:6px;">Nome do usuário + tipo de refeição + lista de preferências dietéticas ativas para aquele horário.</p>
+      </div>
+      <div class="card-white card-top-orange">
+        <h3>Backend Separado</h3>
+        <p style="margin-top:6px;"><code>ifood-backend/</code> é um projeto Node.js/TypeScript independente, não incluído no build Android.</p>
+      </div>
+      <div class="card-white card-top-green">
+        <h3>UI não bloqueante</h3>
+        <p style="margin-top:6px;">BottomSheet com estado de loading/success/error. ViewModel expõe via StateFlow; coroutine no IO dispatcher.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 9: Testes & Qualidade -->
+<section class="slide slide-gray" data-slide="9">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">QUALIDADE · ESTRATÉGIA DE TESTES</div>
+    <h2 class="reveal delay-1">36 testes — do Use Case<br>ao Compose UI</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:24px;">Pirâmide de testes completa: unitários na JVM com MockK + coroutines, integração com Room in-memory e testes de UI com <code>createAndroidComposeRule</code>. Cobertura medida por Kover.</p>
+    <div class="grid-4 reveal delay-3" style="margin-bottom:20px;">
+      <div class="stat-box">
+        <div class="stat-num">13</div>
+        <div class="stat-label">Use Cases</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">8</div>
+        <div class="stat-label">UI Screens</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">6</div>
+        <div class="stat-label">ViewModels</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">5+3</div>
+        <div class="stat-label">Repos + DAOs</div>
+      </div>
+    </div>
+    <div class="grid-2 reveal delay-4">
+      <div class="card-white card-top-red">
+        <h3>Testes Unitários (JVM)</h3>
+        <p style="margin-top:6px;"><strong>MockK</strong> para mocks. Padrão Arrange-Act-Assert. <code>MainDispatcherRule</code> substitui <code>Dispatchers.Main</code> por <code>UnconfinedTestDispatcher</code>. <code>advanceTimeBy()</code> para controle de tempo.</p>
+      </div>
+      <div class="card-white card-top-green">
+        <h3>Testes Instrumentados (Device)</h3>
+        <p style="margin-top:6px;"><strong>Room in-memory</strong> para DAOs. <code>createAndroidComposeRule&lt;ComponentActivity&gt;</code> para Compose. Árvore semântica verificada para acessibilidade e estado visual.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 10: CI/CD -->
+<section class="slide slide-white" data-slide="10">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">INFRAESTRUTURA · CI/CD</div>
+    <h2 class="reveal delay-1">Pipeline automatizado<br>com GitHub Actions</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">Dois workflows: <strong>PR Checks</strong> (gatekeeping de qualidade) e <strong>Release</strong> (assinatura + publicação automática ao mergear na master).</p>
+    <div class="grid-2 reveal delay-3">
+      <div class="card-white card-top-red">
+        <h3>PR Checks — 4 jobs encadeados</h3>
+        <div style="margin-top:14px;">
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--ifood-red)"></div>
+            <div><strong>build-debug + build-release</strong> — paralelos, validam compilação nos dois flavors</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--orange)"></div>
+            <div><strong>unit-test</strong> — depende de build-debug, roda <code>testDebugUnitTest</code></div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--green)"></div>
+            <div><strong>coverage</strong> — Kover XML+HTML, gate de threshold, comentário automático no PR com métricas</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-white card-top-green">
+        <h3>Release — push para master</h3>
+        <div style="margin-top:14px;">
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--green)"></div>
+            <div><strong>check-version</strong> — compara versionName/versionCode com HEAD^; pula se sem mudança</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--green)"></div>
+            <div><strong>assembleRelease + bundleRelease</strong> — assinatura com keystore via secrets</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-dot" style="background:var(--green)"></div>
+            <div><strong>gh release create</strong> — tag <code>v{versionName}</code>, APK + AAB anexados automaticamente</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11: IA no Desenvolvimento -->
+<section class="slide slide-gray" data-slide="11">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">PROCESSO · IA NO DESENVOLVIMENTO</div>
+    <h2 class="reveal delay-1">Claude + Gemini como<br>copiloto de engenharia</h2>
+    <p class="reveal delay-2" style="margin-top:12px;margin-bottom:28px;">IA usada como acelerador de produtividade e qualidade — não como substituto de decisões. Todas as escolhas arquiteturais foram tomadas pelo desenvolvedor. A IA sugeriu, o dev revisou e decidiu.</p>
+    <div class="grid-3 reveal delay-3">
+      <div class="card-white card-top-red">
+        <div style="font-size:1.5rem;margin-bottom:12px;">🚀</div>
+        <h3>Vibe Coding</h3>
+        <p style="margin-top:6px;">Iteração rápida com scaffolding gerado por IA: Room entities, DAOs, Use Cases, ViewModels e módulos Hilt. Base sólida em menos tempo.</p>
+      </div>
+      <div class="card-white card-top-orange">
+        <div style="font-size:1.5rem;margin-bottom:12px;">🔍</div>
+        <h3>Code Review</h3>
+        <p style="margin-top:6px;">Verificação de violações de camada, inconsistências de nomenclatura e problemas de lógica. Review contínuo durante o desenvolvimento.</p>
+      </div>
+      <div class="card-white card-top-green">
+        <div style="font-size:1.5rem;margin-bottom:12px;">📖</div>
+        <h3>Spec-Driven Dev</h3>
+        <p style="margin-top:6px;">Specs escritas primeiro, implementação validada depois. Toda documentação em <code>/docs/</code>, README e CLAUDE.md foi rascunhada e revisada com IA.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 12: Roadmap & Encerramento -->
+<section class="slide slide-red" data-slide="12">
+  <div class="slide-inner">
+    <div class="eyebrow reveal">PRÓXIMOS PASSOS · ROADMAP</div>
+    <h2 class="reveal delay-1">O que vem<br>a seguir</h2>
+    <div style="margin-top:28px;" class="reveal delay-2">
+      <div class="roadmap-item">
+        <span class="roadmap-badge badge-high">Alta</span>
+        <div>
+          <strong style="color:#fff;">Agendamentos dinâmicos</strong>
+          <p>Permitir que o usuário crie, remova e personalize slots de refeição além dos 4 fixos.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-badge badge-high">Alta</span>
+        <div>
+          <strong style="color:#fff;">Testes instrumentados no CI</strong>
+          <p>Rodar os testes de UI e DAO em emulador no GitHub Actions em cada PR.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-badge badge-medium">Média</span>
+        <div>
+          <strong style="color:#fff;">Modularização</strong>
+          <p>Dividir em módulos Gradle (:feature:home, :feature:onboarding, :core:data) para escalar em times maiores.</p>
+        </div>
+      </div>
+      <div class="roadmap-item">
+        <span class="roadmap-badge badge-medium">Média</span>
+        <div>
+          <strong style="color:#fff;">Crash Reporting & Analytics</strong>
+          <p>Firebase Crashlytics ou Sentry para observabilidade em produção.</p>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.2);" class="reveal delay-3">
+      <div style="font-size:0.78rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.6;margin-bottom:10px;">Desenvolvido por</div>
+      <div style="font-size:1.3rem;font-weight:800;color:#fff;">Lucas Caramelo</div>
+      <div style="font-size:0.9rem;opacity:0.75;margin-top:4px;">lucascaramelo@gmail.com</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const TOTAL = 12;
+  let current = 1;
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('slide-counter');
+  const navLabel = document.getElementById('nav-label');
+  const nav = document.getElementById('nav');
+  const progressBar = document.getElementById('progress-bar');
+
+  function updateUI(idx) {
+    current = idx;
+    const pct = ((idx - 1) / (TOTAL - 1)) * 100;
+    progressBar.style.width = pct + '%';
+    counter.textContent = idx + ' / ' + TOTAL;
+    navLabel.textContent = idx + ' / ' + TOTAL;
+    const isRed = slides[idx - 1].classList.contains('slide-red');
+    nav.classList.toggle('on-red', isRed);
+    counter.classList.toggle('on-red', isRed);
+  }
+
+  function activateSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx - 1));
+    updateUI(idx);
+  }
+
+  function navigate(dir) {
+    const next = Math.min(Math.max(current + dir, 1), TOTAL);
+    slides[next - 1].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio > 0.5)
+        activateSlide(parseInt(e.target.dataset.slide));
+    });
+  }, { threshold: 0.5 });
+
+  slides.forEach(s => observer.observe(s));
+
+  document.addEventListener('keydown', e => {
+    if (['ArrowRight', 'ArrowDown', ' '].includes(e.key)) { e.preventDefault(); navigate(1); }
+    if (['ArrowLeft', 'ArrowUp'].includes(e.key))         { e.preventDefault(); navigate(-1); }
+    if (e.key === 'Home') slides[0].scrollIntoView({ behavior: 'smooth' });
+    if (e.key === 'End')  slides[TOTAL - 1].scrollIntoView({ behavior: 'smooth' });
+  });
+
+  activateSlide(1);
+
+  // Inject app icon into every slide (base64 embedded once)
+  const ICON_SRC = 'data:image/webp;base64,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';
+  slides.forEach(s => {
+    const img = document.createElement('img');
+    img.src = ICON_SRC;
+    img.className = 'slide-icon';
+    img.alt = 'ifood-android icon';
+    s.appendChild(img);
+  });
+</script>
+</body>
+</html>
