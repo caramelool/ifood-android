@@ -68,6 +68,7 @@ Alarms fire **30 minutes before** each scheduled meal. A `WorkManager` job fetch
 | [Dependencies](docs/dependencies.md) | All libraries with versions and rationale |
 | [Testing](docs/testing.md) | Test strategy, coverage breakdown, and tooling |
 | [CI](docs/ci.md) | GitHub Actions pipelines: PR checks and signed release publishing |
+| [Roadmap](docs/roadmap.md) | Roadmap — Future Improvements & Technical Debt |
 
 ---
 
