@@ -70,6 +70,13 @@ The `ifood-backend/` folder contains a separate Node.js/TypeScript project (not 
 ## Documentation
 
 - All documentation (README, specs, comments, CLAUDE.md) must be written in English.
+- [`docs/overview.md`](docs/overview.md) — app purpose, target users, and high-level feature set
+- [`docs/architecture.md`](docs/architecture.md) — layered architecture decisions and data flow
+- [`docs/dependencies.md`](docs/dependencies.md) — third-party libraries and version catalog notes
+- [`docs/testing.md`](docs/testing.md) — testing strategy, tooling, and coverage conventions
+- [`docs/ci.md`](docs/ci.md) — CI/CD pipeline setup and build steps
+- [`docs/ai.md`](docs/ai.md) — AI/ML integration details (meal recommendations)
+- [`docs/roadmap.md`](docs/roadmap.md) — planned features and known gaps
 
 ## Conventions
 
