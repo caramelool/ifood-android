@@ -4,8 +4,10 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lc.ifood.R
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -39,13 +41,12 @@ class OnboardingScreenTest {
         )
     )
 
-    private fun setContent(uiState: OnboardingUiState) {
+    private fun setContent(uiState: OnboardingUiState, onFabClicked: () -> Unit = {}) {
         composeRule.setContent {
             OnboardingContent(
                 uiState = uiState,
                 onPageChanged = {},
-                onCompleteOnboarding = {},
-                onOnboardingComplete = {}
+                onFabClicked = onFabClicked
             )
         }
     }
@@ -68,26 +69,39 @@ class OnboardingScreenTest {
     }
 
     @Test
-    fun fab_showsNextText_whenNotCompleted() {
-        setContent(OnboardingUiState(pages = pages, isFabVisible = true, isOnboardCompleted = false))
+    fun fab_showsNextText_whenNotOnLastPage() {
+        setContent(OnboardingUiState(pages = pages, isFabVisible = true, isLastPage = false))
         composeRule
-            .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_next))
+            .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_next), useUnmergedTree = true)
             .assertIsDisplayed()
     }
 
     @Test
-    fun fab_showsStartText_whenOnboardCompleted() {
-        setContent(OnboardingUiState(pages = pages, isFabVisible = true, isOnboardCompleted = true))
+    fun fab_showsStartText_whenOnLastPage() {
+        setContent(OnboardingUiState(pages = pages, isFabVisible = true, isLastPage = true))
         composeRule
-            .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_start))
+            .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_start), useUnmergedTree = true)
             .assertIsDisplayed()
     }
 
     @Test
     fun fab_isNotVisible_whenHidden() {
-        setContent(OnboardingUiState(pages = pages, isFabVisible = false, isOnboardCompleted = false))
+        setContent(OnboardingUiState(pages = pages, isFabVisible = false, isLastPage = false))
         composeRule
             .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_next))
             .assertDoesNotExist()
+    }
+
+    @Test
+    fun fab_click_invokesOnFabClicked_whenOnLastPage() {
+        var clicked = false
+        setContent(
+            uiState = OnboardingUiState(pages = pages, isFabVisible = true, isLastPage = true),
+            onFabClicked = { clicked = true }
+        )
+        composeRule
+            .onNodeWithText(composeRule.activity.getString(R.string.onboarding_btn_start), useUnmergedTree = true)
+            .performClick()
+        assertTrue(clicked)
     }
 }

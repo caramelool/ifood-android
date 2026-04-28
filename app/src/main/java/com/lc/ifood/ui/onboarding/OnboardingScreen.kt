@@ -1,5 +1,10 @@
 package com.lc.ifood.ui.onboarding
 
+import android.Manifest
+import android.app.Activity
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -30,11 +35,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -43,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lc.ifood.R
+import com.lc.ifood.ui.PermissionDeniedDialog
 import com.lc.ifood.ui.theme.IfoodBackground
 import com.lc.ifood.ui.theme.IfoodRed
 import com.lc.ifood.ui.theme.IfoodTextPrimary
@@ -55,11 +65,35 @@ fun OnboardingScreen(
     viewModel: OnboardingViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        viewModel.onPermissionResult(granted)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                OnboardingEvent.RequestNotificationPermission -> {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                }
+                OnboardingEvent.NavigateToHome -> onOnboardingComplete()
+                OnboardingEvent.ShowPermissionDeniedDialog -> showPermissionDeniedDialog = true
+            }
+        }
+    }
+
+    if (showPermissionDeniedDialog) {
+        PermissionDeniedDialog(onConfirm = { (context as? Activity)?.finish() })
+    }
+
     OnboardingContent(
         uiState = uiState,
         onPageChanged = viewModel::onPageChanged,
-        onCompleteOnboarding = viewModel::completeOnboarding,
-        onOnboardingComplete = onOnboardingComplete
+        onFabClicked = viewModel::onFabClicked
     )
 }
 
@@ -67,13 +101,12 @@ fun OnboardingScreen(
 internal fun OnboardingContent(
     uiState: OnboardingUiState,
     onPageChanged: (Int) -> Unit,
-    onCompleteOnboarding: () -> Unit,
-    onOnboardingComplete: () -> Unit
+    onFabClicked: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { uiState.pages.size })
 
-    if (uiState.isOnboardCompleted.not()) {
+    if (uiState.isLastPage.not()) {
         LaunchedEffect(pagerState.currentPage) {
             onPageChanged(pagerState.currentPage)
         }
@@ -83,12 +116,11 @@ internal fun OnboardingContent(
         contentColor = IfoodBackground,
         floatingActionButton = {
             OnboardingFab(
-                isOnboardCompleted = uiState.isOnboardCompleted,
+                isLastPage = uiState.isLastPage,
                 isVisible = uiState.isFabVisible,
                 onClick = {
-                    if (uiState.isOnboardCompleted) {
-                        onCompleteOnboarding()
-                        onOnboardingComplete()
+                    if (uiState.isLastPage) {
+                        onFabClicked()
                     } else {
                         scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
@@ -180,7 +212,7 @@ private fun OnboardingPagerIndicator(
 
 @Composable
 private fun OnboardingFab(
-    isOnboardCompleted: Boolean,
+    isLastPage: Boolean,
     isVisible: Boolean,
     onClick: () -> Unit
 ) {
@@ -199,13 +231,13 @@ private fun OnboardingFab(
             ),
             icon = {
                 Icon(
-                    imageVector = if (isOnboardCompleted) Icons.Default.Check else Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = if (isOnboardCompleted) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next)
+                    imageVector = if (isLastPage) Icons.Default.Check else Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = if (isLastPage) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next)
                 )
             },
             text = {
                 Text(
-                    text = if (isOnboardCompleted) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next),
+                    text = if (isLastPage) stringResource(R.string.onboarding_btn_start) else stringResource(R.string.onboarding_btn_next),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )

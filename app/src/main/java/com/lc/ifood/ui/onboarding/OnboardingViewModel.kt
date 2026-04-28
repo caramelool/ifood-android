@@ -3,12 +3,16 @@ package com.lc.ifood.ui.onboarding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.lc.ifood.R
+import com.lc.ifood.domain.permission.NotificationPermissionChecker
 import com.lc.ifood.domain.usecase.CompleteOnboardingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -17,11 +21,15 @@ import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val completeOnboardingUseCase: CompleteOnboardingUseCase
+    private val completeOnboardingUseCase: CompleteOnboardingUseCase,
+    private val checker: NotificationPermissionChecker
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(OnboardingUiState())
     val uiState: StateFlow<OnboardingUiState> = _uiState.asStateFlow()
+
+    private val _events = MutableSharedFlow<OnboardingEvent>()
+    val events: SharedFlow<OnboardingEvent> = _events.asSharedFlow()
 
     private var fabJob: Job? = null
 
@@ -34,12 +42,7 @@ class OnboardingViewModel @Inject constructor(
             val isLastPage = currentPage == pages.size - 1
             fabJob?.cancel()
             if (isLastPage) {
-                _uiState.update {
-                    it.copy(
-                        isFabVisible = true,
-                        isOnboardCompleted = true
-                    )
-                }
+                _uiState.update { it.copy(isFabVisible = true, isLastPage = true) }
             } else {
                 _uiState.update { it.copy(isFabVisible = false) }
                 fabJob = viewModelScope.launch {
@@ -50,9 +53,22 @@ class OnboardingViewModel @Inject constructor(
         }
     }
 
-    fun completeOnboarding() {
+    fun onFabClicked() {
         viewModelScope.launch {
             completeOnboardingUseCase()
+            _events.emit(
+                if (checker.isGranted()) OnboardingEvent.NavigateToHome
+                else OnboardingEvent.RequestNotificationPermission
+            )
+        }
+    }
+
+    fun onPermissionResult(granted: Boolean) {
+        viewModelScope.launch {
+            _events.emit(
+                if (granted) OnboardingEvent.NavigateToHome
+                else OnboardingEvent.ShowPermissionDeniedDialog
+            )
         }
     }
 
