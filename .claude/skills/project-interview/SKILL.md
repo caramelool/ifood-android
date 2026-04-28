@@ -34,6 +34,7 @@ covered here, say you'd need to double-check.
 - **All dependencies with versions**: `docs/dependencies.md`
 - **Testing strategy, coverage, CI**: `docs/testing.md`, `docs/ci.md`
 - **AI-assisted development methodology**: `docs/ai.md`
+- **Roadmap — Future Improvements & Technical Debt**: `docs/roadmap.md`
 
 ---
 
