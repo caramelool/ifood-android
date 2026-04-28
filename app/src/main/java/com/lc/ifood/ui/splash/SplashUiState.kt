@@ -4,4 +4,6 @@ sealed interface SplashDestination {
     data object Loading : SplashDestination
     data object Onboarding : SplashDestination
     data object Home : SplashDestination
+
+    data object PermissionDenied : SplashDestination
 }

@@ -6,6 +6,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
+/**
+ * Emits the ordered list of [MealType] values derived from the stored meal schedules.
+ *
+ * Transforms [MealSchedule] objects into plain [MealType] values so callers that only
+ * need to know which meal types exist do not have to deal with schedule details.
+ *
+ * @return a [Flow] that emits a new list whenever the underlying schedules change.
+ */
 class GetMealsUseCase @Inject constructor(
     private val repository: MealScheduleRepository
 ) {

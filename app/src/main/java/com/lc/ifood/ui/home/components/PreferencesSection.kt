@@ -42,7 +42,8 @@ import com.lc.ifood.ui.theme.IfoodTextSecondary
 @Composable
 internal fun PreferencesSection(
     preferences: List<UserPreference>,
-    onAddClick: () -> Unit
+    onAddClick: () -> Unit,
+    onDeletePreference: (Int) -> Unit = {}
 ) {
     val deleteState = rememberDeletePreferenceState()
 
@@ -91,7 +92,8 @@ internal fun PreferencesSection(
                 preferences.forEach { preference ->
                     SwipeToDeletePreference(
                         preference = preference,
-                        state = deleteState
+                        state = deleteState,
+                        onDeleteConfirmed = onDeletePreference
                     ) {
                         PreferenceCard(
                             preference = preference,

@@ -36,6 +36,7 @@ class AddPreferenceViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        coJustRun { savePreference.invoke(any(), any()) }
     }
 
     @After
@@ -44,7 +45,6 @@ class AddPreferenceViewModelTest {
     }
 
     private fun createViewModel(): AddPreferenceViewModel {
-        coJustRun { savePreference.invoke(any(), any()) }
         return AddPreferenceViewModel(getMeals, savePreference)
     }
 

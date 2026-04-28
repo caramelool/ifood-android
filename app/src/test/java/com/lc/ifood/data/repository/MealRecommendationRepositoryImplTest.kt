@@ -6,6 +6,7 @@ import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.User
+import com.lc.ifood.domain.repository.MealRecommendationRepository
 import com.lc.ifood.domain.repository.UserRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
@@ -27,6 +28,8 @@ class MealRecommendationRepositoryImplTest {
     @MockK private lateinit var apiService: MealReminderApiService
     @MockK private lateinit var userRepository: UserRepository
 
+    private lateinit var repository: MealRecommendationRepository
+
     private val schedule = MealSchedule(BREAKFAST, 8, 0)
     private val user = User(1, "Lucas")
     private val apiResponse = MealRecommendationResponse(
@@ -44,14 +47,13 @@ class MealRecommendationRepositoryImplTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        repository = MealRecommendationRepositoryImpl(apiService, userRepository)
     }
 
     @After
     fun tearDown() {
         unmockkAll()
     }
-
-    private fun createRepository() = MealRecommendationRepositoryImpl(apiService, userRepository)
 
     @Test
     fun `getRecommendation fetches user and calls api with correct params`() = runTest {
@@ -60,7 +62,7 @@ class MealRecommendationRepositoryImplTest {
             apiService.getRecommendation("Lucas", "breakfast", listOf("Saudável"))
         } returns apiResponse
 
-        createRepository().getRecommendation(schedule, listOf("Saudável"))
+        repository.getRecommendation(schedule, listOf("Saudável"))
 
         coVerify { apiService.getRecommendation("Lucas", "breakfast", listOf("Saudável")) }
     }
@@ -72,7 +74,7 @@ class MealRecommendationRepositoryImplTest {
             apiService.getRecommendation(any(), any(), any())
         } returns apiResponse
 
-        val result = createRepository().getRecommendation(schedule, listOf("Saudável"))
+        val result = repository.getRecommendation(schedule, listOf("Saudável"))
 
         assertEquals(
             MealRecommendation(
@@ -96,7 +98,7 @@ class MealRecommendationRepositoryImplTest {
             apiService.getRecommendation(any(), any(), any())
         } returns apiResponse
 
-        createRepository().getRecommendation(schedule, emptyList())
+        repository.getRecommendation(schedule, emptyList())
 
         coVerify { apiService.getRecommendation(any(), "breakfast", any()) }
     }
@@ -105,6 +107,6 @@ class MealRecommendationRepositoryImplTest {
     fun `getRecommendation throws when user is null`() = runTest {
         every { userRepository.getUser() } returns flowOf(null)
 
-        createRepository().getRecommendation(schedule, emptyList())
+        repository.getRecommendation(schedule, emptyList())
     }
 }

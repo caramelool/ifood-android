@@ -4,8 +4,8 @@
         <color android:color="@color/ifood_red"/>
     </item>
     <item
-        android:drawable="@mipmap/ic_launcher"
-        android:width="48dp"
-        android:height="48dp" />
-
+        android:drawable="@drawable/ic_ifood_transparent"
+        android:gravity="center"
+        android:width="160dp"
+        android:height="160dp" />
 </layer-list>
