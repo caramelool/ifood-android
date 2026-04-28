@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             IfoodTheme {
-                MainNavHost(pendingRecommendation = pendingRecommendation.value)
+                MainNavHost(pendingRecommendation = pendingRecommendation)
             }
         }
     }
@@ -43,7 +43,9 @@ class MainActivity : ComponentActivity() {
         const val EXTRA_MEAL_RECOMMENDATION = "extra_recommendation"
         fun intentRecommendation(context: Context, recommendation: MealRecommendation): Intent {
             return Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP
                 putExtra(EXTRA_MEAL_RECOMMENDATION, recommendation)
             }
         }

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.preferencesOf
+import com.lc.ifood.domain.repository.OnboardingRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -28,9 +29,13 @@ class OnboardingRepositoryImplTest {
     @MockK private lateinit var dataStore: DataStore<Preferences>
     private val onboardingKey = booleanPreferencesKey("onboarding_completed")
 
+    private lateinit var repository: OnboardingRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        every { dataStore.data } returns flowOf(emptyPreferences())
+        repository = OnboardingRepositoryImpl(dataStore)
     }
 
     @After
@@ -38,30 +43,22 @@ class OnboardingRepositoryImplTest {
         unmockkAll()
     }
 
-    private fun createRepository(): OnboardingRepositoryImpl {
-        every { dataStore.data } returns flowOf(emptyPreferences())
-        return OnboardingRepositoryImpl(dataStore)
-    }
-
     @Test
     fun `isOnboardingCompleted emits false when key is not set`() = runTest {
-        val repo = createRepository()
-        assertFalse(repo.isOnboardingCompleted.first())
+        assertFalse(repository.isOnboardingCompleted.first())
     }
 
     @Test
     fun `isOnboardingCompleted emits true when key is set to true`() = runTest {
         every { dataStore.data } returns flowOf(preferencesOf(onboardingKey to true))
-        val repo = OnboardingRepositoryImpl(dataStore)
-        assertTrue(repo.isOnboardingCompleted.first())
+        assertTrue(repository.isOnboardingCompleted.first())
     }
 
     @Test
     fun `setOnboardingCompleted calls dataStore updateData`() = runTest {
-        val repo = createRepository()
         coEvery { dataStore.updateData(any()) } returns mockk()
 
-        repo.setOnboardingCompleted()
+        repository.setOnboardingCompleted()
 
         coVerify { dataStore.updateData(any()) }
     }

@@ -71,7 +71,7 @@ class MealRecommendationWorker @AssistedInject constructor(
 
         val recommendation = runCatching {
             getMealRecommendation(schedule, preferences)
-        }.onFailure { Log.e(TAG, "Recommendation failed for ${mealType}", it) }.getOrNull()
+        }.onFailure { Log.e(TAG, "Recommendation failed for $mealType", it) }.getOrNull()
 
         createNotificationChannel()
 

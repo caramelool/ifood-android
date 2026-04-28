@@ -43,8 +43,7 @@ app/src/main/java/com/lc/ifood/
 │   ├── schedule/         # ScheduleAdjustmentScreen, ScheduleAdjustmentViewModel, ScheduleAdjustmentUiState
 │   ├── splash/           # SplashScreen, SplashViewModel, SplashUiState
 │   ├── navigation/       # AppRoutes, MainNavHost
-│   ├── theme/            # Color, Theme, Type, SystemStatusBar
-│   └── MealTypeStrings.kt
+│   └── theme/            # Color, Theme, Type, SystemStatusBar
 ├── worker/               # AlarmReceiver, BootReceiver, MealRecommendationScheduler, MealRecommendationWorker
 ├── MainActivity.kt
 └── MainApplication.kt

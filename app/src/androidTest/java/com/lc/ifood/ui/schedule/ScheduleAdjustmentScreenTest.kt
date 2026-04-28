@@ -5,7 +5,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -73,9 +74,10 @@ class ScheduleAdjustmentScreenTest {
     fun editIcon_clickOpensTimePicker() {
         setContent(ScheduleAdjustmentUiState(schedules = schedules))
         composeRule
-            .onNodeWithContentDescription(
+            .onAllNodesWithContentDescription(
                 composeRule.activity.getString(R.string.schedule_adjustment_edit_content_description)
             )
+            .onFirst()
             .performClick()
         composeRule
             .onNodeWithText(composeRule.activity.getString(R.string.schedule_adjustment_time_picker_title))

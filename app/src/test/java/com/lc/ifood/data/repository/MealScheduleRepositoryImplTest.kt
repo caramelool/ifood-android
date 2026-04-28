@@ -7,6 +7,7 @@ import com.lc.ifood.domain.model.MealType.AFTERNOON_SNACK
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.DINNER
 import com.lc.ifood.domain.model.MealType.LUNCH
+import com.lc.ifood.domain.repository.MealScheduleRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -29,9 +30,12 @@ class MealScheduleRepositoryImplTest {
 
     @MockK private lateinit var dao: MealScheduleDao
 
+    private lateinit var repository: MealScheduleRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        repository = MealScheduleRepositoryImpl(dao)
     }
 
     @After
@@ -39,21 +43,19 @@ class MealScheduleRepositoryImplTest {
         unmockkAll()
     }
 
-    private fun createRepository() = MealScheduleRepositoryImpl(dao)
-
     @Test
     fun `getMealSchedules maps entities from dao to domain models`() = runTest {
         val entity = MealScheduleEntity(mealType = "BREAKFAST", hour = 8, minute = 0)
         every { dao.getAll() } returns flowOf(listOf(entity))
 
-        assertEquals(listOf(MealSchedule(BREAKFAST, 8, 0)), createRepository().getMealSchedules().first())
+        assertEquals(listOf(MealSchedule(BREAKFAST, 8, 0)), repository.getMealSchedules().first())
     }
 
     @Test
     fun `getMealSchedules returns default schedules when dao emits empty list`() = runTest {
         every { dao.getAll() } returns flowOf(emptyList())
 
-        val result = createRepository().getMealSchedules().first()
+        val result = repository.getMealSchedules().first()
         assertEquals(4, result.size)
         assertEquals(BREAKFAST, result[0].mealType)
         assertEquals(8, result[0].hour)
@@ -69,7 +71,7 @@ class MealScheduleRepositoryImplTest {
     fun `updateMealSchedule upserts entity into dao`() = runTest {
         coEvery { dao.upsert(any()) } just runs
 
-        createRepository().updateMealSchedule(MealSchedule(BREAKFAST, 9, 30))
+        repository.updateMealSchedule(MealSchedule(BREAKFAST, 9, 30))
 
         coVerify {
             dao.upsert(MealScheduleEntity(mealType = "BREAKFAST", hour = 9, minute = 30))
@@ -81,7 +83,7 @@ class MealScheduleRepositoryImplTest {
         coEvery { dao.count() } returns 0
         coEvery { dao.insertAll(any()) } just runs
 
-        createRepository().seedDefaultsIfEmpty()
+        repository.seedDefaultsIfEmpty()
 
         coVerify { dao.insertAll(any()) }
     }
@@ -90,7 +92,7 @@ class MealScheduleRepositoryImplTest {
     fun `seedDefaultsIfEmpty does not insert when dao already has records`() = runTest {
         coEvery { dao.count() } returns 4
 
-        createRepository().seedDefaultsIfEmpty()
+        repository.seedDefaultsIfEmpty()
 
         coVerify(exactly = 0) { dao.insertAll(any()) }
     }
