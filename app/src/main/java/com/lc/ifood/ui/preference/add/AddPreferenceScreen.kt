@@ -22,6 +22,7 @@ import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -113,6 +114,10 @@ internal fun AddPreferenceContent(
                 placeholder = { Text(stringResource(R.string.add_preference_label_placeholder)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
+                isError = uiState.labelError,
+                supportingText = if (uiState.labelError) {
+                    { Text(stringResource(R.string.add_preference_label_error)) }
+                } else null,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = IfoodRed,
@@ -149,11 +154,21 @@ internal fun AddPreferenceContent(
                 }
             }
 
+            if (uiState.mealTypesError) {
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.add_preference_meal_types_error),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+
             Spacer(Modifier.height(32.dp))
 
             Button(
                 onClick = onSave,
-                enabled = uiState.canSave && !uiState.isSaving,
+                enabled = !uiState.isSaving,
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(containerColor = IfoodRed),
                 shape = RoundedCornerShape(12.dp)

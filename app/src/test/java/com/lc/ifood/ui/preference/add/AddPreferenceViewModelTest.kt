@@ -6,10 +6,10 @@ import com.lc.ifood.domain.usecase.GetMealsUseCase
 import com.lc.ifood.domain.usecase.SavePreferenceUseCase
 import com.lc.ifood.util.MainDispatcherRule
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -130,12 +130,38 @@ class AddPreferenceViewModelTest {
     }
 
     @Test
-    fun `save does not call SavePreferenceUseCase when canSave is false`() = runTest {
+    fun `save sets showErrors true when form is invalid`() = runTest {
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
+        val vm = createViewModel()
+        vm.save {}
+        assertTrue(vm.uiState.value.showErrors)
+    }
+
+    @Test
+    fun `save does not call SavePreferenceUseCase when form is invalid`() = runTest {
         every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
         val vm = createViewModel()
         vm.save {}
         advanceUntilIdle()
         coVerify(exactly = 0) { savePreference.invoke(any(), any()) }
+    }
+
+    @Test
+    fun `labelError is true when showErrors and label is blank`() = runTest {
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
+        val vm = createViewModel()
+        vm.save {}
+        assertTrue(vm.uiState.value.labelError)
+    }
+
+    @Test
+    fun `mealTypesError is true when showErrors and no meal selected`() = runTest {
+        every { getMeals.invoke() } returns flowOf(listOf(BREAKFAST))
+        val vm = createViewModel()
+        vm.onLabelChange("Saudável")
+        vm.save {}
+        assertTrue(vm.uiState.value.mealTypesError)
+        assertFalse(vm.uiState.value.labelError)
     }
 
     @Test

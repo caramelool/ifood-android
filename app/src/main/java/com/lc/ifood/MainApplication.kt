@@ -18,8 +18,9 @@ import javax.inject.Inject
  * - Triggers Hilt component generation via `@HiltAndroidApp`.
  * - Provides a custom [Configuration] so WorkManager uses [HiltWorkerFactory] and can inject
  *   dependencies into workers (e.g. [com.lc.ifood.worker.MealRecommendationWorker]).
- * - Schedules all meal reminder alarms on every cold start so the alarm chain is never broken
- *   (AlarmManager alarms do not survive device reboots, so rescheduling here covers that case).
+ * - Schedules all meal reminder alarms on every cold start so the alarm chain is never broken.
+ *   [com.lc.ifood.worker.BootReceiver] handles rescheduling on headless boot; this covers the
+ *   normal app-open path.
  *
  * Implements [LifecycleOwner] via delegation to [ProcessLifecycleOwner] to get access to
  * [lifecycleScope] for the initial alarm scheduling coroutine.

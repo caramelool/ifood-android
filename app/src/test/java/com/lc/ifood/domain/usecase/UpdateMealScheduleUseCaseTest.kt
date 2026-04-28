@@ -5,10 +5,10 @@ import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.repository.MealScheduleRepository
 import com.lc.ifood.worker.MealRecommendationScheduler
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll

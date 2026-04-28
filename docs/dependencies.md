@@ -101,6 +101,6 @@ All library versions are managed centrally in [`gradle/libs.versions.toml`](../g
 | `androidx-core` (test) | 1.7.0 | Core utilities for instrumented tests |
 | `androidx-runner` | 1.7.0 | AndroidX test runner |
 | `compose-ui-test-junit4` | (BOM-managed) | Compose test rule and semantic tree queries |
-| `mockk` | 1.14.2 | Kotlin-idiomatic mocking (supports coroutines and suspend functions) |
+| `mockk` | 1.14.9 | Kotlin-idiomatic mocking (supports coroutines and suspend functions) |
 | `kotlinx-coroutines-test` | 1.10.2 | `runTest`, `TestDispatcher`, `advanceTimeBy` for coroutine-based tests |
 | `kover` (plugin) | 0.9.8 | JVM code coverage measurement; enforces minimum thresholds in CI |

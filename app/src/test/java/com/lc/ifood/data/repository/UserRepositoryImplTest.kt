@@ -4,10 +4,10 @@ import com.lc.ifood.data.db.dao.UserDao
 import com.lc.ifood.data.db.entity.UserEntity
 import com.lc.ifood.domain.model.User
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll

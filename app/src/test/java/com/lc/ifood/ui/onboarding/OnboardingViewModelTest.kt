@@ -3,9 +3,9 @@ package com.lc.ifood.ui.onboarding
 import com.lc.ifood.domain.usecase.CompleteOnboardingUseCase
 import com.lc.ifood.util.MainDispatcherRule
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coJustRun
 import io.mockk.coVerify
+import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher

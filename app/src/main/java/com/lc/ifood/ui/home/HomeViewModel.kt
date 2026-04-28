@@ -2,6 +2,7 @@ package com.lc.ifood.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.usecase.GetMealSchedulesUseCase
 import com.lc.ifood.domain.usecase.GetPreferencesUseCase
 import com.lc.ifood.domain.usecase.GetUserUseCase
@@ -33,6 +34,8 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    private val _recommendation = MutableStateFlow<MealRecommendation?>(null)
+
     init {
         viewModelScope.launch {
             seedDefaultSchedulesUseCase()
@@ -51,13 +54,15 @@ class HomeViewModel @Inject constructor(
             combine(
                 getMealSchedulesUseCase(),
                 getPreferencesUseCase(),
-                getUserUseCase()
-            ) { schedules, preferences, user ->
+                getUserUseCase(),
+                _recommendation
+            ) { schedules, preferences, user, recommendation ->
                 HomeUiState(
                     mealSchedules = schedules,
                     preferences = preferences,
                     userName = user?.name,
-                    isUserLoaded = true
+                    isUserLoaded = true,
+                    mealRecommendation = recommendation
                 )
             }.collect { _uiState.value = it }
         }
@@ -67,5 +72,13 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             saveUserUseCase(name)
         }
+    }
+
+    fun showRecommendation(recommendation: MealRecommendation) {
+        _recommendation.value = recommendation
+    }
+
+    fun dismissRecommendation() {
+        _recommendation.value = null
     }
 }

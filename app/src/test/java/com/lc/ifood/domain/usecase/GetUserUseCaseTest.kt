@@ -3,8 +3,8 @@ package com.lc.ifood.domain.usecase
 import com.lc.ifood.domain.model.User
 import com.lc.ifood.domain.repository.UserRepository
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first

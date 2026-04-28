@@ -11,12 +11,12 @@ A native Android application built for the **iFood Selection Process**. The app 
 | Language | Kotlin 2.3 |
 | UI | Jetpack Compose + Material 3 |
 | Architecture | MVVM + Clean Architecture |
-| DI | Hilt 2.59 |
-| Local DB | Room 2.8 |
+| DI | Hilt 2.59.2 |
+| Local DB | Room 2.8.4 |
 | Preferences | DataStore |
 | Networking | Retrofit 3 + OkHttp 5 + Moshi |
 | Background | WorkManager + AlarmManager |
-| Navigation | Navigation Compose 2.9 |
+| Navigation | Navigation Compose 2.9.8 |
 | Testing | JUnit 4 · MockK · Kover · Espresso · Compose Test |
 | CI | GitHub Actions |
 

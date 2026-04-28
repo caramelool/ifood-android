@@ -3,15 +3,11 @@ package com.lc.ifood.ui.home
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.lc.ifood.R
-import com.lc.ifood.domain.model.MealSchedule
-import com.lc.ifood.domain.model.MealType.BREAKFAST
-import com.lc.ifood.domain.model.MealType.LUNCH
-import com.lc.ifood.domain.model.UserPreference
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -22,14 +18,6 @@ class HomeScreenTest {
 
     @get:Rule
     val composeRule = createAndroidComposeRule<ComponentActivity>()
-
-    private val schedules = listOf(
-        MealSchedule(BREAKFAST, 8, 0),
-        MealSchedule(LUNCH, 12, 0)
-    )
-    private val preferences = listOf(
-        UserPreference(1, "Saudável", listOf(BREAKFAST))
-    )
 
     private fun setContent(
         uiState: HomeUiState = HomeUiState(),
@@ -48,89 +36,40 @@ class HomeScreenTest {
     }
 
     @Test
-    fun schedulesSection_displaysTitle() {
-        setContent(uiState = HomeUiState(mealSchedules = schedules, isUserLoaded = true))
+    fun header_displaysWelcomeText() {
+        setContent(uiState = HomeUiState(isUserLoaded = true, userName = "Lucas"))
         composeRule
-            .onNodeWithText(composeRule.activity.getString(R.string.home_schedules_title))
+            .onNodeWithText(composeRule.activity.getString(R.string.home_welcome))
             .assertIsDisplayed()
     }
 
     @Test
-    fun schedulesSection_displaysMealLabels() {
-        setContent(uiState = HomeUiState(mealSchedules = schedules, isUserLoaded = true))
-        composeRule.onNodeWithText("Café da Manhã").assertIsDisplayed()
-        composeRule.onNodeWithText("Almoço").assertIsDisplayed()
+    fun header_displaysUserName_whenProvided() {
+        setContent(uiState = HomeUiState(isUserLoaded = true, userName = "Lucas"))
+        composeRule.onNodeWithText("Lucas").assertIsDisplayed()
     }
 
     @Test
-    fun schedulesSection_editButtonIsVisible() {
-        setContent(uiState = HomeUiState(mealSchedules = schedules, isUserLoaded = true))
+    fun header_showsDialog_whenUserLoadedAndNameIsNull() {
+        setContent(uiState = HomeUiState(isUserLoaded = true, userName = null))
         composeRule
-            .onNodeWithContentDescription(
-                composeRule.activity.getString(R.string.home_schedules_edit_content_description)
-            )
+            .onNodeWithText(composeRule.activity.getString(R.string.home_username_dialog_title))
             .assertIsDisplayed()
     }
 
     @Test
-    fun schedulesSection_editButtonFiresCallback() {
-        var editClicked = false
+    fun header_dialogConfirm_callsOnSaveUserName() {
+        var savedName = ""
         setContent(
-            uiState = HomeUiState(mealSchedules = schedules, isUserLoaded = true),
-            onEditSchedules = { editClicked = true }
+            uiState = HomeUiState(isUserLoaded = true, userName = null),
+            onSaveUserName = { savedName = it }
         )
         composeRule
-            .onNodeWithContentDescription(
-                composeRule.activity.getString(R.string.home_schedules_edit_content_description)
-            )
+            .onNodeWithText(composeRule.activity.getString(R.string.home_username_dialog_hint))
+            .performTextInput("Joao")
+        composeRule
+            .onNodeWithText(composeRule.activity.getString(R.string.home_username_dialog_confirm))
             .performClick()
-        assertTrue(editClicked)
-    }
-
-    @Test
-    fun preferencesSection_displaysTitle() {
-        setContent(uiState = HomeUiState(preferences = preferences, isUserLoaded = true))
-        composeRule
-            .onNodeWithText(composeRule.activity.getString(R.string.home_preferences_title))
-            .assertIsDisplayed()
-    }
-
-    @Test
-    fun preferencesSection_displaysPreferenceLabel() {
-        setContent(uiState = HomeUiState(preferences = preferences, isUserLoaded = true))
-        composeRule.onNodeWithText("Saudável").assertIsDisplayed()
-    }
-
-    @Test
-    fun preferencesSection_addButtonIsVisible() {
-        setContent(uiState = HomeUiState(isUserLoaded = true))
-        composeRule
-            .onNodeWithContentDescription(
-                composeRule.activity.getString(R.string.home_preferences_add_content_description)
-            )
-            .assertIsDisplayed()
-    }
-
-    @Test
-    fun preferencesSection_addButtonFiresCallback() {
-        var addClicked = false
-        setContent(
-            uiState = HomeUiState(isUserLoaded = true),
-            onAddPreference = { addClicked = true }
-        )
-        composeRule
-            .onNodeWithContentDescription(
-                composeRule.activity.getString(R.string.home_preferences_add_content_description)
-            )
-            .performClick()
-        assertTrue(addClicked)
-    }
-
-    @Test
-    fun preferencesSection_showsEmptyMessage_whenNoPreferences() {
-        setContent(uiState = HomeUiState(preferences = emptyList(), isUserLoaded = true))
-        composeRule
-            .onNodeWithText(composeRule.activity.getString(R.string.home_preferences_empty))
-            .assertIsDisplayed()
+        assertTrue(savedName == "Joao")
     }
 }

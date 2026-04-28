@@ -11,10 +11,10 @@ import com.lc.ifood.domain.usecase.SaveUserUseCase
 import com.lc.ifood.domain.usecase.SeedDefaultSchedulesUseCase
 import com.lc.ifood.util.MainDispatcherRule
 import io.mockk.MockKAnnotations
-import io.mockk.impl.annotations.MockK
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.just
 import io.mockk.runs
 import io.mockk.unmockkAll

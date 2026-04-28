@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">iFoodFast</string>
+    <string name="app_name">iFood - Meal Scheduling</string>
 
     <!-- Common -->
     <string name="common_save">Salvar</string>
@@ -50,6 +50,8 @@
     <string name="add_preference_label_field">Descrição da preferência</string>
     <string name="add_preference_label_placeholder">Ex: Saudável, Econômico…</string>
     <string name="add_preference_meal_types_title">Tipos de refeição</string>
+    <string name="add_preference_label_error">Informe uma descrição</string>
+    <string name="add_preference_meal_types_error">Selecione pelo menos um tipo de refeição</string>
 
     <!-- Delete preference -->
     <string name="delete_preference_dialog_title">Remover preferência?</string>

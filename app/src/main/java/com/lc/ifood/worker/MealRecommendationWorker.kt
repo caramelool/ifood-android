@@ -19,6 +19,9 @@ import com.lc.ifood.domain.model.MealType
 import com.lc.ifood.domain.model.labelId
 import com.lc.ifood.domain.usecase.GetMealRecommendationUseCase
 import com.lc.ifood.domain.usecase.GetPreferencesByMealTypeUseCase
+import com.lc.ifood.worker.MealRecommendationWorker.Companion.KEY_HOUR
+import com.lc.ifood.worker.MealRecommendationWorker.Companion.KEY_MEAL_TYPE
+import com.lc.ifood.worker.MealRecommendationWorker.Companion.KEY_MINUTE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 

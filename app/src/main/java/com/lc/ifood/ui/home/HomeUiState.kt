@@ -1,5 +1,6 @@
 package com.lc.ifood.ui.home
 
+import com.lc.ifood.domain.model.MealRecommendation
 import com.lc.ifood.domain.model.MealSchedule
 import com.lc.ifood.domain.model.UserPreference
 
@@ -7,5 +8,6 @@ data class HomeUiState(
     val mealSchedules: List<MealSchedule> = emptyList(),
     val preferences: List<UserPreference> = emptyList(),
     val userName: String? = null,
-    val isUserLoaded: Boolean = false
+    val isUserLoaded: Boolean = false,
+    val mealRecommendation: MealRecommendation? = null
 )
