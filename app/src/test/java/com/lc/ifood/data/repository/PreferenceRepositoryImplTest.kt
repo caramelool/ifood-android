@@ -5,6 +5,7 @@ import com.lc.ifood.data.db.entity.UserPreferenceEntity
 import com.lc.ifood.domain.model.MealType.BREAKFAST
 import com.lc.ifood.domain.model.MealType.LUNCH
 import com.lc.ifood.domain.model.UserPreference
+import com.lc.ifood.domain.repository.PreferenceRepository
 import io.mockk.MockKAnnotations
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -27,9 +28,12 @@ class PreferenceRepositoryImplTest {
 
     @MockK private lateinit var dao: UserPreferenceDao
 
+    private lateinit var repository: PreferenceRepository
+
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        repository = PreferenceRepositoryImpl(dao)
     }
 
     @After
@@ -37,14 +41,12 @@ class PreferenceRepositoryImplTest {
         unmockkAll()
     }
 
-    private fun createRepository() = PreferenceRepositoryImpl(dao)
-
     @Test
     fun `getPreferences maps entities from dao to domain models`() = runTest {
         val entity = UserPreferenceEntity(id = 1, label = "Saudável", mealTypes = "BREAKFAST")
         every { dao.getAll() } returns flowOf(listOf(entity))
 
-        val result = createRepository().getPreferences().first()
+        val result = repository.getPreferences().first()
         assertEquals(1, result.size)
         assertEquals(UserPreference(1, "Saudável", listOf(BREAKFAST)), result[0])
     }
@@ -54,7 +56,7 @@ class PreferenceRepositoryImplTest {
         val entity = UserPreferenceEntity(id = 1, label = "Flex", mealTypes = "BREAKFAST,LUNCH")
         every { dao.getAll() } returns flowOf(listOf(entity))
 
-        val result = createRepository().getPreferences().first()
+        val result = repository.getPreferences().first()
         assertEquals(listOf(BREAKFAST, LUNCH), result[0].mealTypes)
     }
 
@@ -63,7 +65,7 @@ class PreferenceRepositoryImplTest {
         val entity = UserPreferenceEntity(id = 2, label = "Vegano", mealTypes = "LUNCH")
         coEvery { dao.getByMealType("LUNCH") } returns listOf(entity)
 
-        val result = createRepository().getPreferencesByMealType(LUNCH)
+        val result = repository.getPreferencesByMealType(LUNCH)
 
         assertEquals(1, result.size)
         assertEquals(UserPreference(2, "Vegano", listOf(LUNCH)), result[0])
@@ -74,7 +76,7 @@ class PreferenceRepositoryImplTest {
         val preference = UserPreference(id = 0, label = "Saudável", mealTypes = listOf(BREAKFAST, LUNCH))
         coEvery { dao.insert(any()) } just runs
 
-        createRepository().addPreference(preference)
+        repository.addPreference(preference)
 
         coVerify {
             dao.insert(
@@ -87,7 +89,7 @@ class PreferenceRepositoryImplTest {
     fun `deletePreference calls dao deleteById with given id`() = runTest {
         coEvery { dao.deleteById(5) } just runs
 
-        createRepository().deletePreference(5)
+        repository.deletePreference(5)
 
         coVerify { dao.deleteById(5) }
     }

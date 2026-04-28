@@ -26,6 +26,7 @@ class DeletePreferenceViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        coJustRun { deletePreference.invoke(any()) }
     }
 
     @After
@@ -34,7 +35,6 @@ class DeletePreferenceViewModelTest {
     }
 
     private fun createViewModel(): DeletePreferenceViewModel {
-        coJustRun { deletePreference.invoke(any()) }
         return DeletePreferenceViewModel(deletePreference)
     }
 

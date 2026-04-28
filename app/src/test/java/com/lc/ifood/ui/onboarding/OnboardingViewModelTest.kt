@@ -33,6 +33,7 @@ class OnboardingViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        coJustRun { completeOnboarding.invoke() }
     }
 
     @After
@@ -41,7 +42,6 @@ class OnboardingViewModelTest {
     }
 
     private fun createViewModel(): OnboardingViewModel {
-        coJustRun { completeOnboarding.invoke() }
         return OnboardingViewModel(completeOnboarding)
     }
 

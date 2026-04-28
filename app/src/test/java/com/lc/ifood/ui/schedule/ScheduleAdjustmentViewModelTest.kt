@@ -12,6 +12,7 @@ import io.mockk.coJustRun
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.justRun
 import io.mockk.unmockkAll
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -42,6 +43,8 @@ class ScheduleAdjustmentViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        coJustRun { updateMealSchedule.invoke(any()) }
+        justRun { scheduler.schedule(any()) }
     }
 
     @After
@@ -50,7 +53,6 @@ class ScheduleAdjustmentViewModelTest {
     }
 
     private fun createViewModel(): ScheduleAdjustmentViewModel {
-        coJustRun { updateMealSchedule.invoke(any()) }
         return ScheduleAdjustmentViewModel(
             getMealSchedules,
             updateMealSchedule,

@@ -56,7 +56,7 @@ fun MainNavHost(pendingRecommendation: MutableState<MealRecommendation?>) {
 
         composable<HomeRoute> {
             val homeViewModel: HomeViewModel = hiltViewModel()
-            LaunchedEffect(pendingRecommendation) {
+            LaunchedEffect(pendingRecommendation.value) {
                 pendingRecommendation.value?.let {
                     homeViewModel.showRecommendation(it)
                     pendingRecommendation.value = null

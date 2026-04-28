@@ -48,6 +48,7 @@ class HomeViewModelTest {
     @Before
     fun setUp() {
         MockKAnnotations.init(this)
+        coEvery { seedDefaultSchedules.invoke() } just runs
     }
 
     @After
@@ -56,8 +57,13 @@ class HomeViewModelTest {
     }
 
     private fun createViewModel(): HomeViewModel {
-        coEvery { seedDefaultSchedules.invoke() } just runs
-        return HomeViewModel(getMealSchedules, getPreferences, getUser, saveUser, seedDefaultSchedules)
+        return HomeViewModel(
+            getMealSchedules,
+            getPreferences,
+            getUser,
+            saveUser,
+            seedDefaultSchedules
+        )
     }
 
     @Test

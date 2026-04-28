@@ -54,11 +54,7 @@ class MealRecommendationScheduler @Inject constructor(
         val pendingIntent = buildPendingIntent(schedule)
         val triggerTime = triggerTimeMillis(schedule.hour, schedule.minute)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-        } else {
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-        }
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
     }
 
     private fun buildPendingIntent(schedule: MealSchedule): PendingIntent {
