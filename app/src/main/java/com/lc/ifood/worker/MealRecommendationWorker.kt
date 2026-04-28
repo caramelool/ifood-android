@@ -51,7 +51,6 @@ class MealRecommendationWorker @AssistedInject constructor(
         const val KEY_HOUR = "hour"
         const val KEY_MINUTE = "minute"
         const val CHANNEL_ID = "meal_reminders"
-        const val CHANNEL_NAME = "Lembretes de Refeição"
         private const val TAG = "MealReminderWorker"
     }
 
@@ -87,10 +86,10 @@ class MealRecommendationWorker @AssistedInject constructor(
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
-            CHANNEL_NAME,
+            ContextCompat.getString(context, R.string.worker_meal_recommendation_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT
         ).apply {
-            description = "Lembretes para horários de refeição"
+            description = ContextCompat.getString(context, R.string.worker_meal_recommendation_channel_description)
         }
         applicationContext.getSystemService(NotificationManager::class.java)
             .createNotificationChannel(channel)

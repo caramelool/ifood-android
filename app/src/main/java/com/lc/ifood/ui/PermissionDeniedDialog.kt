@@ -11,11 +11,11 @@ import com.lc.ifood.R
 fun PermissionDeniedDialog(onConfirm: () -> Unit) {
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(stringResource(R.string.splash_notification_required_title)) },
-        text = { Text(stringResource(R.string.splash_notification_required_message)) },
+        title = { Text(stringResource(R.string.notification_permission_required_title)) },
+        text = { Text(stringResource(R.string.notification_permission_required_message)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.splash_notification_required_confirm))
+                Text(stringResource(R.string.notification_permission_required_confirm))
             }
         }
     )

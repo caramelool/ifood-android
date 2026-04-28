@@ -17,12 +17,18 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val pendingResult = goAsync()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                mealRecommendationScheduler.scheduleAll()
-            } finally {
-                pendingResult.finish()
+        try {
+            if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+                scheduleAllRecommendations()
             }
+        } finally {
+            pendingResult.finish()
+        }
+    }
+
+    private fun scheduleAllRecommendations() {
+        CoroutineScope(Dispatchers.IO).launch {
+            mealRecommendationScheduler.scheduleAll()
         }
     }
 }
