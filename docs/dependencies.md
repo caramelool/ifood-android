@@ -21,7 +21,6 @@ All library versions are managed centrally in [`gradle/libs.versions.toml`](../g
 |---------|---------|---------|
 | `compose-bom` | 2026.04.01 | BOM that aligns all Compose library versions |
 | `material3` | (BOM-managed) | Material Design 3 components (buttons, chips, time pickers, etc.) |
-| `material-icons-extended` | (BOM-managed) | Extended Material icon set |
 | `ui-tooling` / `ui-tooling-preview` | (BOM-managed) | Compose layout inspector and preview support |
 | `activity-compose` | 1.13.0 | `ComponentActivity.setContent {}` integration |
 | `lifecycle-runtime-compose` | 2.10.0 | `collectAsStateWithLifecycle` for safe Flow collection in Composables |
@@ -75,11 +74,11 @@ All library versions are managed centrally in [`gradle/libs.versions.toml`](../g
 
 ## Background & Scheduling
 
-| Library | Purpose |
-|---------|---------|
-| `WorkManager` (work-runtime-ktx) | Reliable background execution for the recommendation fetch + notification |
-| `AlarmManager` (Android framework) | Exact time triggers 30 minutes before each meal |
-| `lifecycle-process` | Provides `ProcessLifecycleOwner` for coroutine scope in `MainApplication` |
+| Library | Version | Purpose |
+|---------|---------|---------|
+| `WorkManager` (work-runtime-ktx) | 2.11.2 | Reliable background execution for the recommendation fetch + notification |
+| `AlarmManager` (Android framework) | — | Exact time triggers 30 minutes before each meal |
+| `lifecycle-process` | 2.10.0 | Provides `ProcessLifecycleOwner` for coroutine scope in `MainApplication` |
 
 ---
 
